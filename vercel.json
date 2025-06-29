@@ -1,7 +1,9 @@
 {
-  "buildCommand": "node build-static.js",
+  "framework": "vite",
+  "buildCommand": "cd client && npx vite build --outDir ../dist --emptyOutDir",
   "outputDirectory": "dist",
   "installCommand": "npm install",
+  "functions": {},
   "rewrites": [
     {
       "source": "/(.*)",
