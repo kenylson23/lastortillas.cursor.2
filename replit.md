@@ -125,3 +125,9 @@ Preferred communication style: Simple, everyday language.
   - Added vercel.json configuration
   - Updated build process for static deployment
   - Created deployment documentation
+- June 29, 2025: Fixed Vercel 404 deployment errors
+  - Resolved Rollup import resolution failures by converting @/ aliases to relative paths
+  - Replaced complex UI components (Button, Card, Input, etc.) with standard HTML elements
+  - Simplified Contact form with native form elements while preserving WhatsApp functionality
+  - Build process now completes successfully without import errors
+  - Maintained all animations, styling, and core functionality

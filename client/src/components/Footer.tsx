@@ -1,4 +1,4 @@
-import { RESTAURANT_INFO } from "@/lib/constants";
+import { RESTAURANT_INFO } from "../lib/constants";
 
 export default function Footer() {
   const menuLinks = [
