@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,12 +41,12 @@ export default function Navigation() {
             </div>
           </div>
           
-          <Button 
+          <button 
             onClick={() => scrollToSection("#contato")}
             className="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300 floating-btn"
           >
             Reservar Mesa
-          </Button>
+          </button>
           
           <div className="md:hidden">
             <button 

@@ -55,11 +55,13 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-solid;
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
   }
   
   html {

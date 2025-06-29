@@ -1,18 +1,18 @@
-import Navigation from "@/components/Navigation";
-import Hero from "@/components/Hero";
-import MenuShowcase from "@/components/MenuShowcase";
-import About from "@/components/About";
-import Features from "@/components/Features";
-import Location from "@/components/Location";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import Navigation from "../components/Navigation";
+import Hero from "../components/Hero";
+import SimpleMenuShowcase from "../components/SimpleMenuShowcase";
+import About from "../components/About";
+import Features from "../components/Features";
+import Location from "../components/Location";
+import Contact from "../components/Contact";
+import Footer from "../components/Footer";
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       <Navigation />
       <Hero />
-      <MenuShowcase />
+      <SimpleMenuShowcase />
       <About />
       <Features />
       <Location />

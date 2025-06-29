@@ -1,7 +1,6 @@
 {
-  "buildCommand": "vite build",
+  "buildCommand": "node build-static.js",
   "outputDirectory": "dist",
-  "framework": "vite",
   "installCommand": "npm install",
   "rewrites": [
     {

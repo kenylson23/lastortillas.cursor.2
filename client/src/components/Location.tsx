@@ -1,6 +1,4 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function Location() {
   const locationInfo = [
@@ -81,8 +79,8 @@ export default function Location() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <Card className="bg-white rounded-2xl p-8 shadow-lg">
-              <CardContent className="p-0">
+            <div className="bg-white rounded-2xl p-8 shadow-lg">
+              <div className="p-0">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Informações de Localização</h3>
                 
                 <div className="space-y-4">
@@ -107,15 +105,15 @@ export default function Location() {
                 </div>
                 
                 <div className="mt-8">
-                  <Button className="w-full bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors">
+                  <button className="w-full bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors flex items-center justify-center">
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                     Como Chegar
-                  </Button>
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
