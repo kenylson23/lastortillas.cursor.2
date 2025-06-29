@@ -35,10 +35,31 @@ export default function Contact() {
   const reservationMutation = useMutation({
     mutationFn: (data: ReservationData) => apiRequest("POST", "/api/reservations", data),
     onSuccess: () => {
+      // Criar mensagem para WhatsApp
+      const whatsappMessage = `Olá Las Tortilhas! Gostaria de fazer uma reserva:
+      
+*Nome:* ${formData.name}
+*Telefone:* ${formData.phone}
+${formData.email ? `*Email:* ${formData.email}` : ''}
+*Data:* ${formData.date}
+*Hora:* ${formData.time}
+*Número de pessoas:* ${formData.guests}
+${formData.notes ? `*Observações:* ${formData.notes}` : ''}
+
+Aguardo confirmação. Obrigado!`;
+
+      // Codificar a mensagem para URL
+      const encodedMessage = encodeURIComponent(whatsappMessage);
+      
+      // Redirecionar para WhatsApp
+      const whatsappUrl = `https://wa.me/244949639932?text=${encodedMessage}`;
+      window.open(whatsappUrl, '_blank');
+      
       toast({
-        title: "Reserva confirmada!",
-        description: "Entraremos em contato em breve para confirmar os detalhes.",
+        title: "Redirecionando para WhatsApp!",
+        description: "Você será direcionado para o WhatsApp para confirmar sua reserva.",
       });
+      
       setFormData({
         name: "",
         phone: "",
@@ -71,7 +92,7 @@ export default function Contact() {
         </svg>
       ),
       title: "Telefone",
-      description: "+244 XXX XXX XXX",
+      description: "+244 949 639 932",
       bgColor: "bg-red-600"
     },
     {
@@ -91,7 +112,7 @@ export default function Contact() {
         </svg>
       ),
       title: "WhatsApp",
-      description: "+244 XXX XXX XXX",
+      description: "+244 949 639 932",
       bgColor: "bg-orange-500"
     }
   ];

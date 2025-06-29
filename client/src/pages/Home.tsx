@@ -22,7 +22,9 @@ export default function Home() {
       {/* Floating WhatsApp Button */}
       <div className="fixed bottom-6 right-6 z-50">
         <a 
-          href="#contato" 
+          href="https://wa.me/244949639932" 
+          target="_blank"
+          rel="noopener noreferrer"
           className="bg-green-500 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:bg-green-600 transition-all duration-300 floating-btn"
         >
           <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 24 24">

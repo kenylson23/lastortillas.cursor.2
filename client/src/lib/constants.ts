@@ -60,7 +60,7 @@ export const MENU_ITEMS = [
 export const RESTAURANT_INFO = {
   name: "Las Tortilhas",
   description: "Autêntica culinária mexicana no coração de Luanda",
-  phone: "+244 XXX XXX XXX",
+  phone: "+244 949 639 932",
   email: "info@lastortilhas.ao",
   address: "Ilha de Luanda, Angola",
   hours: "Seg-Dom: 11:00 - 23:00"

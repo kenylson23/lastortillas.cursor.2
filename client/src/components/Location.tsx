@@ -30,7 +30,7 @@ export default function Location() {
         </svg>
       ),
       title: "Telefone",
-      description: "+244 XXX XXX XXX"
+      description: "+244 949 639 932"
     },
     {
       icon: (
