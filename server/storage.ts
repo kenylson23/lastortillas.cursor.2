@@ -46,7 +46,9 @@ export class MemStorage implements IStorage {
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
     const id = this.currentReservationId++;
     const reservation: Reservation = { 
-      ...insertReservation, 
+      ...insertReservation,
+      email: insertReservation.email || null,
+      notes: insertReservation.notes || null,
       id, 
       createdAt: new Date() 
     };
@@ -57,7 +59,8 @@ export class MemStorage implements IStorage {
   async createContact(insertContact: InsertContact): Promise<Contact> {
     const id = this.currentContactId++;
     const contact: Contact = { 
-      ...insertContact, 
+      ...insertContact,
+      phone: insertContact.phone || null,
       id, 
       createdAt: new Date() 
     };

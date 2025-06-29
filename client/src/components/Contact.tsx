@@ -6,8 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+
 import { useToast } from "@/hooks/use-toast";
 
 interface ReservationData {
@@ -32,11 +31,9 @@ export default function Contact() {
     notes: ""
   });
 
-  const reservationMutation = useMutation({
-    mutationFn: (data: ReservationData) => apiRequest("POST", "/api/reservations", data),
-    onSuccess: () => {
-      // Criar mensagem para WhatsApp
-      const whatsappMessage = `Olá Las Tortilhas! Gostaria de fazer uma reserva:
+  const handleWhatsAppRedirect = () => {
+    // Criar mensagem para WhatsApp
+    const whatsappMessage = `Olá Las Tortilhas! Gostaria de fazer uma reserva:
       
 *Nome:* ${formData.name}
 *Telefone:* ${formData.phone}
@@ -48,40 +45,43 @@ ${formData.notes ? `*Observações:* ${formData.notes}` : ''}
 
 Aguardo confirmação. Obrigado!`;
 
-      // Codificar a mensagem para URL
-      const encodedMessage = encodeURIComponent(whatsappMessage);
-      
-      // Redirecionar para WhatsApp
-      const whatsappUrl = `https://wa.me/244949639932?text=${encodedMessage}`;
-      window.open(whatsappUrl, '_blank');
-      
-      toast({
-        title: "Redirecionando para WhatsApp!",
-        description: "Você será direcionado para o WhatsApp para confirmar sua reserva.",
-      });
-      
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        date: "",
-        time: "",
-        guests: 2,
-        notes: ""
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro ao fazer reserva",
-        description: "Tente novamente ou contacte-nos diretamente.",
-        variant: "destructive",
-      });
-    }
-  });
+    // Codificar a mensagem para URL
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+    
+    // Redirecionar para WhatsApp
+    const whatsappUrl = `https://wa.me/244949639932?text=${encodedMessage}`;
+    window.open(whatsappUrl, '_blank');
+    
+    toast({
+      title: "Redirecionando para WhatsApp!",
+      description: "Você será direcionado para o WhatsApp para confirmar sua reserva.",
+    });
+    
+    setFormData({
+      name: "",
+      phone: "",
+      email: "",
+      date: "",
+      time: "",
+      guests: 2,
+      notes: ""
+    });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    reservationMutation.mutate(formData);
+    
+    // Validar campos obrigatórios
+    if (!formData.name || !formData.phone || !formData.date || !formData.time) {
+      toast({
+        title: "Campos obrigatórios",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    handleWhatsAppRedirect();
   };
 
   const contactInfo = [
@@ -303,13 +303,12 @@ Aguardo confirmação. Obrigado!`;
               
               <Button 
                 type="submit" 
-                disabled={reservationMutation.isPending}
                 className="w-full bg-red-600 text-white px-6 py-4 rounded-lg text-lg font-semibold hover:bg-red-700 transition-colors"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a2 2 0 012-2h4a2 2 0 012 2v4m-6 0V5a2 2 0 012-2h2a2 2 0 012 2v2m-6 0h6m-6 0v11a2 2 0 002 2h2a2 2 0 002-2V7m-6 0V5" />
                 </svg>
-                {reservationMutation.isPending ? "Processando..." : "Confirmar Reserva"}
+                Confirmar Reserva
               </Button>
             </form>
           </motion.div>

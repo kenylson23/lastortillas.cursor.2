@@ -100,16 +100,17 @@ Las Tortilhas is a full-stack web application for a Mexican restaurant located i
 - **Database**: In-memory storage for rapid development
 - **Integration**: Vite proxy configuration for API requests
 
-### Production Build
-- **Frontend**: Static asset generation with Vite build
-- **Backend**: ESBuild compilation to optimized JavaScript
-- **Database**: PostgreSQL connection via environment variables
-- **Deployment**: Single-process architecture serving both API and static files
+### Production Build (Vercel)
+- **Type**: Static Single Page Application (SPA)
+- **Build Command**: `vite build`
+- **Output Directory**: `dist`
+- **Framework**: Vite (auto-detected)
+- **Reservations**: WhatsApp integration (no backend required)
 
 ### Environment Configuration
-- **DATABASE_URL**: PostgreSQL connection string for production
-- **NODE_ENV**: Environment detection for conditional behavior
-- **REPL_ID**: Replit-specific environment detection
+- **Vercel Configuration**: `vercel.json` with SPA routing
+- **WhatsApp Integration**: Direct linking to +244 949639932
+- **Static Assets**: Optimized for CDN delivery
 
 ## User Preferences
 
@@ -117,5 +118,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
-Changelog:
-- June 29, 2025. Initial setup
+- June 29, 2025: Initial setup
+- June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
+- June 29, 2025: Prepared for Vercel deployment as static SPA
+  - Removed backend dependencies from Contact form
+  - Added vercel.json configuration
+  - Updated build process for static deployment
+  - Created deployment documentation
