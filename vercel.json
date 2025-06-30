@@ -1,7 +1,7 @@
 {
   "framework": "vite",
-  "buildCommand": "npx vite build client --outDir dist --emptyOutDir",
-  "outputDirectory": "dist",
+  "buildCommand": "node build-vercel.js",
+  "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "rewrites": [
     {

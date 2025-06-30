@@ -16,39 +16,48 @@ try {
     fs.rmSync('dist', { recursive: true, force: true });
   }
   
-  // Use simpler build command that's more reliable
-  console.log('Building application...');
-  execSync('npm run build', { 
+  // Build with optimized settings for Vercel
+  console.log('Building application with optimized settings...');
+  execSync('vite build', { 
     stdio: 'inherit',
     env: { 
       ...process.env, 
       NODE_ENV: 'production',
-      VITE_API_URL: '',
-      // Optimize for production
-      NODE_OPTIONS: '--max-old-space-size=4096'
-    }
+      // Optimize build performance
+      NODE_OPTIONS: '--max-old-space-size=4096',
+      // Reduce Vite build complexity 
+      VITE_LEGACY: 'false'
+    },
+    timeout: 300000 // 5 minutes timeout
   });
   
-  // Verify build output
+  // Verify build output - checking both possible locations
   const distPath = path.join(__dirname, 'dist');
-  const indexPath = path.join(distPath, 'index.html');
+  const publicPath = path.join(distPath, 'public');
+  const indexPath = fs.existsSync(publicPath) 
+    ? path.join(publicPath, 'index.html')
+    : path.join(distPath, 'index.html');
   
   if (fs.existsSync(indexPath)) {
     console.log('✓ Build completed successfully');
-    console.log('✓ Static files ready for deployment');
     
-    // List key files for verification
-    const distContents = fs.readdirSync(distPath);
-    const importantFiles = distContents.filter(file => 
-      file.includes('.html') || file.includes('.js') || file.includes('.css')
-    );
-    console.log('✓ Generated files:', importantFiles.join(', '));
+    // Show actual output directory structure
+    const outputDir = fs.existsSync(publicPath) ? publicPath : distPath;
+    const contents = fs.readdirSync(outputDir);
+    
+    console.log('✓ Output directory:', outputDir);
+    console.log('✓ Generated files:', contents.filter(f => 
+      f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css')
+    ).join(', '));
+    
   } else {
-    throw new Error('Build output not found - check build configuration');
+    throw new Error(`Build output not found. Expected: ${indexPath}`);
   }
   
 } catch (error) {
   console.error('❌ Build failed:', error.message);
-  console.error('💡 Suggestion: Check if all dependencies are installed correctly');
+  if (error.code === 'ETIMEDOUT') {
+    console.error('💡 Build timed out - this can happen with complex dependencies');
+  }
   process.exit(1);
 }
