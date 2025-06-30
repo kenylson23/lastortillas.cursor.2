@@ -26,70 +26,68 @@ export default function Hero() {
       <div className="absolute inset-0 bg-black/20" />
       
       <div className="relative z-10 text-center px-4 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-20">
-        {/* Left Column - Content */}
+        {/* Content without card */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           className="lg:text-left"
         >
-          <div className="bg-white/90 backdrop-blur-lg rounded-3xl p-8 md:p-10 shadow-2xl border border-white/20">
-            <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-4xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6"
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
+          >
+            <span className="text-green-300 drop-shadow-lg">Las</span>{" "}
+            <span className="text-red-400 drop-shadow-lg">Tortilhas</span>
+          </motion.h1>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.6 }}
+            className="text-xl md:text-2xl text-white mb-6 font-light drop-shadow-xl"
+          >
+            Autêntica culinária mexicana no coração de Luanda
+          </motion.p>
+          
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.8 }}
+            className="text-lg text-white/90 mb-8 drop-shadow-lg"
+          >
+            Descubra os sabores vibrantes do México numa experiência gastronómica única. 
+            Pratos tradicionais preparados com ingredientes frescos e muito amor.
+          </motion.p>
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 1 }}
+            className="flex flex-col sm:flex-row gap-4"
+          >
+            <button 
+              onClick={() => scrollToSection("#menu")}
+              className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-2xl border-2 border-red-500"
             >
-              <span className="text-green-700">Las</span>{" "}
-              <span className="text-red-600">Tortilhas</span>
-            </motion.h1>
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              Ver Menu
+            </button>
             
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-xl md:text-2xl text-gray-700 mb-6 font-light"
+            <button 
+              onClick={() => scrollToSection("#contato")}
+              className="border-2 border-green-400 text-green-400 bg-white/10 backdrop-blur-sm px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-400 hover:text-white transition-all duration-300 flex items-center justify-center shadow-2xl"
             >
-              Autêntica culinária mexicana no coração de Luanda
-            </motion.p>
-            
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.8 }}
-              className="text-lg text-gray-600 mb-8"
-            >
-              Descubra os sabores vibrantes do México numa experiência gastronómica única. 
-              Pratos tradicionais preparados com ingredientes frescos e muito amor.
-            </motion.p>
-            
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 1 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
-              <button 
-                onClick={() => scrollToSection("#menu")}
-                className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                Ver Menu
-              </button>
-              
-              <button 
-                onClick={() => scrollToSection("#contato")}
-                className="border-2 border-green-700 text-green-700 px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-700 hover:text-white transition-all duration-300 flex items-center justify-center"
-              >
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                Fazer Reserva
-              </button>
-            </motion.div>
-          </div>
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+              Fazer Reserva
+            </button>
+          </motion.div>
         </motion.div>
 
         {/* Right Column - Visual Space for Image */}
