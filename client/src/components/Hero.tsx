@@ -23,7 +23,10 @@ export default function Hero() {
       />
       
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/20" />
+      <div className="absolute inset-0 bg-black/30" />
+      
+      {/* Additional gradient overlay for text area */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent lg:block hidden" />
       
       <div className="relative z-10 text-center px-4 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-20">
         {/* Content without card */}
@@ -37,17 +40,23 @@ export default function Hero() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6 drop-shadow-2xl"
+            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6"
+            style={{
+              textShadow: '4px 4px 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6), 0px 0px 20px rgba(0,0,0,0.5)'
+            }}
           >
-            <span className="text-green-300 drop-shadow-lg">Las</span>{" "}
-            <span className="text-red-400 drop-shadow-lg">Tortilhas</span>
+            <span className="text-green-300" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Las</span>{" "}
+            <span className="text-red-400" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Tortilhas</span>
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-xl md:text-2xl text-white mb-6 font-light drop-shadow-xl"
+            className="text-xl md:text-2xl text-white mb-6 font-light"
+            style={{
+              textShadow: '3px 3px 6px rgba(0,0,0,0.8), 1px 1px 3px rgba(0,0,0,0.6), 0px 0px 15px rgba(0,0,0,0.4)'
+            }}
           >
             Autêntica culinária mexicana no coração de Luanda
           </motion.p>
@@ -56,7 +65,10 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="text-lg text-white/90 mb-8 drop-shadow-lg"
+            className="text-lg text-white mb-8"
+            style={{
+              textShadow: '2px 2px 4px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.6), 0px 0px 10px rgba(0,0,0,0.4)'
+            }}
           >
             Descubra os sabores vibrantes do México numa experiência gastronómica única. 
             Pratos tradicionais preparados com ingredientes frescos e muito amor.
