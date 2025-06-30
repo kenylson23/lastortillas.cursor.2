@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { MENU_ITEMS } from "../lib/constants";
+import ScrollReveal from "./ScrollReveal";
 
 export default function MenuShowcase() {
   const handleOrderItem = (itemName: string) => {
@@ -10,11 +11,9 @@ export default function MenuShowcase() {
   return (
     <section id="menu" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <ScrollReveal 
+          direction="up"
+          delay={0.2}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -23,16 +22,18 @@ export default function MenuShowcase() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Pratos autênticos que transportam você direto para o México
           </p>
-        </motion.div>
+        </ScrollReveal>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {MENU_ITEMS.map((item, index) => (
-            <motion.div
+            <ScrollReveal
               key={item.id}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              viewport={{ once: true }}
+              direction="up"
+              delay={0.1}
+              stagger={true}
+              staggerIndex={index}
+              staggerDelay={0.15}
+              duration={0.6}
             >
               <div className="menu-item bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
                 <div className="relative overflow-hidden">
@@ -56,15 +57,14 @@ export default function MenuShowcase() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </ScrollReveal>
           ))}
         </div>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          viewport={{ once: true }}
+        <ScrollReveal 
+          direction="up"
+          delay={0.8}
+          duration={0.6}
           className="text-center mt-12"
         >
           <button className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105">
@@ -73,7 +73,7 @@ export default function MenuShowcase() {
             </svg>
             Ver Menu Completo
           </button>
-        </motion.div>
+        </ScrollReveal>
       </div>
     </section>
   );

@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import ScrollReveal from "./ScrollReveal";
 
 export default function Features() {
   const features = [
@@ -34,26 +35,27 @@ export default function Features() {
   return (
     <section className="py-20 bg-gradient-to-br from-green-700 to-red-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
+        <ScrollReveal 
+          direction="fade"
+          delay={0.2}
+          duration={0.8}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             Por que escolher Las Tortilhas?
           </h2>
-        </motion.div>
+        </ScrollReveal>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <motion.div 
+            <ScrollReveal
               key={feature.title}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}
+              direction="up"
+              delay={0.4}
+              stagger={true}
+              staggerIndex={index}
+              staggerDelay={0.2}
+              duration={0.6}
               className="text-center text-white card-3d bg-white/10 backdrop-blur-lg rounded-2xl p-8"
             >
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -61,7 +63,7 @@ export default function Features() {
               </div>
               <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
               <p className="text-white/90">{feature.description}</p>
-            </motion.div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
