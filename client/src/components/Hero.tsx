@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
 
 export default function Hero() {
   const scrollToSection = (href: string) => {
@@ -12,9 +13,12 @@ export default function Hero() {
     <section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-green-700/20 to-red-600/20 parallax-bg"
+        className="absolute inset-0 bg-gradient-to-br from-green-700/30 to-red-600/30 parallax-bg"
         style={{
-          backgroundImage: "url('https://images.unsplash.com/photo-1551218808-94e220e084d2?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080')"
+          backgroundImage: `url(${heroImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
         }}
       />
       
@@ -23,7 +27,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="card-3d bg-white/90 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl"
+          className="card-3d bg-white/95 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20"
         >
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
