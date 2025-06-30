@@ -66,11 +66,11 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1 }}
-            className="flex flex-col sm:flex-row gap-4"
+            className="flex flex-col sm:flex-row gap-4 lg:justify-start justify-center items-center sm:items-start"
           >
             <button 
               onClick={() => scrollToSection("#menu")}
-              className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-2xl border-2 border-red-500"
+              className="bg-red-600 text-white px-10 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center shadow-2xl border-2 border-red-500 min-w-[180px]"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -80,7 +80,7 @@ export default function Hero() {
             
             <button 
               onClick={() => scrollToSection("#contato")}
-              className="border-2 border-green-400 text-green-400 bg-white/10 backdrop-blur-sm px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-400 hover:text-white transition-all duration-300 flex items-center justify-center shadow-2xl"
+              className="border-2 border-green-400 text-green-400 bg-white/10 backdrop-blur-sm px-10 py-4 rounded-full text-lg font-semibold hover:bg-green-400 hover:text-white transition-all duration-300 flex items-center justify-center shadow-2xl min-w-[180px]"
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
