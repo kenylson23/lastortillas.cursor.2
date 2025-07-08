@@ -137,3 +137,9 @@ Preferred communication style: Simple, everyday language.
   - Created availability endpoints for frontend validation
   - Added proper error handling for duplicate reservations
   - Improved user experience with visual availability status indicators
+- July 8, 2025: Updated restaurant operating hours
+  - Changed from single schedule (11:00-23:00 daily) to split schedule
+  - Monday-Thursday: 11:00-23:00
+  - Friday-Sunday: 11:00-01:00  
+  - Added new reservation time slots (22:00, 23:00, 00:00)
+  - Updated all references in footer, contact section, and restaurant info

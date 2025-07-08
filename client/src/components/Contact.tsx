@@ -148,7 +148,7 @@ Obrigado!`;
         </svg>
       ),
       title: "Horário",
-      description: "12:00 - 23:00 (Todos os dias)",
+      description: "Seg-Qui: 11:00-23:00 | Sex-Dom: 11:00-01:00",
       bgColor: "bg-orange-500"
     }
   ];
@@ -305,6 +305,9 @@ Obrigado!`;
                     <option value="19:00">19:00</option>
                     <option value="20:00">20:00</option>
                     <option value="21:00">21:00</option>
+                    <option value="22:00">22:00</option>
+                    <option value="23:00">23:00</option>
+                    <option value="00:00">00:00</option>
                   </select>
                 </div>
 
