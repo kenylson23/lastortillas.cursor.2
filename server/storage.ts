@@ -19,6 +19,8 @@ export class MemStorage implements IStorage {
   private currentReservationId: number;
   private currentContactId: number;
   private reservationMutex: Promise<void> = Promise.resolve();
+  // Índice para busca rápida por data+hora
+  private reservationIndex: Map<string, number> = new Map();
 
   constructor() {
     this.users = new Map();
@@ -53,12 +55,10 @@ export class MemStorage implements IStorage {
     return new Promise((resolve, reject) => {
       this.reservationMutex = (async () => {
         try {
-          // Verificar se já existe uma reserva no mesmo horário
-          const existingReservation = Array.from(this.reservations.values()).find(
-            (r) => r.date === insertReservation.date && r.time === insertReservation.time
-          );
+          // Busca rápida O(1) usando índice
+          const dateTimeKey = `${insertReservation.date}-${insertReservation.time}`;
           
-          if (existingReservation) {
+          if (this.reservationIndex.has(dateTimeKey)) {
             throw new Error('Horário já reservado');
           }
           
@@ -72,7 +72,9 @@ export class MemStorage implements IStorage {
             createdAt: new Date() 
           };
           
+          // Armazenar com índice para busca rápida
           this.reservations.set(id, reservation);
+          this.reservationIndex.set(dateTimeKey, id);
           resolve(reservation);
         } catch (error) {
           reject(error);
@@ -98,10 +100,8 @@ export class MemStorage implements IStorage {
   }
 
   async checkAvailability(date: string, time: string): Promise<boolean> {
-    const existingReservation = Array.from(this.reservations.values()).find(
-      (r) => r.date === date && r.time === time
-    );
-    return !existingReservation;
+    const dateTimeKey = `${date}-${time}`;
+    return !this.reservationIndex.has(dateTimeKey);
   }
 
   async getReservationsByDate(date: string): Promise<Reservation[]> {

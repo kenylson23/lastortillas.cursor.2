@@ -4,8 +4,12 @@ import { storage } from "./storage";
 import { insertReservationSchema, insertContactSchema } from "@shared/schema";
 import { z } from "zod";
 
+// Cache simples para verificação de disponibilidade
+const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
+const CACHE_DURATION = 10000; // 10 segundos
+
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Check availability endpoint
+  // Check availability endpoint com cache
   app.get("/api/availability", async (req, res) => {
     try {
       const { date, time } = req.query;
@@ -14,7 +18,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Date and time are required" });
       }
       
+      const cacheKey = `${date}-${time}`;
+      const cached = availabilityCache.get(cacheKey);
+      const now = Date.now();
+      
+      // Verificar se cache é válido
+      if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+        return res.json({ available: cached.available });
+      }
+      
       const isAvailable = await storage.checkAvailability(date as string, time as string);
+      
+      // Armazenar no cache
+      availabilityCache.set(cacheKey, { available: isAvailable, timestamp: now });
+      
       res.json({ available: isAvailable });
     } catch (error) {
       res.status(500).json({ message: "Failed to check availability" });
@@ -26,6 +43,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const reservation = insertReservationSchema.parse(req.body);
       const newReservation = await storage.createReservation(reservation);
+      
+      // Limpar cache após criação de reserva
+      const cacheKey = `${reservation.date}-${reservation.time}`;
+      availabilityCache.delete(cacheKey);
+      
       res.json(newReservation);
     } catch (error) {
       if (error instanceof z.ZodError) {
