@@ -5,6 +5,22 @@ import { insertReservationSchema, insertContactSchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Check availability endpoint
+  app.get("/api/availability", async (req, res) => {
+    try {
+      const { date, time } = req.query;
+      
+      if (!date || !time) {
+        return res.status(400).json({ message: "Date and time are required" });
+      }
+      
+      const isAvailable = await storage.checkAvailability(date as string, time as string);
+      res.json({ available: isAvailable });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to check availability" });
+    }
+  });
+
   // Reservation endpoint
   app.post("/api/reservations", async (req, res) => {
     try {
@@ -14,6 +30,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: "Invalid reservation data", errors: error.errors });
+      } else if (error instanceof Error && error.message === 'Horário já reservado') {
+        res.status(409).json({ message: "Horário já reservado. Escolha outro horário." });
       } else {
         res.status(500).json({ message: "Failed to create reservation" });
       }
@@ -32,6 +50,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(500).json({ message: "Failed to create contact" });
       }
+    }
+  });
+
+  // Get reservations by date
+  app.get("/api/reservations/date/:date", async (req, res) => {
+    try {
+      const { date } = req.params;
+      const reservations = await storage.getReservationsByDate(date);
+      res.json(reservations);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reservations for date" });
     }
   });
 

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface ReservationData {
   name: string;
@@ -25,6 +25,51 @@ export default function Contact() {
     guests: 2,
     notes: ""
   });
+
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [availabilityStatus, setAvailabilityStatus] = useState<{
+    available: boolean;
+    message: string;
+  } | null>(null);
+
+  // Verificar disponibilidade quando data e horário mudarem
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (!formData.date || !formData.time) {
+        setAvailabilityStatus(null);
+        return;
+      }
+
+      setIsCheckingAvailability(true);
+      
+      try {
+        const response = await fetch(`/api/availability?date=${formData.date}&time=${formData.time}`);
+        const data = await response.json();
+        
+        if (data.available) {
+          setAvailabilityStatus({
+            available: true,
+            message: "✓ Horário disponível!"
+          });
+        } else {
+          setAvailabilityStatus({
+            available: false,
+            message: "✗ Horário já reservado. Escolha outro horário."
+          });
+        }
+      } catch (error) {
+        setAvailabilityStatus({
+          available: false,
+          message: "Erro ao verificar disponibilidade"
+        });
+      } finally {
+        setIsCheckingAvailability(false);
+      }
+    };
+
+    const timeoutId = setTimeout(checkAvailability, 500); // Debounce
+    return () => clearTimeout(timeoutId);
+  }, [formData.date, formData.time]);
 
   const handleWhatsAppRedirect = () => {
     const whatsappMessage = `Olá Las Tortilhas! Gostaria de fazer uma reserva:
@@ -295,9 +340,33 @@ Obrigado!`;
                   />
                 </div>
 
+                {/* Status de Disponibilidade */}
+                {(formData.date && formData.time) && (
+                  <div className="p-4 rounded-lg border">
+                    {isCheckingAvailability ? (
+                      <div className="flex items-center text-gray-600">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verificando disponibilidade...
+                      </div>
+                    ) : availabilityStatus && (
+                      <div className={`font-medium ${availabilityStatus.available ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'} p-3 rounded-lg`}>
+                        {availabilityStatus.message}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-red-600 text-white px-6 py-4 rounded-full font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
+                  disabled={!availabilityStatus?.available || isCheckingAvailability}
+                  className={`w-full px-6 py-4 rounded-full font-semibold transition-all duration-300 flex items-center justify-center ${
+                    (!availabilityStatus?.available || isCheckingAvailability) 
+                      ? 'bg-gray-400 text-gray-700 cursor-not-allowed' 
+                      : 'bg-red-600 text-white hover:bg-red-700 transform hover:scale-105'
+                  }`}
                 >
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />

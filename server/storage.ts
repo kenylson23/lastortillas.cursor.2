@@ -7,6 +7,8 @@ export interface IStorage {
   createReservation(reservation: InsertReservation): Promise<Reservation>;
   createContact(contact: InsertContact): Promise<Contact>;
   getAllReservations(): Promise<Reservation[]>;
+  checkAvailability(date: string, time: string): Promise<boolean>;
+  getReservationsByDate(date: string): Promise<Reservation[]>;
 }
 
 export class MemStorage implements IStorage {
@@ -16,6 +18,7 @@ export class MemStorage implements IStorage {
   private currentUserId: number;
   private currentReservationId: number;
   private currentContactId: number;
+  private reservationMutex: Promise<void> = Promise.resolve();
 
   constructor() {
     this.users = new Map();
@@ -44,16 +47,38 @@ export class MemStorage implements IStorage {
   }
 
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
-    const id = this.currentReservationId++;
-    const reservation: Reservation = { 
-      ...insertReservation,
-      email: insertReservation.email || null,
-      notes: insertReservation.notes || null,
-      id, 
-      createdAt: new Date() 
-    };
-    this.reservations.set(id, reservation);
-    return reservation;
+    // Implementa mutex para evitar condições de corrida
+    await this.reservationMutex;
+    
+    return new Promise((resolve, reject) => {
+      this.reservationMutex = (async () => {
+        try {
+          // Verificar se já existe uma reserva no mesmo horário
+          const existingReservation = Array.from(this.reservations.values()).find(
+            (r) => r.date === insertReservation.date && r.time === insertReservation.time
+          );
+          
+          if (existingReservation) {
+            throw new Error('Horário já reservado');
+          }
+          
+          // Gerar ID único de forma thread-safe
+          const id = this.currentReservationId++;
+          const reservation: Reservation = { 
+            ...insertReservation,
+            email: insertReservation.email || null,
+            notes: insertReservation.notes || null,
+            id, 
+            createdAt: new Date() 
+          };
+          
+          this.reservations.set(id, reservation);
+          resolve(reservation);
+        } catch (error) {
+          reject(error);
+        }
+      })();
+    });
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
@@ -70,6 +95,19 @@ export class MemStorage implements IStorage {
 
   async getAllReservations(): Promise<Reservation[]> {
     return Array.from(this.reservations.values());
+  }
+
+  async checkAvailability(date: string, time: string): Promise<boolean> {
+    const existingReservation = Array.from(this.reservations.values()).find(
+      (r) => r.date === date && r.time === time
+    );
+    return !existingReservation;
+  }
+
+  async getReservationsByDate(date: string): Promise<Reservation[]> {
+    return Array.from(this.reservations.values()).filter(
+      (r) => r.date === date
+    );
   }
 }
 
