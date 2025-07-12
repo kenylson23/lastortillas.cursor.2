@@ -179,3 +179,6 @@ Preferred communication style: Simple, everyday language.
   - Fixed About and Features sections animation issues by removing ScrollReveal
   - Removed logo from navigation bar as requested
   - Updated navigation to include "Nossos Locais" section
+  - Fixed image loading issues in About section for Vercel deployment
+  - Updated location names to Portuguese: "Centro" → "Talatona", "Mobile" → "Móvel"
+  - Optimized WhatsApp redirects using window.location.href for faster response

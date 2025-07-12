@@ -55,7 +55,7 @@ export default function About() {
           >
             <div className="relative rounded-2xl shadow-2xl w-full h-auto overflow-hidden">
               <img 
-                src="/attached_assets/estaurante mexicano, bienvenido a nuevo mexico tu familia es nuestra prioridad, ven a visitarnos_1752332939968.jpg" 
+                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" 
                 alt="Clientes felizes no Las Tortillas Mexican Grill - ambiente familiar e acolhedor" 
                 className="w-full h-auto rounded-2xl shadow-2xl"
                 loading="lazy"
