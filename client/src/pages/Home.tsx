@@ -3,7 +3,7 @@ import Hero from "../components/Hero";
 import SimpleMenuShowcase from "../components/SimpleMenuShowcase";
 import About from "../components/About";
 import Features from "../components/Features";
-import Location from "../components/Location";
+import OurLocations from "../components/OurLocations";
 import Contact from "../components/Contact";
 import Footer from "../components/Footer";
 
@@ -15,7 +15,7 @@ export default function Home() {
       <SimpleMenuShowcase />
       <About />
       <Features />
-      <Location />
+      <OurLocations />
       <Contact />
       <Footer />
       

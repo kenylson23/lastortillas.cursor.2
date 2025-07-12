@@ -126,7 +126,7 @@ export default function Hero() {
               textShadow: '2px 2px 4px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.6), 0px 0px 10px rgba(0,0,0,0.4)'
             }}
           >
-            O único restaurante mexicano com ambiente 100% familiar em Luanda. Pratos tradicionais que toda a família vai adorar.
+            3 formas de desfrutar da autêntica culinária mexicana em Luanda. Pratos tradicionais que toda a família vai adorar.
           </motion.p>
           
           <motion.div 

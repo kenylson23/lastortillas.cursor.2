@@ -7,7 +7,7 @@ export default function Navigation() {
     { href: "#inicio", label: "Início" },
     { href: "#menu", label: "Menu" },
     { href: "#sobre", label: "Sobre" },
-    { href: "#localizacao", label: "Localização" },
+    { href: "#locais", label: "Nossos Locais" },
     { href: "#contato", label: "Contato" },
   ];
 
