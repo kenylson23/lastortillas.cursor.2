@@ -2,7 +2,7 @@
 
 ## Overview
 
-Las Tortillas Mexican Grill is a full-stack web application for a Mexican restaurant located in Luanda, Angola. The application features a modern, responsive frontend built with React and a RESTful API backend powered by Express.js. The system allows customers to browse the menu, make reservations, and submit contact inquiries.
+Las Tortillas Mexican Grill is a full-stack web application for a Mexican restaurant located in Luanda, Angola. Founded on February 14, 2018, the restaurant has established itself as a family-friendly dining destination. The application features a modern, responsive frontend built with React and a RESTful API backend powered by Express.js. The system allows customers to browse the menu, make reservations, and submit contact inquiries.
 
 ## System Architecture
 
@@ -156,3 +156,7 @@ Preferred communication style: Simple, everyday language.
   - Made text more assertive and clear
   - New description: "O único restaurante mexicano com ambiente 100% familiar em Luanda"
   - Eliminated confusion and strengthened value proposition
+- July 13, 2025: Updated restaurant founding information
+  - Added founding date: February 14, 2018
+  - Documented restaurant's 7-year history in Luanda
+  - Reinforced established reputation and local presence
