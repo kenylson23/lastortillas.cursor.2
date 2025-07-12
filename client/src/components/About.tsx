@@ -3,9 +3,9 @@ import ScrollReveal from "./ScrollReveal";
 
 export default function About() {
   const stats = [
-    { number: "4+", label: "Anos de Experiência" },
+    { number: "7+", label: "Anos de Experiência" },
     { number: "50+", label: "Pratos no Menu" },
-    { number: "1000+", label: "Clientes Satisfeitos" },
+    { number: "5000+", label: "Clientes Satisfeitos" },
   ];
 
   return (
@@ -21,13 +21,14 @@ export default function About() {
               Nossa História
             </h2>
             <p className="text-lg text-gray-600 mb-6">
-              Las Tortilhas nasceu do sonho de trazer os autênticos sabores mexicanos para Luanda. 
-              Fundado em 2020, somos um restaurante familiar que se dedica a preparar cada prato 
+              Las Tortillas Mexican Grill nasceu do sonho de trazer os autênticos sabores mexicanos para Luanda. 
+              Fundado em 14 de Fevereiro de 2018, somos um restaurante familiar que se dedica a preparar cada prato 
               com ingredientes frescos e receitas tradicionais passadas de geração em geração.
             </p>
             <p className="text-lg text-gray-600 mb-8">
-              Localizado na bela Ilha de Luanda, oferecemos uma experiência gastronómica única, 
-              combinando a hospitalidade angolana com a paixão pela culinária mexicana.
+              Há mais de 7 anos localizado na bela Ilha de Luanda, oferecemos uma experiência gastronómica única, 
+              combinando a hospitalidade angolana com a paixão pela culinária mexicana. Nossa história começou 
+              no Dia dos Namorados, simbolizando o amor que dedicamos à nossa culinária e aos nossos clientes.
             </p>
             <div className="flex items-center space-x-8">
               {stats.map((stat, index) => (

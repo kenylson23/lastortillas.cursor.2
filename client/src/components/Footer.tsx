@@ -97,7 +97,8 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Las Tortillas Mexican Grill. Todos os direitos reservados.</p>
+          <p>&copy; 2018-2025 Las Tortillas Mexican Grill. Todos os direitos reservados.</p>
+          <p className="text-sm text-gray-500 mt-2">Fundado em 14 de Fevereiro de 2018</p>
         </div>
       </div>
     </footer>
