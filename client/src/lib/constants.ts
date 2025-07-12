@@ -59,7 +59,7 @@ export const MENU_ITEMS = [
 
 export const RESTAURANT_INFO = {
   name: "Las Tortillas Mexican Grill",
-  description: "Quer passar o dia com a família? É no Las Tortillas. Autêntica culinária mexicana no coração de Luanda",
+  description: "Quer passar o dia com a família? É no Las Tortillas. O único restaurante mexicano com ambiente 100% familiar em Luanda.",
   phone: "+244 949 639 932",
   email: "info@lastortillas.ao",
   address: "Ilha de Luanda, Angola",

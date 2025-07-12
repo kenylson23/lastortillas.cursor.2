@@ -152,3 +152,7 @@ Preferred communication style: Simple, everyday language.
   - New slogan: "Quer passar o dia com a família? É no Las Tortillas"
   - Updated hero section, meta descriptions, and restaurant description
   - Reinforced family-friendly positioning and local connection
+- July 13, 2025: Optimized Hero section messaging
+  - Made text more assertive and clear
+  - New description: "O único restaurante mexicano com ambiente 100% familiar em Luanda"
+  - Eliminated confusion and strengthened value proposition
