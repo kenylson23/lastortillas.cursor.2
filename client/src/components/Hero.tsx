@@ -45,8 +45,10 @@ export default function Hero() {
               textShadow: '4px 4px 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6), 0px 0px 20px rgba(0,0,0,0.5)'
             }}
           >
-            <span className="text-green-300" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Las Tortillas</span>{" "}
-            <span className="text-red-400" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Mexican Grill</span>
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-start text-center lg:text-left">
+              <span className="text-green-300" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Las Tortillas</span>
+              <span className="text-red-400 text-2xl md:text-4xl lg:text-5xl lg:ml-4 mt-2 lg:mt-0" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Mexican Grill</span>
+            </div>
           </motion.h1>
           
           <motion.p 
