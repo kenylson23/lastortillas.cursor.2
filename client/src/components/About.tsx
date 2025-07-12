@@ -1,12 +1,37 @@
 import { motion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
+import { useEffect, useRef } from "react";
 
 export default function About() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  
   const stats = [
     { number: "7+", label: "Anos de Experiência" },
     { number: "50+", label: "Pratos no Menu" },
     { number: "5000+", label: "Clientes Satisfeitos" },
   ];
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            video.play().catch(error => {
+              console.log('Autoplay blocked:', error);
+            });
+          }
+        });
+      },
+      { threshold: 0.5 }
+    );
+
+    observer.observe(video);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <section id="sobre" className="py-20 bg-white">
@@ -55,20 +80,15 @@ export default function About() {
             duration={0.8}
           >
             <video 
+              ref={videoRef}
               src="/attached_assets/restaurant-video.mp4"
               autoPlay
               loop
               muted
               playsInline
-              controls
               preload="auto"
-              width="800"
-              height="600"
               className="rounded-2xl shadow-2xl w-full h-auto"
               style={{ maxHeight: '600px', objectFit: 'cover' }}
-              onLoadStart={() => console.log('Video loading started')}
-              onLoadedData={() => console.log('Video data loaded')}
-              onError={(e) => console.error('Video error:', e)}
             >
               Seu navegador não suporta vídeos HTML5.
             </video>
