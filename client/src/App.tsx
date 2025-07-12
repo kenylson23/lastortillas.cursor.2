@@ -6,6 +6,7 @@ import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
+import OrderTracking from "./pages/OrderTracking";
 import NotFound from "./pages/not-found";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/menu" component={Menu} />
       <Route path="/login" component={Login} />
       <Route path="/admin" component={Admin} />
+      <Route path="/rastreamento" component={OrderTracking} />
       <Route component={NotFound} />
     </Switch>
   );

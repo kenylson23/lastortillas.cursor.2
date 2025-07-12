@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { MenuItem, Order, OrderItem } from '@shared/schema';
+import EnhancedCart from './EnhancedCart';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -60,8 +61,9 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       });
       setIsCartOpen(false);
       
-      // Show success message
-      alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA`);
+      // Show success message with order tracking info
+      const orderLink = `/rastreamento`;
+      alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA\n\nVocê pode acompanhar seu pedido em: ${window.location.origin}${orderLink}`);
       
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
@@ -206,161 +208,16 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         </div>
       </div>
 
-      {/* Cart Modal */}
-      <AnimatePresence>
-        {isCartOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-            >
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-2xl font-bold">Carrinho</h2>
-                  <button
-                    onClick={() => setIsCartOpen(false)}
-                    className="text-gray-500 hover:text-gray-700"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-
-                {cart.length === 0 ? (
-                  <p className="text-gray-500 text-center py-8">Carrinho vazio</p>
-                ) : (
-                  <>
-                    {/* Cart Items */}
-                    <div className="space-y-4 mb-6">
-                      {cart.map((item, index) => (
-                        <div key={`${item.id}-${index}`} className="flex items-center gap-4 p-4 border rounded-lg">
-                          <img
-                            src={item.image || 'https://via.placeholder.com/80x80'}
-                            alt={item.name}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                          <div className="flex-1">
-                            <h4 className="font-semibold">{item.name}</h4>
-                            {item.customizations.length > 0 && (
-                              <p className="text-sm text-gray-600">
-                                {item.customizations.join(', ')}
-                              </p>
-                            )}
-                            <p className="text-red-600 font-bold">{item.price} AOA</p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => updateQuantity(item.id, item.customizations, item.quantity - 1)}
-                              className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
-                            >
-                              -
-                            </button>
-                            <span className="w-8 text-center">{item.quantity}</span>
-                            <button
-                              onClick={() => updateQuantity(item.id, item.customizations, item.quantity + 1)}
-                              className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300"
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Customer Info Form */}
-                    <div className="border-t pt-6">
-                      <h3 className="text-lg font-semibold mb-4">Informações do Pedido</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <input
-                          type="text"
-                          placeholder="Nome completo"
-                          value={customerInfo.name}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                          className="border rounded-lg p-3"
-                          required
-                        />
-                        <input
-                          type="tel"
-                          placeholder="Telefone"
-                          value={customerInfo.phone}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                          className="border rounded-lg p-3"
-                          required
-                        />
-                        <input
-                          type="email"
-                          placeholder="Email (opcional)"
-                          value={customerInfo.email}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
-                          className="border rounded-lg p-3"
-                        />
-                        <select
-                          value={customerInfo.orderType}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, orderType: e.target.value as any }))}
-                          className="border rounded-lg p-3"
-                        >
-                          <option value="delivery">Delivery</option>
-                          <option value="takeaway">Takeaway</option>
-                          <option value="dine-in">Comer no local</option>
-                        </select>
-                        {customerInfo.orderType === 'delivery' && (
-                          <input
-                            type="text"
-                            placeholder="Endereço de entrega"
-                            value={customerInfo.address}
-                            onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
-                            className="border rounded-lg p-3 md:col-span-2"
-                            required
-                          />
-                        )}
-                        <select
-                          value={customerInfo.paymentMethod}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, paymentMethod: e.target.value as any }))}
-                          className="border rounded-lg p-3"
-                        >
-                          <option value="cash">Dinheiro</option>
-                          <option value="card">Cartão</option>
-                          <option value="transfer">Transferência</option>
-                        </select>
-                        <textarea
-                          placeholder="Observações (opcional)"
-                          value={customerInfo.notes}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, notes: e.target.value }))}
-                          className="border rounded-lg p-3 md:col-span-2"
-                          rows={3}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="border-t pt-6 mt-6">
-                      <div className="flex justify-between text-xl font-bold mb-4">
-                        <span>Total:</span>
-                        <span>{getTotalPrice().toFixed(2)} AOA</span>
-                      </div>
-                      <button
-                        onClick={handleSubmitOrder}
-                        disabled={!customerInfo.name || !customerInfo.phone || createOrderMutation.isPending}
-                        className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {createOrderMutation.isPending ? 'Processando...' : 'Finalizar Pedido'}
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Enhanced Cart Modal */}
+      <EnhancedCart
+        cart={cart}
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onUpdateQuantity={updateQuantity}
+        onSubmitOrder={handleSubmitOrder}
+        locationId={locationId}
+        isSubmitting={createOrderMutation.isPending}
+      />
     </div>
   );
 }

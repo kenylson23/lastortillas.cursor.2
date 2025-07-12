@@ -10,13 +10,18 @@ export default function Navigation() {
     { href: "#menu", label: "Menu" },
     { href: "#sobre", label: "Sobre" },
     { href: "#locais", label: "Nossos Locais" },
+    { href: "/rastreamento", label: "Rastreamento", isRoute: true },
     { href: "#contato", label: "Contato" },
   ];
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const handleNavigation = (href: string, isRoute?: boolean) => {
+    if (isRoute) {
+      window.location.href = href;
+    } else {
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
     setIsMenuOpen(false);
   };
@@ -37,7 +42,7 @@ export default function Navigation() {
               {navItems.map((item) => (
                 <button
                   key={item.href}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => handleNavigation(item.href, item.isRoute)}
                   className="text-gray-700 hover:text-red-600 transition-colors duration-300"
                 >
                   {item.label}
@@ -114,7 +119,7 @@ export default function Navigation() {
               {navItems.map((item) => (
                 <button
                   key={item.href}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => handleNavigation(item.href, item.isRoute)}
                   className="block text-gray-700 hover:text-red-600 px-3 py-2 text-base font-medium w-full text-left"
                 >
                   {item.label}

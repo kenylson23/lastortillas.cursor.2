@@ -3,6 +3,7 @@ import { useLocation } from 'wouter';
 import { useAuth } from '../hooks/useAuth';
 import OrderManagement from '../components/OrderManagement';
 import MenuManagement from '../components/MenuManagement';
+import OrderStats from '../components/OrderStats';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
@@ -105,12 +106,7 @@ export default function Admin() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {activeTab === 'orders' && <OrderManagement />}
         {activeTab === 'menu' && <MenuManagement />}
-        {activeTab === 'analytics' && (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4">Relatórios e Análises</h2>
-            <p className="text-gray-600">Funcionalidade em desenvolvimento...</p>
-          </div>
-        )}
+        {activeTab === 'analytics' && <OrderStats />}
       </div>
     </div>
   );

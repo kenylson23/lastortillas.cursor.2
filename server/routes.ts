@@ -315,7 +315,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const validatedItems = items.map((item: any) => insertOrderItemSchema.parse(item));
       
       const result = await storage.createOrder(validatedOrder, validatedItems);
+      
+      // Send WhatsApp notification (optional - can be implemented later)
+      // await sendWhatsAppNotification(result);
+      
       res.json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  // Update order status
+  app.patch("/api/orders/:id/status", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!['received', 'preparing', 'ready', 'delivered', 'cancelled'].includes(status)) {
+        return res.status(400).json({ error: "Invalid status" });
+      }
+      
+      const updatedOrder = await storage.updateOrderStatus(id, status);
+      
+      // Send WhatsApp notification about status change (optional)
+      // await sendStatusUpdateNotification(updatedOrder);
+      
+      res.json(updatedOrder);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
