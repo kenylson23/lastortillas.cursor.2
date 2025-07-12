@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
     { href: "#inicio", label: "Início" },
@@ -47,12 +49,30 @@ export default function Navigation() {
               >
                 Pedir Online
               </a>
-              <a
-                href="/admin"
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium"
-              >
-                Admin
-              </a>
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700">Olá, {user?.firstName}</span>
+                  <a
+                    href="/admin"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium"
+                  >
+                    Admin
+                  </a>
+                  <button
+                    onClick={logout}
+                    className="text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href="/login"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium"
+                >
+                  Login
+                </a>
+              )}
             </div>
           </div>
           
@@ -116,6 +136,32 @@ export default function Navigation() {
               >
                 🛒 Pedir Online
               </a>
+              
+              {/* Botão de login/admin no menu mobile */}
+              {isAuthenticated ? (
+                <div className="mt-4 mx-3">
+                  <div className="text-center text-gray-700 mb-2">Olá, {user?.firstName}</div>
+                  <a
+                    href="/admin"
+                    className="block bg-blue-600 text-white px-3 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 text-base font-semibold w-full text-center mb-2"
+                  >
+                    👨‍💼 Admin
+                  </a>
+                  <button
+                    onClick={logout}
+                    className="block bg-gray-600 text-white px-3 py-3 rounded-lg hover:bg-gray-700 transition-all duration-300 text-base font-semibold w-full text-center"
+                  >
+                    🚪 Logout
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href="/login"
+                  className="block bg-blue-600 text-white px-3 py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 text-base font-semibold w-full text-center mt-2 mx-3"
+                >
+                  🔐 Login
+                </a>
+              )}
             </div>
           </div>
         )}

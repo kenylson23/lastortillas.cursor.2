@@ -1,10 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useAuth } from '../hooks/useAuth';
 import OrderManagement from '../components/OrderManagement';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('orders');
+  const { isAuthenticated, isLoading, logout } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      setLocation('/login');
+    }
+  }, [isAuthenticated, isLoading, setLocation]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to login
+  }
+
+  const handleLogout = () => {
+    logout();
+    setLocation('/');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -16,12 +44,20 @@ export default function Admin() {
               <h1 className="text-3xl font-bold text-gray-900">Painel Administrativo</h1>
               <p className="text-gray-600 mt-1">Gestão de pedidos e menu do Las Tortillas</p>
             </div>
-            <button
-              onClick={() => setLocation('/')}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Voltar ao Site
-            </button>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setLocation('/')}
+                className="text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                Voltar ao Site
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
       </div>
