@@ -86,6 +86,19 @@ export const orderItems = pgTable("order_items", {
   subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
+export const tables = pgTable("tables", {
+  id: serial("id").primaryKey(),
+  number: integer("number").notNull(),
+  locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
+  capacity: integer("capacity").notNull(), // número de pessoas
+  status: text("status").notNull().default("available"), // "available", "occupied", "reserved", "maintenance"
+  position: text("position"), // "janela", "centro", "varanda", etc.
+  features: text("features").array(), // ["ar_condicionado", "vista_mar", "kids_area"]
+  notes: text("notes"), // observações especiais
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const insertReservationSchema = createInsertSchema(reservations).omit({
   id: true,
   createdAt: true,
@@ -114,6 +127,12 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   orderId: true,
 });
 
+export const insertTableSchema = createInsertSchema(tables).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export type InsertReservation = z.infer<typeof insertReservationSchema>;
 export type Reservation = typeof reservations.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
@@ -124,3 +143,5 @@ export type InsertOrder = z.infer<typeof insertOrderSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
 export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertTable = z.infer<typeof insertTableSchema>;
+export type Table = typeof tables.$inferSelect;

@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema } from "@shared/schema";
+import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema, insertTableSchema } from "@shared/schema";
 import { z } from "zod";
 import multer from "multer";
 import path from "path";
@@ -431,6 +431,104 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error('Erro no upload:', error);
       res.status(500).json({ error: 'Erro ao processar upload da imagem' });
+    }
+  });
+
+  // Tables routes
+  
+  // Get all tables
+  app.get("/api/tables", async (req, res) => {
+    try {
+      const { location } = req.query;
+      let tables;
+      
+      if (location) {
+        tables = await storage.getTablesByLocation(location as string);
+      } else {
+        tables = await storage.getAllTables();
+      }
+      
+      res.json(tables);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get specific table
+  app.get("/api/tables/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const table = await storage.getTable(id);
+      if (!table) {
+        return res.status(404).json({ error: "Mesa não encontrada" });
+      }
+      res.json(table);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Create table
+  app.post("/api/tables", async (req, res) => {
+    try {
+      const validatedData = insertTableSchema.parse(req.body);
+      const table = await storage.createTable(validatedData);
+      res.status(201).json(table);
+    } catch (error: any) {
+      if (error.name === 'ZodError') {
+        return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+      }
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Update table
+  app.put("/api/tables/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const existingTable = await storage.getTable(id);
+      if (!existingTable) {
+        return res.status(404).json({ error: "Mesa não encontrada" });
+      }
+      
+      const table = await storage.updateTable(id, req.body);
+      res.json(table);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Update table status
+  app.patch("/api/tables/:id/status", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!status || !['available', 'occupied', 'reserved', 'maintenance'].includes(status)) {
+        return res.status(400).json({ error: "Status inválido" });
+      }
+      
+      const table = await storage.updateTableStatus(id, status);
+      res.json(table);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Delete table
+  app.delete("/api/tables/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      const existingTable = await storage.getTable(id);
+      if (!existingTable) {
+        return res.status(404).json({ error: "Mesa não encontrada" });
+      }
+      
+      await storage.deleteTable(id);
+      res.json({ message: "Mesa removida com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
     }
   });
 

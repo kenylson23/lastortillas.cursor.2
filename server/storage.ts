@@ -1,8 +1,9 @@
 import { 
-  reservations, contacts, menuItems, orders, orderItems,
+  reservations, contacts, menuItems, orders, orderItems, tables,
   type Reservation, type InsertReservation, 
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
-  type Order, type InsertOrder, type OrderItem, type InsertOrderItem
+  type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
+  type Table, type InsertTable
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from "drizzle-orm";
@@ -34,6 +35,15 @@ export interface IStorage {
   
   // Order Items
   getOrderItems(orderId: number): Promise<OrderItem[]>;
+  
+  // Tables
+  getAllTables(): Promise<Table[]>;
+  getTablesByLocation(locationId: string): Promise<Table[]>;
+  getTable(id: number): Promise<Table | undefined>;
+  createTable(table: InsertTable): Promise<Table>;
+  updateTable(id: number, table: Partial<Table>): Promise<Table>;
+  deleteTable(id: number): Promise<void>;
+  updateTableStatus(id: number, status: string): Promise<Table>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -257,6 +267,58 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(orderItems)
       .where(eq(orderItems.orderId, orderId));
+  }
+
+  // Tables operations
+  async getAllTables(): Promise<Table[]> {
+    return await db.select().from(tables);
+  }
+
+  async getTablesByLocation(locationId: string): Promise<Table[]> {
+    return await db
+      .select()
+      .from(tables)
+      .where(eq(tables.locationId, locationId));
+  }
+
+  async getTable(id: number): Promise<Table | undefined> {
+    const [table] = await db
+      .select()
+      .from(tables)
+      .where(eq(tables.id, id));
+    return table;
+  }
+
+  async createTable(insertTable: InsertTable): Promise<Table> {
+    const [table] = await db
+      .insert(tables)
+      .values(insertTable)
+      .returning();
+    return table;
+  }
+
+  async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
+    const [table] = await db
+      .update(tables)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(tables.id, id))
+      .returning();
+    return table;
+  }
+
+  async deleteTable(id: number): Promise<void> {
+    await db
+      .delete(tables)
+      .where(eq(tables.id, id));
+  }
+
+  async updateTableStatus(id: number, status: string): Promise<Table> {
+    const [table] = await db
+      .update(tables)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(tables.id, id))
+      .returning();
+    return table;
   }
 }
 

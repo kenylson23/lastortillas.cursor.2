@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import OrderManagement from '../components/OrderManagement';
 import MenuManagement from '../components/MenuManagement';
 import OrderStats from '../components/OrderStats';
+import TableManagement from '../components/TableManagement';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
@@ -89,6 +90,16 @@ export default function Admin() {
               Menu
             </button>
             <button
+              onClick={() => setActiveTab('tables')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'tables'
+                  ? 'border-red-500 text-red-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Mesas
+            </button>
+            <button
               onClick={() => setActiveTab('analytics')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'analytics'
@@ -106,6 +117,7 @@ export default function Admin() {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {activeTab === 'orders' && <OrderManagement />}
         {activeTab === 'menu' && <MenuManagement />}
+        {activeTab === 'tables' && <TableManagement />}
         {activeTab === 'analytics' && <OrderStats />}
       </div>
     </div>
