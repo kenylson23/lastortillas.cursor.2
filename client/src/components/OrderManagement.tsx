@@ -310,50 +310,9 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <div className="flex gap-2">
-                {order.status === 'received' && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!updateStatusMutation.isPending) {
-                        updateStatusMutation.mutate({ orderId: order.id, status: 'preparing' });
-                      }
-                    }}
-                    disabled={updateStatusMutation.isPending}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Preparar'}
-                  </button>
-                )}
-                {order.status === 'preparing' && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!updateStatusMutation.isPending) {
-                        updateStatusMutation.mutate({ orderId: order.id, status: 'ready' });
-                      }
-                    }}
-                    disabled={updateStatusMutation.isPending}
-                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Pronto'}
-                  </button>
-                )}
-                {order.status === 'ready' && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (!updateStatusMutation.isPending) {
-                        updateStatusMutation.mutate({ orderId: order.id, status: 'delivered' });
-                      }
-                    }}
-                    disabled={updateStatusMutation.isPending}
-                    className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Entregue'}
-                  </button>
-                )}
+              {/* Clique para ver detalhes */}
+              <div className="text-sm text-gray-500 mt-2">
+                Clique para ver detalhes e gerenciar pedido
               </div>
             </motion.div>
             ))}
