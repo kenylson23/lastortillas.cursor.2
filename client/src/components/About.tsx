@@ -55,13 +55,20 @@ export default function About() {
             duration={0.8}
           >
             <video 
-              src="/attached_assets/AQNooJfUNYrVmIkcTdYIYYMveVz9mWIEP7sBJzYTQyEZ8wkuHfjk_LjoREZ9fV4dCJAJ0k6Y3c3BREGEthFmRXRsCLdE_pb4_1752327923427.mp4"
+              src="/attached_assets/restaurant-video.mp4"
               autoPlay
               loop
               muted
               playsInline
+              controls
+              preload="auto"
+              width="800"
+              height="600"
               className="rounded-2xl shadow-2xl w-full h-auto"
               style={{ maxHeight: '600px', objectFit: 'cover' }}
+              onLoadStart={() => console.log('Video loading started')}
+              onLoadedData={() => console.log('Video data loaded')}
+              onError={(e) => console.error('Video error:', e)}
             >
               Seu navegador não suporta vídeos HTML5.
             </video>
