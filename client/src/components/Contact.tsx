@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 interface ReservationData {
   name: string;
@@ -32,44 +32,47 @@ export default function Contact() {
     message: string;
   } | null>(null);
 
-  // Verificar disponibilidade quando data e horário mudarem
-  useEffect(() => {
-    const checkAvailability = async () => {
-      if (!formData.date || !formData.time) {
-        setAvailabilityStatus(null);
-        return;
-      }
+  // Função debounced para verificar disponibilidade
+  const checkAvailability = useCallback(async (date: string, time: string) => {
+    if (!date || !time) {
+      setAvailabilityStatus(null);
+      return;
+    }
 
-      setIsCheckingAvailability(true);
+    setIsCheckingAvailability(true);
+    
+    try {
+      const response = await fetch(`/api/availability?date=${date}&time=${time}`);
+      const data = await response.json();
       
-      try {
-        const response = await fetch(`/api/availability?date=${formData.date}&time=${formData.time}`);
-        const data = await response.json();
-        
-        if (data.available) {
-          setAvailabilityStatus({
-            available: true,
-            message: "✓ Horário disponível!"
-          });
-        } else {
-          setAvailabilityStatus({
-            available: false,
-            message: "✗ Horário já reservado. Escolha outro horário."
-          });
-        }
-      } catch (error) {
+      if (data.available) {
+        setAvailabilityStatus({
+          available: true,
+          message: "✓ Horário disponível!"
+        });
+      } else {
         setAvailabilityStatus({
           available: false,
-          message: "Erro ao verificar disponibilidade"
+          message: "✗ Horário já reservado. Escolha outro horário."
         });
-      } finally {
-        setIsCheckingAvailability(false);
       }
-    };
+    } catch (error) {
+      setAvailabilityStatus({
+        available: false,
+        message: "Erro ao verificar disponibilidade"
+      });
+    } finally {
+      setIsCheckingAvailability(false);
+    }
+  }, []);
 
-    const timeoutId = setTimeout(checkAvailability, 500); // Debounce
+  // Verificar disponibilidade quando data e horário mudarem
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      checkAvailability(formData.date, formData.time);
+    }, 500); // Debounce
     return () => clearTimeout(timeoutId);
-  }, [formData.date, formData.time]);
+  }, [formData.date, formData.time, checkAvailability]);
 
   const handleWhatsAppRedirect = () => {
     const whatsappMessage = `Olá Las Tortillas Mexican Grill! Gostaria de fazer uma reserva:

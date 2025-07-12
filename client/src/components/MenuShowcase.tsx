@@ -1,12 +1,55 @@
 import { motion } from "framer-motion";
 import { MENU_ITEMS } from "../lib/constants";
 import ScrollReveal from "./ScrollReveal";
+import LazyImage from "./LazyImage";
+import { memo } from "react";
 
-export default function MenuShowcase() {
+// Componente memo para item do menu
+const MenuItemCard = memo(({ item, index }: { item: typeof MENU_ITEMS[0], index: number }) => {
   const handleOrderItem = (itemName: string) => {
     // Simple alert for static deployment
     alert(`${itemName} - Entre em contato via WhatsApp para fazer seu pedido!`);
   };
+
+  return (
+    <ScrollReveal
+      key={item.id}
+      direction="up"
+      delay={0.1}
+      stagger={true}
+      staggerIndex={index}
+      staggerDelay={0.15}
+      duration={0.6}
+    >
+      <div className="menu-item bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
+        <div className="relative overflow-hidden">
+          <LazyImage
+            src={item.image}
+            alt={item.name}
+            className="w-full h-48 transition-transform duration-300 hover:scale-110"
+          />
+        </div>
+        <div className="p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
+          <p className="text-gray-600 mb-4">{item.description}</p>
+          <div className="flex justify-between items-center">
+            <span className="text-2xl font-bold text-red-600">{item.price}</span>
+            <button 
+              onClick={() => handleOrderItem(item.name)}
+              className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors"
+            >
+              Pedir
+            </button>
+          </div>
+        </div>
+      </div>
+    </ScrollReveal>
+  );
+});
+
+MenuItemCard.displayName = 'MenuItemCard';
+
+export default function MenuShowcase() {
 
   return (
     <section id="menu" className="py-20 bg-gray-50">
@@ -26,38 +69,7 @@ export default function MenuShowcase() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {MENU_ITEMS.map((item, index) => (
-            <ScrollReveal
-              key={item.id}
-              direction="up"
-              delay={0.1}
-              stagger={true}
-              staggerIndex={index}
-              staggerDelay={0.15}
-              duration={0.6}
-            >
-              <div className="menu-item bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-                <div className="relative overflow-hidden">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    className="w-full h-48 object-cover transition-transform duration-300 hover:scale-110" 
-                  />
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
-                  <p className="text-gray-600 mb-4">{item.description}</p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-red-600">{item.price}</span>
-                    <button 
-                      onClick={() => handleOrderItem(item.name)}
-                      className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors"
-                    >
-                      Pedir
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
+            <MenuItemCard key={item.id} item={item} index={index} />
           ))}
         </div>
 

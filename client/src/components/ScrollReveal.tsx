@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useScrollReveal } from "@/hooks/use-scroll-reveal";
-import { ReactNode } from "react";
+import { ReactNode, memo, useMemo } from "react";
 
 interface ScrollRevealProps {
   children: ReactNode;
@@ -15,7 +15,7 @@ interface ScrollRevealProps {
   staggerIndex?: number;
 }
 
-export default function ScrollReveal({
+const ScrollReveal = memo(({
   children,
   direction = 'up',
   delay = 0,
@@ -26,10 +26,11 @@ export default function ScrollReveal({
   stagger = false,
   staggerDelay = 0.1,
   staggerIndex = 0,
-}: ScrollRevealProps) {
+}: ScrollRevealProps) => {
   const { ref, isVisible } = useScrollReveal({ threshold });
 
-  const getInitialState = () => {
+  // Memoizar os estados para evitar recalcular a cada render
+  const initialState = useMemo(() => {
     switch (direction) {
       case 'up':
         return { opacity: 0, y: distance };
@@ -44,9 +45,9 @@ export default function ScrollReveal({
       default:
         return { opacity: 0, y: distance };
     }
-  };
+  }, [direction, distance]);
 
-  const getAnimateState = () => {
+  const animateState = useMemo(() => {
     switch (direction) {
       case 'up':
       case 'down':
@@ -59,23 +60,32 @@ export default function ScrollReveal({
       default:
         return { opacity: 1, y: 0 };
     }
-  };
+  }, [direction]);
 
-  const finalDelay = stagger ? delay + (staggerIndex * staggerDelay) : delay;
+  const finalDelay = useMemo(() => 
+    stagger ? delay + (staggerIndex * staggerDelay) : delay,
+    [stagger, delay, staggerIndex, staggerDelay]
+  );
+
+  const transitionConfig = useMemo(() => ({
+    duration,
+    delay: finalDelay,
+    ease: "easeOut",
+  }), [duration, finalDelay]);
 
   return (
     <motion.div
       ref={ref}
       className={className}
-      initial={getInitialState()}
-      animate={isVisible ? getAnimateState() : getInitialState()}
-      transition={{
-        duration,
-        delay: finalDelay,
-        ease: "easeOut",
-      }}
+      initial={initialState}
+      animate={isVisible ? animateState : initialState}
+      transition={transitionConfig}
     >
       {children}
     </motion.div>
   );
-}
+});
+
+ScrollReveal.displayName = 'ScrollReveal';
+
+export default ScrollReveal;
