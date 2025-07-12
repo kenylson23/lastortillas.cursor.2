@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReservationSchema, insertContactSchema } from "@shared/schema";
+import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
 import { z } from "zod";
 
 // Cache otimizado para verificação de disponibilidade
@@ -157,6 +157,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(reservations);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch reservations" });
+    }
+  });
+
+  // Menu Items endpoints
+  app.get("/api/menu", async (req, res) => {
+    try {
+      const menuItems = await storage.getAllMenuItems();
+      res.json(menuItems);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/menu/category/:category", async (req, res) => {
+    try {
+      const { category } = req.params;
+      const menuItems = await storage.getMenuItemsByCategory(category);
+      res.json(menuItems);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/menu/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const menuItem = await storage.getMenuItem(id);
+      if (!menuItem) {
+        return res.status(404).json({ error: "Menu item not found" });
+      }
+      res.json(menuItem);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Orders endpoints
+  app.post("/api/orders", async (req, res) => {
+    try {
+      const { order, items } = req.body;
+      
+      // Validate order
+      const validatedOrder = insertOrderSchema.parse(order);
+      
+      // Validate items
+      const validatedItems = items.map((item: any) => insertOrderItemSchema.parse(item));
+      
+      const result = await storage.createOrder(validatedOrder, validatedItems);
+      res.json(result);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/orders", async (req, res) => {
+    try {
+      const { status, location } = req.query;
+      
+      let orders;
+      if (status) {
+        orders = await storage.getOrdersByStatus(status as string);
+      } else if (location) {
+        orders = await storage.getOrdersByLocation(location as string);
+      } else {
+        orders = await storage.getAllOrders();
+      }
+      
+      res.json(orders);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.get("/api/orders/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const order = await storage.getOrder(id);
+      if (!order) {
+        return res.status(404).json({ error: "Order not found" });
+      }
+      
+      const items = await storage.getOrderItems(id);
+      res.json({ ...order, items });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.patch("/api/orders/:id/status", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = req.body;
+      
+      if (!status) {
+        return res.status(400).json({ error: "Status is required" });
+      }
+      
+      const order = await storage.updateOrderStatus(id, status);
+      res.json(order);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   });
 

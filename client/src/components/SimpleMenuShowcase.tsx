@@ -68,19 +68,31 @@ export default function SimpleMenuShowcase() {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <button 
-            onClick={() => {
-              const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortillas Mexican Grill.');
-              window.location.href = `https://wa.me/244949639932?text=${message}`;
-            }}
-            className="bg-red-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center"
-          >
-            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            <span className="hidden sm:inline">Ver Menu Completo</span>
-            <span className="sm:hidden">Menu Completo</span>
-          </button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/menu"
+              className="bg-green-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+              </svg>
+              <span className="hidden sm:inline">Pedir Online</span>
+              <span className="sm:hidden">Pedir</span>
+            </a>
+            <button 
+              onClick={() => {
+                const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortillas Mexican Grill.');
+                window.location.href = `https://wa.me/244949639932?text=${message}`;
+              }}
+              className="bg-red-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center justify-center"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <span className="hidden sm:inline">Ver Menu Completo</span>
+              <span className="sm:hidden">Menu Completo</span>
+            </button>
+          </div>
         </motion.div>
       </div>
     </section>

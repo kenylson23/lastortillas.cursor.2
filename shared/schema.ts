@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, numeric } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -29,6 +29,47 @@ export const contacts = pgTable("contacts", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const menuItems = pgTable("menu_items", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  category: text("category").notNull(),
+  image: text("image"),
+  available: boolean("available").default(true),
+  preparationTime: integer("preparation_time").default(15), // minutes
+  customizations: text("customizations").array(), // ["sem cebola", "extra queijo"]
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  customerName: text("customer_name").notNull(),
+  customerPhone: text("customer_phone").notNull(),
+  customerEmail: text("customer_email"),
+  deliveryAddress: text("delivery_address"),
+  orderType: text("order_type").notNull(), // "delivery", "takeaway", "dine-in"
+  locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
+  status: text("status").notNull().default("received"), // "received", "preparing", "ready", "delivered", "cancelled"
+  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: text("payment_method").notNull(), // "cash", "card", "transfer"
+  paymentStatus: text("payment_status").notNull().default("pending"), // "pending", "paid", "failed"
+  notes: text("notes"),
+  estimatedDeliveryTime: timestamp("estimated_delivery_time"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => orders.id).notNull(),
+  menuItemId: integer("menu_item_id").references(() => menuItems.id).notNull(),
+  quantity: integer("quantity").notNull(),
+  unitPrice: numeric("unit_price", { precision: 10, scale: 2 }).notNull(),
+  customizations: text("customizations").array(), // customizations for this specific item
+  subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -44,9 +85,30 @@ export const insertContactSchema = createInsertSchema(contacts).omit({
   createdAt: true,
 });
 
+export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
+  id: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type InsertReservation = z.infer<typeof insertReservationSchema>;
 export type Reservation = typeof reservations.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
+export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+export type MenuItem = typeof menuItems.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+export type OrderItem = typeof orderItems.$inferSelect;

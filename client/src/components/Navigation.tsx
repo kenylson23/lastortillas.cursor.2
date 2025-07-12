@@ -41,6 +41,12 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
+              <a
+                href="/menu"
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-300 font-medium"
+              >
+                Pedir Online
+              </a>
             </div>
           </div>
           
@@ -96,6 +102,14 @@ export default function Navigation() {
               >
                 🍽️ Reservar Mesa
               </button>
+              
+              {/* Botão de pedido online no menu mobile */}
+              <a
+                href="/menu"
+                className="block bg-green-600 text-white px-3 py-3 rounded-lg hover:bg-green-700 transition-all duration-300 text-base font-semibold w-full text-center mt-2 mx-3"
+              >
+                🛒 Pedir Online
+              </a>
             </div>
           </div>
         )}
