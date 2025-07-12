@@ -56,8 +56,15 @@ export default function OrderManagement() {
       const response = await apiRequest('PATCH', `/api/orders/${orderId}/status`, { status });
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
+      // Invalidar queries de forma mais específica
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      
+      // Atualizar o pedido selecionado se for o mesmo
+      if (selectedOrder && selectedOrder.id === variables.orderId) {
+        setSelectedOrder(prev => prev ? { ...prev, status: variables.status } : null);
+      }
+      
       toast({
         title: "Sucesso",
         description: "Status do pedido atualizado com sucesso",
@@ -309,33 +316,42 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      updateStatusMutation.mutate({ orderId: order.id, status: 'preparing' });
+                      if (!updateStatusMutation.isPending) {
+                        updateStatusMutation.mutate({ orderId: order.id, status: 'preparing' });
+                      }
                     }}
-                    className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors"
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Preparar
+                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Preparar'}
                   </button>
                 )}
                 {order.status === 'preparing' && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      updateStatusMutation.mutate({ orderId: order.id, status: 'ready' });
+                      if (!updateStatusMutation.isPending) {
+                        updateStatusMutation.mutate({ orderId: order.id, status: 'ready' });
+                      }
                     }}
-                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors"
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Pronto
+                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Pronto'}
                   </button>
                 )}
                 {order.status === 'ready' && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      updateStatusMutation.mutate({ orderId: order.id, status: 'delivered' });
+                      if (!updateStatusMutation.isPending) {
+                        updateStatusMutation.mutate({ orderId: order.id, status: 'delivered' });
+                      }
                     }}
-                    className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+                    disabled={updateStatusMutation.isPending}
+                    className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Entregue
+                    {updateStatusMutation.isPending ? 'Atualizando...' : 'Entregue'}
                   </button>
                 )}
               </div>
