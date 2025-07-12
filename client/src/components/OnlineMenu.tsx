@@ -237,7 +237,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onUpdateQuantity={updateQuantity}
-        onSubmitOrder={handleSubmitOrder}
+        onSubmitOrder={(orderData) => {
+          console.log('OnlineMenu received order data from EnhancedCart:', orderData);
+          createOrderMutation.mutate(orderData);
+        }}
         locationId={locationId}
         isSubmitting={createOrderMutation.isPending}
       />

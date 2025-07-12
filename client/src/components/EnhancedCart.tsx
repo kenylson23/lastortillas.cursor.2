@@ -84,11 +84,14 @@ export default function EnhancedCart({
         locationId,
         totalAmount: getTotalPrice().toString(),
         paymentMethod: customerInfo.paymentMethod,
+        paymentStatus: 'pending',
         notes: customerInfo.notes || undefined,
         estimatedDeliveryTime: new Date(Date.now() + getPreparationTime() * 60 * 1000)
       },
       items: orderItems
     };
+
+    console.log('EnhancedCart submitting order:', orderData);
 
     onSubmitOrder(orderData);
   };

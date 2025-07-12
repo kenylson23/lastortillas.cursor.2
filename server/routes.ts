@@ -306,13 +306,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Orders endpoints
   app.post("/api/orders", async (req, res) => {
     try {
+      console.log('Received order request:', JSON.stringify(req.body, null, 2));
+      
       const { order, items } = req.body;
+      
+      if (!order) {
+        return res.status(400).json({ error: "Order data is required" });
+      }
+      
+      if (!items || !Array.isArray(items)) {
+        return res.status(400).json({ error: "Items array is required" });
+      }
       
       // Validate order
       const validatedOrder = insertOrderSchema.parse(order);
+      console.log('Validated order:', validatedOrder);
       
       // Validate items
-      const validatedItems = items.map((item: any) => insertOrderItemSchema.parse(item));
+      const validatedItems = items.map((item: any) => {
+        console.log('Validating item:', item);
+        return insertOrderItemSchema.parse(item);
+      });
+      console.log('Validated items:', validatedItems);
       
       const result = await storage.createOrder(validatedOrder, validatedItems);
       
@@ -321,6 +336,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(result);
     } catch (error: any) {
+      console.error('Order creation error:', error);
       res.status(400).json({ error: error.message });
     }
   });
