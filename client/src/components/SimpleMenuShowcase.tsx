@@ -1,7 +1,34 @@
 import { motion } from "framer-motion";
-import { MENU_ITEMS } from "../lib/constants";
+import { useQuery } from "@tanstack/react-query";
+import { MenuItem } from "../../shared/schema";
 
 export default function SimpleMenuShowcase() {
+  const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
+    queryKey: ['/api/menu'],
+  });
+
+  // Show only featured items (first 6 available items)
+  const featuredItems = menuItems.filter(item => item.available).slice(0, 6);
+
+  if (isLoading) {
+    return (
+      <section id="menu" className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Nossos <span className="text-red-600">Pratos Especiais</span>
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Sabores autênticos do México preparados com ingredientes frescos e muito amor
+            </p>
+          </div>
+          <div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="menu" className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
@@ -22,7 +49,7 @@ export default function SimpleMenuShowcase() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MENU_ITEMS.map((item, index) => (
+          {featuredItems.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 30 }}
@@ -42,7 +69,9 @@ export default function SimpleMenuShowcase() {
                   <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
                   <p className="text-gray-600 mb-4">{item.description}</p>
                   <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-red-600">{item.price}</span>
+                    <span className="text-2xl font-bold text-red-600">
+                      {Number(item.price).toLocaleString('pt-AO', { style: 'currency', currency: 'AOA' })}
+                    </span>
                     <a 
                       href="/menu"
                       className="bg-green-700 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-green-800 transition-colors transform hover:scale-105 text-sm sm:text-base inline-block"

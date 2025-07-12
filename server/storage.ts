@@ -35,6 +35,77 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  
+  constructor() {
+    this.initializeSampleMenuItems();
+  }
+
+  private async initializeSampleMenuItems(): Promise<void> {
+    try {
+      // Check if menu items already exist
+      const existingItems = await this.getAllMenuItems();
+      if (existingItems.length === 0) {
+        // Add sample menu items
+        const sampleItems = [
+          {
+            name: 'Tacos al Pastor',
+            description: 'Tacos tradicionais com carne de porco marinada, abacaxi e coentro',
+            price: '2500',
+            category: 'Tacos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Burrito Supremo',
+            description: 'Burrito gigante com carne, feijão, arroz, queijo e molho especial',
+            price: '3200',
+            category: 'Burritos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Quesadilla de Queijo',
+            description: 'Tortilla crocante recheada com queijo derretido e temperos',
+            price: '2000',
+            category: 'Quesadillas',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Nachos Especiais',
+            description: 'Chips de tortilla com queijo derretido, guacamole e molho picante',
+            price: '2800',
+            category: 'Aperitivos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Enchiladas Verdes',
+            description: 'Tortillas recheadas com frango e cobertas com molho verde',
+            price: '3000',
+            category: 'Enchiladas',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Fajitas de Frango',
+            description: 'Frango grelhado com pimentos e cebolas, servido com tortillas',
+            price: '3500',
+            category: 'Fajitas',
+            image: '/api/placeholder/400/300',
+            available: true
+          }
+        ];
+
+        for (const item of sampleItems) {
+          await this.createMenuItem(item);
+        }
+        console.log('Sample menu items initialized successfully');
+      }
+    } catch (error) {
+      console.error('Error initializing sample menu items:', error);
+    }
+  }
   // Reservation operations
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
     const [reservation] = await db

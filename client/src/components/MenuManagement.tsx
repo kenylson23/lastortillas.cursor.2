@@ -10,7 +10,7 @@ export default function MenuManagement() {
   const [newItem, setNewItem] = useState<Partial<InsertMenuItem>>({
     name: '',
     description: '',
-    price: 0,
+    price: '0',
     category: '',
     image: '',
     available: true
@@ -41,7 +41,7 @@ export default function MenuManagement() {
       setNewItem({
         name: '',
         description: '',
-        price: 0,
+        price: '0',
         category: '',
         image: '',
         available: true
@@ -155,7 +155,7 @@ export default function MenuManagement() {
                 <input
                   type="number"
                   value={newItem.price}
-                  onChange={(e) => setNewItem({...newItem, price: Number(e.target.value)})}
+                  onChange={(e) => setNewItem({...newItem, price: e.target.value})}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                   required
                   min="0"
@@ -230,7 +230,7 @@ export default function MenuManagement() {
                     <div>
                       <h4 className="font-medium text-gray-900">{item.name}</h4>
                       <p className="text-sm text-gray-600">{item.description}</p>
-                      <p className="text-lg font-semibold text-red-600">{item.price.toLocaleString('pt-AO', { style: 'currency', currency: 'AOA' })}</p>
+                      <p className="text-lg font-semibold text-red-600">{Number(item.price).toLocaleString('pt-AO', { style: 'currency', currency: 'AOA' })}</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -289,7 +289,7 @@ export default function MenuManagement() {
                   <input
                     type="number"
                     value={editingItem.price}
-                    onChange={(e) => setEditingItem({...editingItem, price: Number(e.target.value)})}
+                    onChange={(e) => setEditingItem({...editingItem, price: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
                     required
                     min="0"
