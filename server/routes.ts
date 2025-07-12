@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
+import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema } from "@shared/schema";
 import { z } from "zod";
 // Cache otimizado para verificação de disponibilidade
 const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
@@ -160,7 +160,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Menu Items endpoints
+  // Menu Items endpoints for admin
+  app.get("/api/menu-items", async (req, res) => {
+    try {
+      const menuItems = await storage.getAllMenuItems();
+      res.json(menuItems);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  app.post("/api/menu-items", async (req, res) => {
+    try {
+      const validatedItem = insertMenuItemSchema.parse(req.body);
+      const menuItem = await storage.createMenuItem(validatedItem);
+      res.status(201).json(menuItem);
+    } catch (error: any) {
+      if (error instanceof z.ZodError) {
+        res.status(400).json({ message: "Invalid menu item data", errors: error.errors });
+      } else {
+        res.status(500).json({ error: error.message });
+      }
+    }
+  });
+
+  app.put("/api/menu-items/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const updates = req.body;
+      const menuItem = await storage.updateMenuItem(id, updates);
+      res.json(menuItem);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Menu Items endpoints for customers
   app.get("/api/menu", async (req, res) => {
     try {
       const menuItems = await storage.getAllMenuItems();
