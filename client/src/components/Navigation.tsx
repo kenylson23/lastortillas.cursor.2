@@ -10,7 +10,6 @@ export default function Navigation() {
     { href: "#menu", label: "Menu" },
     { href: "#sobre", label: "Sobre" },
     { href: "#locais", label: "Nossos Locais" },
-    { href: "/rastreamento", label: "Rastreamento", isRoute: true },
     { href: "#contato", label: "Contato" },
   ];
 
