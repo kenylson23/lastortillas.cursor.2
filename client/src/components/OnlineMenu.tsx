@@ -32,7 +32,8 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
     address: '',
     orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
     paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
-    notes: ''
+    notes: '',
+    tableId: null as number | null
   });
 
   const queryClient = useQueryClient();
@@ -47,6 +48,18 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       console.log('Menu items data:', data);
       return data;
     }
+  });
+
+  const { data: availableTables = [] } = useQuery({
+    queryKey: ['/api/tables', locationId],
+    queryFn: async () => {
+      const response = await fetch(`/api/tables?location=${locationId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tables');
+      }
+      return response.json();
+    },
+    enabled: customerInfo.orderType === 'dine-in'
   });
 
   const createOrderMutation = useMutation({
@@ -66,7 +79,8 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         address: '',
         orderType: 'delivery',
         paymentMethod: 'cash',
-        notes: ''
+        notes: '',
+        tableId: null
       });
       setIsCartOpen(false);
       
@@ -337,6 +351,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         }}
         locationId={locationId}
         isSubmitting={createOrderMutation.isPending}
+        availableTables={availableTables}
       />
 
       {/* Success Modal */}

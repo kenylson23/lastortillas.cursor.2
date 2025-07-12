@@ -66,6 +66,7 @@ export const orders = pgTable("orders", {
   deliveryAddress: text("delivery_address"),
   orderType: text("order_type").notNull(), // "delivery", "takeaway", "dine-in"
   locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
+  tableId: integer("table_id").references(() => tables.id), // mesa para pedidos dine-in
   status: text("status").notNull().default("received"), // "received", "preparing", "ready", "delivered", "cancelled"
   totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
   paymentMethod: text("payment_method").notNull(), // "cash", "card", "transfer"

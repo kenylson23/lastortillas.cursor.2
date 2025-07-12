@@ -15,6 +15,7 @@ interface EnhancedCartProps {
   onSubmitOrder: (orderData: any) => void;
   locationId: string;
   isSubmitting?: boolean;
+  availableTables?: any[];
 }
 
 export default function EnhancedCart({
@@ -24,7 +25,8 @@ export default function EnhancedCart({
   onUpdateQuantity,
   onSubmitOrder,
   locationId,
-  isSubmitting = false
+  isSubmitting = false,
+  availableTables = []
 }: EnhancedCartProps) {
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -33,7 +35,8 @@ export default function EnhancedCart({
     address: '',
     orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
     paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
-    notes: ''
+    notes: '',
+    tableId: null as number | null
   });
 
   const [deliveryFee, setDeliveryFee] = useState(0);
@@ -82,6 +85,7 @@ export default function EnhancedCart({
         deliveryAddress: customerInfo.orderType === 'delivery' ? customerInfo.address : undefined,
         orderType: customerInfo.orderType,
         locationId,
+        tableId: customerInfo.orderType === 'dine-in' ? customerInfo.tableId : undefined,
         totalAmount: getTotalPrice().toString(),
         paymentMethod: customerInfo.paymentMethod,
         paymentStatus: 'pending',
@@ -99,7 +103,8 @@ export default function EnhancedCart({
   const isFormValid = () => {
     return customerInfo.name.trim() !== '' && 
            customerInfo.phone.trim() !== '' && 
-           (customerInfo.orderType !== 'delivery' || customerInfo.address.trim() !== '');
+           (customerInfo.orderType !== 'delivery' || customerInfo.address.trim() !== '') &&
+           (customerInfo.orderType !== 'dine-in' || customerInfo.tableId !== null);
   };
 
   const getLocationName = (locationId: string) => {
@@ -262,6 +267,22 @@ export default function EnhancedCart({
                           className="border rounded-lg p-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-red-500"
                           required
                         />
+                      )}
+                      {customerInfo.orderType === 'dine-in' && (
+                        <select
+                          value={customerInfo.tableId || ''}
+                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }))}
+                          className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          required
+                        >
+                          <option value="">Selecione uma mesa *</option>
+                          {availableTables.filter(table => table.status === 'available').map(table => (
+                            <option key={table.id} value={table.id}>
+                              Mesa {table.number} - {table.capacity} pessoas
+                              {table.position && ` (${table.position})`}
+                            </option>
+                          ))}
+                        </select>
                       )}
                       <select
                         value={customerInfo.paymentMethod}
