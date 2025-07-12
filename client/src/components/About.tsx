@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import ScrollReveal from "./ScrollReveal";
 
 export default function About() {
   const stats = [
@@ -12,10 +11,11 @@ export default function About() {
     <section id="sobre" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <ScrollReveal 
-            direction="left"
-            delay={0.2}
-            duration={0.8}
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            viewport={{ once: true }}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
               Nossa História
@@ -32,34 +32,33 @@ export default function About() {
             </p>
             <div className="flex items-center space-x-8">
               {stats.map((stat, index) => (
-                <ScrollReveal
+                <motion.div
                   key={stat.label}
-                  direction="up"
-                  delay={0.6}
-                  stagger={true}
-                  staggerIndex={index}
-                  staggerDelay={0.2}
-                  duration={0.6}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 + (index * 0.2) }}
+                  viewport={{ once: true }}
                   className="text-center"
                 >
                   <div className="text-3xl font-bold text-red-600">{stat.number}</div>
                   <div className="text-sm text-gray-600">{stat.label}</div>
-                </ScrollReveal>
+                </motion.div>
               ))}
             </div>
-          </ScrollReveal>
+          </motion.div>
           
-          <ScrollReveal 
-            direction="right"
-            delay={0.4}
-            duration={0.8}
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            viewport={{ once: true }}
           >
-            {/* Substituir vídeo por imagem para melhor compatibilidade */}
             <div className="relative rounded-2xl shadow-2xl w-full h-auto overflow-hidden">
               <img 
                 src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" 
                 alt="Interior do restaurante Las Tortillas Mexican Grill" 
                 className="w-full h-auto rounded-2xl shadow-2xl"
+                loading="lazy"
                 style={{ 
                   maxHeight: '600px', 
                   objectFit: 'cover'
@@ -71,7 +70,7 @@ export default function About() {
                 <p className="text-sm opacity-90">Venha conhecer nosso espaço!</p>
               </div>
             </div>
-          </ScrollReveal>
+          </motion.div>
         </div>
       </div>
     </section>
