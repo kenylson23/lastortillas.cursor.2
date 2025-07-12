@@ -102,6 +102,36 @@ export default function MenuManagement() {
     });
   };
 
+  // Delete item mutation
+  const deleteItemMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest('DELETE', `/api/menu-items/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
+      toast({
+        title: 'Item removido',
+        description: 'O item foi removido com sucesso',
+        variant: 'success'
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erro ao remover item',
+        description: error.message,
+        variant: 'destructive'
+      });
+    }
+  });
+
+  const handleDeleteItem = (item: MenuItem) => {
+    if (window.confirm(`Tem certeza que deseja remover "${item.name}"? Esta ação não pode ser desfeita.`)) {
+      deleteItemMutation.mutate(item.id);
+    }
+  };
+
   const categories = Array.from(new Set(menuItems.map(item => item.category)));
 
   if (isLoading) {
@@ -248,6 +278,13 @@ export default function MenuManagement() {
                       className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                     >
                       Editar
+                    </button>
+                    <button
+                      onClick={() => handleDeleteItem(item)}
+                      disabled={deleteItemMutation.isPending}
+                      className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors text-sm disabled:opacity-50"
+                    >
+                      {deleteItemMutation.isPending ? 'Removendo...' : 'Apagar'}
                     </button>
                   </div>
                 </div>

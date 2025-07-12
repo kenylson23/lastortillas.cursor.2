@@ -21,6 +21,7 @@ export interface IStorage {
   getMenuItem(id: number): Promise<MenuItem | undefined>;
   createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
   updateMenuItem(id: number, item: Partial<MenuItem>): Promise<MenuItem>;
+  deleteMenuItem(id: number): Promise<void>;
   
   // Orders
   createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
@@ -180,6 +181,12 @@ export class DatabaseStorage implements IStorage {
       .where(eq(menuItems.id, id))
       .returning();
     return item;
+  }
+
+  async deleteMenuItem(id: number): Promise<void> {
+    await db
+      .delete(menuItems)
+      .where(eq(menuItems.id, id));
   }
 
   // Orders

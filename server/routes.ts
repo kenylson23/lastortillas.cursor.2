@@ -241,6 +241,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.delete("/api/menu-items/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      
+      // Verificar se o item existe
+      const existingItem = await storage.getMenuItem(id);
+      if (!existingItem) {
+        return res.status(404).json({ error: "Item não encontrado" });
+      }
+      
+      await storage.deleteMenuItem(id);
+      res.json({ message: "Item removido com sucesso" });
+    } catch (error: any) {
+      console.error("Erro ao remover item:", error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // Menu Items endpoints for customers
   app.get("/api/menu", async (req, res) => {
     try {
