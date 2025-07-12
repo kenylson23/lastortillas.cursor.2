@@ -160,3 +160,13 @@ Preferred communication style: Simple, everyday language.
   - Added founding date: February 14, 2018
   - Documented restaurant's 7-year history in Luanda
   - Reinforced established reputation and local presence
+- July 13, 2025: Major performance optimization implementation
+  - Implemented lazy loading system for all images with intersection observer
+  - Added comprehensive caching system for backend APIs (5s availability, 30s reservations)
+  - Optimized hero image loading with preload and loading states
+  - Memoized React components to prevent unnecessary re-renders
+  - Added performance-focused CSS with content-visibility and will-change
+  - Implemented HTTP cache headers and resource hints for faster loading
+  - Created image cache system with error handling and loading indicators
+  - Reduced initial bundle size through code splitting and optimization
+  - Enhanced TanStack Query configuration with intelligent retry logic

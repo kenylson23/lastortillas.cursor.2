@@ -1,7 +1,12 @@
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
+import LoadingSpinner from "./LoadingSpinner";
 
 export default function Hero() {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
@@ -9,18 +14,67 @@ export default function Hero() {
     }
   };
 
+  // Preload otimizado da imagem do hero
+  useEffect(() => {
+    const img = new Image();
+    
+    img.onload = () => {
+      setImageLoaded(true);
+      setImageError(false);
+    };
+    
+    img.onerror = () => {
+      setImageError(true);
+      setImageLoaded(true); // Considerar como carregado mesmo com erro
+    };
+    
+    // Configurar para carregamento prioritário
+    img.fetchPriority = 'high';
+    img.loading = 'eager';
+    img.src = heroImage;
+    
+    // Cleanup
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, []);
+
   return (
     <section id="inicio" className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
+      {/* Background Image com loading otimizado */}
       <div 
-        className="absolute inset-0 parallax-bg"
+        className={`absolute inset-0 parallax-bg transition-opacity duration-500 ${
+          imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'
+        }`}
         style={{
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          willChange: 'opacity'
         }}
       />
+      
+      {/* Placeholder gradient enquanto a imagem carrega */}
+      {!imageLoaded && (
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-orange-800 to-yellow-700">
+          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center text-white">
+              <LoadingSpinner size="lg" className="mx-auto mb-4" />
+              <p className="text-lg font-medium">Carregando...</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Fallback para erro de imagem */}
+      {imageError && (
+        <div className="absolute inset-0 bg-gradient-to-br from-red-900 via-orange-800 to-yellow-700">
+          <div className="absolute inset-0 bg-black/30" />
+        </div>
+      )}
       
       {/* Overlay for better text readability */}
       <div className="absolute inset-0 bg-black/30" />
