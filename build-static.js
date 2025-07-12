@@ -41,6 +41,32 @@ try {
   if (fs.existsSync(indexPath)) {
     console.log('✓ Build completed successfully');
     
+    // Copy public directory to dist
+    const publicSourceDir = path.join(__dirname, 'public');
+    if (fs.existsSync(publicSourceDir)) {
+      const files = fs.readdirSync(publicSourceDir, { withFileTypes: true });
+      files.forEach(file => {
+        if (file.isDirectory()) {
+          const srcDir = path.join(publicSourceDir, file.name);
+          const destDir = path.join(distPath, file.name);
+          fs.mkdirSync(destDir, { recursive: true });
+          
+          const subFiles = fs.readdirSync(srcDir);
+          subFiles.forEach(subFile => {
+            const src = path.join(srcDir, subFile);
+            const dest = path.join(destDir, subFile);
+            fs.copyFileSync(src, dest);
+          });
+        } else {
+          const src = path.join(publicSourceDir, file.name);
+          const dest = path.join(distPath, file.name);
+          fs.copyFileSync(src, dest);
+        }
+      });
+      
+      console.log('✓ Public directory copied to dist');
+    }
+    
     // Show actual output directory structure
     const outputDir = fs.existsSync(publicPath) ? publicPath : distPath;
     const contents = fs.readdirSync(outputDir);
