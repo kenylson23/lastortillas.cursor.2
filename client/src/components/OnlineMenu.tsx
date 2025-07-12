@@ -31,21 +31,21 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
 
   const queryClient = useQueryClient();
 
-  const { data: menuItems = [], isLoading } = useQuery({
+  const { data: menuItems = [], isLoading, error } = useQuery({
     queryKey: ['/api/menu-items'],
     queryFn: async () => {
-      const response = await apiRequest('/api/menu-items');
-      return response.json();
+      console.log('Fetching menu items...');
+      const response = await apiRequest('GET', '/api/menu-items');
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Menu items data:', data);
+      return data;
     }
   });
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
-      const response = await apiRequest('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderData)
-      });
+      const response = await apiRequest('POST', '/api/orders', orderData);
       return response.json();
     },
     onSuccess: (order) => {
@@ -74,8 +74,14 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   const categories = ['Todos', ...Array.from(new Set(menuItems.map((item: MenuItem) => item.category)))];
 
   const filteredItems = selectedCategory === 'Todos' 
-    ? menuItems 
+    ? menuItems
     : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
+
+  // Debug logs
+  console.log('OnlineMenu - menuItems:', menuItems);
+  console.log('OnlineMenu - filteredItems:', filteredItems);
+  console.log('OnlineMenu - categories:', categories);
+  console.log('OnlineMenu - selectedCategory:', selectedCategory);
 
   const addToCart = (item: MenuItem, customizations: string[] = []) => {
     setCart(prev => {
@@ -198,15 +204,22 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
 
       {/* Menu Items */}
       <div className="max-w-4xl mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item: MenuItem) => (
-            <MenuItemCard
-              key={item.id}
-              item={item}
-              onAddToCart={addToCart}
-            />
-          ))}
-        </div>
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500 text-lg">Nenhum item encontrado.</p>
+            <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map((item: MenuItem) => (
+              <MenuItemCard
+                key={item.id}
+                item={item}
+                onAddToCart={addToCart}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Enhanced Cart Modal */}

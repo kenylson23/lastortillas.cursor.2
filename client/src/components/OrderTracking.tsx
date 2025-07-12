@@ -14,7 +14,7 @@ export default function OrderTracking({ orderId }: OrderTrackingProps) {
   const { data: order, isLoading, error } = useQuery({
     queryKey: ['/api/orders', orderId],
     queryFn: async () => {
-      const response = await apiRequest(`/api/orders/${orderId}`);
+      const response = await apiRequest('GET', `/api/orders/${orderId}`);
       return response.json();
     },
     refetchInterval: 30000, // Atualiza a cada 30 segundos

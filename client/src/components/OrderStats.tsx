@@ -13,7 +13,7 @@ export default function OrderStats({ className = '' }: OrderStatsProps) {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['/api/orders'],
     queryFn: async () => {
-      const response = await apiRequest('/api/orders');
+      const response = await apiRequest('GET', '/api/orders');
       return response.json();
     },
     refetchInterval: 30000, // Atualiza a cada 30 segundos

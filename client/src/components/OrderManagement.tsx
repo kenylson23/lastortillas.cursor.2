@@ -33,7 +33,7 @@ export default function OrderManagement() {
         url += '?' + params.toString();
       }
       
-      const response = await apiRequest(url);
+      const response = await apiRequest('GET', url);
       return response.json();
     },
     refetchInterval: 10000, // Refetch every 10 seconds
@@ -42,18 +42,14 @@ export default function OrderManagement() {
   const { data: menuItems = [] } = useQuery({
     queryKey: ['/api/menu-items'],
     queryFn: async () => {
-      const response = await apiRequest('/api/menu-items');
+      const response = await apiRequest('GET', '/api/menu-items');
       return response.json();
     }
   });
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
-      const response = await apiRequest(`/api/orders/${orderId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
+      const response = await apiRequest('PATCH', `/api/orders/${orderId}/status`, { status });
       return response.json();
     },
     onSuccess: () => {
@@ -71,7 +67,7 @@ export default function OrderManagement() {
 
   const fetchOrderDetails = async (orderId: number) => {
     try {
-      const response = await apiRequest(`/api/orders/${orderId}`);
+      const response = await apiRequest('GET', `/api/orders/${orderId}`);
       const orderDetails = await response.json();
       setSelectedOrder(orderDetails);
     } catch (error) {
