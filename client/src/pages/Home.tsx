@@ -12,8 +12,8 @@ export default function Home() {
     <div className="min-h-screen">
       <Navigation />
       <Hero />
-      <SimpleMenuShowcase />
       <About />
+      <SimpleMenuShowcase />
       <Features />
       <OurLocations />
       <Contact />
