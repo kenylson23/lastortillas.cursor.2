@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
-import { apiRequest } from '../lib/queryClient';
 import { Table, InsertTable } from '@shared/schema';
 
 interface TableModalProps {
@@ -193,47 +192,83 @@ export default function TableManagement() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const queryClient = useQueryClient();
 
-  const { data: tables, isLoading } = useQuery({
+  const { data: tables, isLoading, error } = useQuery({
     queryKey: ['/api/tables'],
-    queryFn: () => apiRequest('/api/tables'),
+    queryFn: async () => {
+      const response = await fetch('/api/tables');
+      if (!response.ok) {
+        throw new Error('Failed to fetch tables');
+      }
+      return response.json();
+    },
   });
 
+  // Debug log
+  console.log('Tables data:', tables);
+  console.log('Tables loading:', isLoading);
+  console.log('Tables error:', error);
+
   const createTableMutation = useMutation({
-    mutationFn: (table: InsertTable) => apiRequest('/api/tables', {
-      method: 'POST',
-      body: JSON.stringify(table)
-    }),
+    mutationFn: async (table: InsertTable) => {
+      const response = await fetch('/api/tables', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(table)
+      });
+      if (!response.ok) {
+        throw new Error('Failed to create table');
+      }
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
     }
   });
 
   const updateTableMutation = useMutation({
-    mutationFn: ({ id, table }: { id: number; table: Partial<Table> }) => 
-      apiRequest(`/api/tables/${id}`, {
+    mutationFn: async ({ id, table }: { id: number; table: Partial<Table> }) => {
+      const response = await fetch(`/api/tables/${id}`, {
         method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(table)
-      }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update table');
+      }
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
     }
   });
 
   const deleteTableMutation = useMutation({
-    mutationFn: (id: number) => apiRequest(`/api/tables/${id}`, {
-      method: 'DELETE'
-    }),
+    mutationFn: async (id: number) => {
+      const response = await fetch(`/api/tables/${id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete table');
+      }
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
     }
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: number; status: string }) => 
-      apiRequest(`/api/tables/${id}/status`, {
+    mutationFn: async ({ id, status }: { id: number; status: string }) => {
+      const response = await fetch(`/api/tables/${id}/status`, {
         method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status })
-      }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update table status');
+      }
+      return response.json();
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
     }
