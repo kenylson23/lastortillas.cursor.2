@@ -24,14 +24,9 @@ export default function Navigation() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-red-600 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">🌮</span>
-              </div>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-                <h1 className="text-xl sm:text-2xl font-bold text-green-700">Las Tortillas</h1>
-                <span className="text-xs sm:text-sm text-red-600 font-medium -mt-1 sm:mt-0">Mexican Grill</span>
-              </div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-green-700">Las Tortillas</h1>
+              <span className="text-xs sm:text-sm text-red-600 font-medium -mt-1 sm:mt-0">Mexican Grill</span>
             </div>
           </div>
           
