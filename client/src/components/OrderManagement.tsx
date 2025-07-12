@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { Order, OrderItem, MenuItem } from '@shared/schema';
 import { useToast } from '../hooks/use-toast';
+import { X, Edit3, Trash2, MessageSquare, Clock, CheckCircle, XCircle, Truck, Phone, MapPin, CreditCard, FileText, Share2 } from 'lucide-react';
 
 interface OrderWithItems extends Order {
   items: OrderItem[];
@@ -13,6 +14,9 @@ export default function OrderManagement() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [adminNotes, setAdminNotes] = useState('');
+  const [estimatedTime, setEstimatedTime] = useState('');
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -54,12 +58,38 @@ export default function OrderManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
-      setSelectedOrder(null);
+      toast({
+        title: "Sucesso",
+        description: "Status do pedido atualizado com sucesso",
+      });
     },
     onError: (error) => {
       toast({
-        title: "Error",
-        description: "Failed to update order status",
+        title: "Erro",
+        description: "Falha ao atualizar status do pedido",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (orderId: number) => {
+      const response = await apiRequest('DELETE', `/api/orders/${orderId}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      setIsOrderModalOpen(false);
+      setSelectedOrder(null);
+      toast({
+        title: "Sucesso",
+        description: "Pedido removido com sucesso",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Erro",
+        description: "Falha ao remover pedido",
         variant: "destructive",
       });
     }
@@ -70,13 +100,52 @@ export default function OrderManagement() {
       const response = await apiRequest('GET', `/api/orders/${orderId}`);
       const orderDetails = await response.json();
       setSelectedOrder(orderDetails);
+      setIsOrderModalOpen(true);
+      setAdminNotes(orderDetails.adminNotes || '');
+      setEstimatedTime(orderDetails.estimatedDeliveryTime || '');
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to fetch order details",
+        title: "Erro",
+        description: "Falha ao buscar detalhes do pedido",
         variant: "destructive",
       });
     }
+  };
+
+  const handleStatusUpdate = (status: string) => {
+    if (!selectedOrder) return;
+    updateStatusMutation.mutate({ orderId: selectedOrder.id, status });
+  };
+
+  const handleDeleteOrder = () => {
+    if (!selectedOrder) return;
+    if (confirm('Tem certeza que deseja remover este pedido? Esta ação não pode ser desfeita.')) {
+      deleteOrderMutation.mutate(selectedOrder.id);
+    }
+  };
+
+  const shareOrderOnWhatsApp = () => {
+    if (!selectedOrder) return;
+    
+    const orderDetails = `
+*Pedido Las Tortillas #${selectedOrder.id}*
+
+*Cliente:* ${selectedOrder.customerName}
+*Telefone:* ${selectedOrder.customerPhone}
+*Status:* ${getStatusText(selectedOrder.status)}
+*Tipo:* ${getOrderTypeText(selectedOrder.orderType)}
+*Local:* ${getLocationName(selectedOrder.locationId)}
+*Total:* ${selectedOrder.totalAmount} AOA
+
+*Itens:*
+${selectedOrder.items?.map(item => `• ${getMenuItemName(item.menuItemId)} (${item.quantity}x) - ${item.itemPrice} AOA`).join('\n')}
+
+*Entrega estimada:* ${selectedOrder.estimatedDeliveryTime || 'A definir'}
+${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}` : ''}
+    `.trim();
+
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(orderDetails)}`;
+    window.open(whatsappUrl, '_blank');
   };
 
   const getStatusColor = (status: string) => {
@@ -396,25 +465,172 @@ export default function OrderManagement() {
                     </div>
                   </div>
 
-                  {/* Status Update Actions */}
-                  <div className="flex gap-2">
-                    <select
-                      value={selectedOrder.status}
-                      onChange={(e) => updateStatusMutation.mutate({ orderId: selectedOrder.id, status: e.target.value })}
-                      className="border rounded-lg px-4 py-2 flex-1"
-                    >
-                      <option value="received">Recebido</option>
-                      <option value="preparing">Preparando</option>
-                      <option value="ready">Pronto</option>
-                      <option value="delivered">Entregue</option>
-                      <option value="cancelled">Cancelado</option>
-                    </select>
-                    <button
-                      onClick={() => setSelectedOrder(null)}
-                      className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                    >
-                      Fechar
-                    </button>
+                  {/* Administrative Actions */}
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-semibold">Ações Administrativas</h3>
+                    
+                    {/* Status Update */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-2">
+                      <button
+                        onClick={() => handleStatusUpdate('received')}
+                        disabled={selectedOrder.status === 'received' || updateStatusMutation.isPending}
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg font-medium transition-colors ${
+                          selectedOrder.status === 'received' 
+                            ? 'bg-blue-100 text-blue-800 cursor-not-allowed' 
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        <FileText className="w-4 h-4" />
+                        Recebido
+                      </button>
+                      
+                      <button
+                        onClick={() => handleStatusUpdate('preparing')}
+                        disabled={selectedOrder.status === 'preparing' || updateStatusMutation.isPending}
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg font-medium transition-colors ${
+                          selectedOrder.status === 'preparing' 
+                            ? 'bg-yellow-100 text-yellow-800 cursor-not-allowed' 
+                            : 'bg-yellow-600 text-white hover:bg-yellow-700'
+                        }`}
+                      >
+                        <Clock className="w-4 h-4" />
+                        Preparando
+                      </button>
+                      
+                      <button
+                        onClick={() => handleStatusUpdate('ready')}
+                        disabled={selectedOrder.status === 'ready' || updateStatusMutation.isPending}
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg font-medium transition-colors ${
+                          selectedOrder.status === 'ready' 
+                            ? 'bg-green-100 text-green-800 cursor-not-allowed' 
+                            : 'bg-green-600 text-white hover:bg-green-700'
+                        }`}
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        Pronto
+                      </button>
+                      
+                      <button
+                        onClick={() => handleStatusUpdate('delivered')}
+                        disabled={selectedOrder.status === 'delivered' || updateStatusMutation.isPending}
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg font-medium transition-colors ${
+                          selectedOrder.status === 'delivered' 
+                            ? 'bg-gray-100 text-gray-800 cursor-not-allowed' 
+                            : 'bg-gray-600 text-white hover:bg-gray-700'
+                        }`}
+                      >
+                        <Truck className="w-4 h-4" />
+                        Entregue
+                      </button>
+                      
+                      <button
+                        onClick={() => handleStatusUpdate('cancelled')}
+                        disabled={selectedOrder.status === 'cancelled' || updateStatusMutation.isPending}
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg font-medium transition-colors ${
+                          selectedOrder.status === 'cancelled' 
+                            ? 'bg-red-100 text-red-800 cursor-not-allowed' 
+                            : 'bg-red-600 text-white hover:bg-red-700'
+                        }`}
+                      >
+                        <XCircle className="w-4 h-4" />
+                        Cancelar
+                      </button>
+                    </div>
+
+                    {/* Additional Actions */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <button
+                        onClick={() => window.open(`tel:${selectedOrder.customerPhone}`, '_self')}
+                        className="flex items-center justify-center gap-2 p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        <Phone className="w-4 h-4" />
+                        Ligar Cliente
+                      </button>
+                      
+                      <button
+                        onClick={shareOrderOnWhatsApp}
+                        className="flex items-center justify-center gap-2 p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                      >
+                        <Share2 className="w-4 h-4" />
+                        Compartilhar
+                      </button>
+                      
+                      <button
+                        onClick={handleDeleteOrder}
+                        disabled={deleteOrderMutation.isPending}
+                        className="flex items-center justify-center gap-2 p-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        {deleteOrderMutation.isPending ? 'Removendo...' : 'Remover Pedido'}
+                      </button>
+                    </div>
+
+                    {/* Estimated Time Update */}
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Tempo Estimado de Entrega
+                        </label>
+                        <input
+                          type="text"
+                          value={estimatedTime}
+                          onChange={(e) => setEstimatedTime(e.target.value)}
+                          placeholder="Ex: 30-45 minutos"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          // TODO: Add API call to update estimated time
+                          toast({
+                            title: "Funcionalidade em desenvolvimento",
+                            description: "Atualização de tempo estimado será implementada em breve",
+                          });
+                        }}
+                        className="mt-7 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                      >
+                        Atualizar
+                      </button>
+                    </div>
+
+                    {/* Admin Notes */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Notas Administrativas
+                      </label>
+                      <textarea
+                        value={adminNotes}
+                        onChange={(e) => setAdminNotes(e.target.value)}
+                        placeholder="Adicione observações internas sobre este pedido..."
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                      />
+                      <button
+                        onClick={() => {
+                          // TODO: Add API call to save admin notes
+                          toast({
+                            title: "Funcionalidade em desenvolvimento",
+                            description: "Salvamento de notas administrativas será implementado em breve",
+                          });
+                        }}
+                        className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                      >
+                        Salvar Notas
+                      </button>
+                    </div>
+
+                    {/* Close Button */}
+                    <div className="flex justify-end pt-4 border-t">
+                      <button
+                        onClick={() => {
+                          setSelectedOrder(null);
+                          setIsOrderModalOpen(false);
+                        }}
+                        className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                      >
+                        Fechar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>

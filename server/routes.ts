@@ -362,6 +362,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get all orders with optional filtering
   app.get("/api/orders", async (req, res) => {
     try {
       const { status, location } = req.query;
@@ -381,6 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific order with items
   app.get("/api/orders/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
@@ -396,19 +398,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/orders/:id/status", async (req, res) => {
+  // Delete order (admin only)
+  app.delete("/api/orders/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { status } = req.body;
       
-      if (!status) {
-        return res.status(400).json({ error: "Status is required" });
+      // Verificar se o pedido existe
+      const existingOrder = await storage.getOrder(id);
+      if (!existingOrder) {
+        return res.status(404).json({ error: "Pedido não encontrado" });
       }
       
-      const order = await storage.updateOrderStatus(id, status);
-      res.json(order);
+      // Remove order and associated items
+      await storage.deleteOrder(id);
+      
+      res.json({ message: "Pedido removido com sucesso" });
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      console.error("Erro ao remover pedido:", error);
+      res.status(500).json({ error: error.message });
     }
   });
 

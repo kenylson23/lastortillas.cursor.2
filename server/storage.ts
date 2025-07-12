@@ -30,6 +30,7 @@ export interface IStorage {
   getOrdersByStatus(status: string): Promise<Order[]>;
   getOrdersByLocation(locationId: string): Promise<Order[]>;
   updateOrderStatus(id: number, status: string): Promise<Order>;
+  deleteOrder(id: number): Promise<void>;
   
   // Order Items
   getOrderItems(orderId: number): Promise<OrderItem[]>;
@@ -237,6 +238,18 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id))
       .returning();
     return order;
+  }
+
+  async deleteOrder(id: number): Promise<void> {
+    // First delete order items
+    await db
+      .delete(orderItems)
+      .where(eq(orderItems.orderId, id));
+    
+    // Then delete the order
+    await db
+      .delete(orders)
+      .where(eq(orders.id, id));
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
