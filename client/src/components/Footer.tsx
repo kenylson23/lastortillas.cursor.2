@@ -59,6 +59,16 @@ export default function Footer() {
                   </button>
                 </li>
               ))}
+              <li>
+                <a href="/menu" className="hover:text-green-400 transition-colors font-semibold">
+                  🛒 Pedir Online
+                </a>
+              </li>
+              <li>
+                <a href="/admin" className="hover:text-blue-400 transition-colors font-semibold">
+                  ⚙️ Admin
+                </a>
+              </li>
             </ul>
           </div>
           

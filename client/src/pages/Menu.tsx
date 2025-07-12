@@ -8,14 +8,8 @@ export default function Menu() {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('ilha');
 
   const handleOrderCreated = (order: Order) => {
-    // Show success message and redirect
-    alert(`Pedido #${order.id} criado com sucesso! Entraremos em contato em breve.`);
-    
-    // Redirect to WhatsApp for confirmation
-    const message = encodeURIComponent(
-      `Olá! Acabei de fazer o pedido #${order.id} no valor de ${order.totalAmount} AOA. Aguardo confirmação.`
-    );
-    window.location.href = `https://wa.me/244949639932?text=${message}`;
+    // Show success message
+    alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA. Entraremos em contato em breve para confirmar.`);
   };
 
   return (

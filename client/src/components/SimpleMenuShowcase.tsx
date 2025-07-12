@@ -2,11 +2,6 @@ import { motion } from "framer-motion";
 import { MENU_ITEMS } from "../lib/constants";
 
 export default function SimpleMenuShowcase() {
-  const handleOrderItem = (itemName: string) => {
-    // Redirect to WhatsApp with order details
-    const message = encodeURIComponent(`Olá! Gostaria de pedir: ${itemName}`);
-    window.location.href = `https://wa.me/244949639932?text=${message}`;
-  };
 
   return (
     <section id="menu" className="py-20 bg-gradient-to-br from-orange-50 to-red-50">
@@ -48,12 +43,12 @@ export default function SimpleMenuShowcase() {
                   <p className="text-gray-600 mb-4">{item.description}</p>
                   <div className="flex justify-between items-center">
                     <span className="text-2xl font-bold text-red-600">{item.price}</span>
-                    <button 
-                      onClick={() => handleOrderItem(item.name)}
-                      className="bg-green-700 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-green-800 transition-colors transform hover:scale-105 text-sm sm:text-base"
+                    <a 
+                      href="/menu"
+                      className="bg-green-700 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-green-800 transition-colors transform hover:scale-105 text-sm sm:text-base inline-block"
                     >
                       Pedir
-                    </button>
+                    </a>
                   </div>
                 </div>
               </div>

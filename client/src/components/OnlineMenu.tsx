@@ -59,6 +59,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         notes: ''
       });
       setIsCartOpen(false);
+      
+      // Show success message
+      alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA`);
+      
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
     }
