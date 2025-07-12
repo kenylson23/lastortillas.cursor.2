@@ -86,7 +86,7 @@ export default function EnhancedCart({
         paymentMethod: customerInfo.paymentMethod,
         paymentStatus: 'pending',
         notes: customerInfo.notes || undefined,
-        estimatedDeliveryTime: new Date(Date.now() + getPreparationTime() * 60 * 1000)
+        estimatedDeliveryTime: new Date(Date.now() + getPreparationTime() * 60 * 1000).toISOString()
       },
       items: orderItems
     };

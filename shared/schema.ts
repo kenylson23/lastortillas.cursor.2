@@ -71,7 +71,7 @@ export const orders = pgTable("orders", {
   paymentMethod: text("payment_method").notNull(), // "cash", "card", "transfer"
   paymentStatus: text("payment_status").notNull().default("pending"), // "pending", "paid", "failed"
   notes: text("notes"),
-  estimatedDeliveryTime: timestamp("estimated_delivery_time"),
+  estimatedDeliveryTime: text("estimated_delivery_time"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -105,6 +105,8 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   createdAt: true,
   updatedAt: true,
+}).extend({
+  estimatedDeliveryTime: z.string().optional(),
 });
 
 export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
