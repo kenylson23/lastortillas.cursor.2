@@ -5,6 +5,7 @@ import { apiRequest } from '../lib/queryClient';
 import { MenuItem, Order, OrderItem } from '@shared/schema';
 import EnhancedCart from './EnhancedCart';
 import OrderSuccessModal from './OrderSuccessModal';
+import OrderTracking from './OrderTracking';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -22,6 +23,8 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null);
+  const [showTracking, setShowTracking] = useState(false);
+  const [trackingOrderId, setTrackingOrderId] = useState('');
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -193,44 +196,130 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         </div>
       </div>
 
-      {/* Categories */}
+      {/* Navigation Tabs */}
       <div className="sticky top-16 z-30 bg-white shadow-sm">
         <div className="max-w-4xl mx-auto p-4">
-          <div className="flex overflow-x-auto gap-2 pb-2">
-            {categories.map(category => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
-                  selectedCategory === category
-                    ? 'bg-red-600 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {category}
-              </button>
-            ))}
+          <div className="flex gap-4 mb-4">
+            <button
+              onClick={() => setShowTracking(false)}
+              className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                !showTracking
+                  ? 'bg-red-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              🍽️ Menu
+            </button>
+            <button
+              onClick={() => setShowTracking(true)}
+              className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                showTracking
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              📍 Rastrear Pedido
+            </button>
           </div>
+          
+          {!showTracking && (
+            <div className="flex overflow-x-auto gap-2 pb-2">
+              {categories.map(category => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Menu Items */}
+      {/* Content Area */}
       <div className="max-w-4xl mx-auto p-4">
-        {filteredItems.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-500 text-lg">Nenhum item encontrado.</p>
-            <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
+        {showTracking ? (
+          /* Order Tracking Section */
+          <div className="bg-white">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Rastrear Pedido</h2>
+              <div className="flex gap-4 items-end">
+                <div className="flex-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Número do Pedido
+                  </label>
+                  <input
+                    type="text"
+                    value={trackingOrderId}
+                    onChange={(e) => setTrackingOrderId(e.target.value)}
+                    placeholder="Digite o número do seu pedido (ex: 1, 2, 3...)"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    if (trackingOrderId.trim()) {
+                      // The OrderTracking component will handle the actual tracking
+                    }
+                  }}
+                  disabled={!trackingOrderId.trim()}
+                  className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                    trackingOrderId.trim()
+                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  }`}
+                >
+                  Buscar
+                </button>
+              </div>
+            </div>
+            
+            {trackingOrderId.trim() && (
+              <div className="mt-6">
+                <OrderTracking orderId={trackingOrderId} />
+              </div>
+            )}
+            
+            {!trackingOrderId.trim() && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+                <div className="text-blue-600 text-4xl mb-4">📱</div>
+                <h3 className="text-lg font-semibold text-blue-900 mb-2">Como rastrear seu pedido?</h3>
+                <p className="text-blue-700 mb-4">
+                  Digite o número do seu pedido no campo acima para acompanhar o status em tempo real.
+                </p>
+                <div className="text-sm text-blue-600">
+                  <p>💡 Você recebeu o número do pedido na confirmação</p>
+                  <p>📞 Dúvidas? Entre em contato: +244 949 639 932</p>
+                </div>
+              </div>
+            )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item: MenuItem) => (
-              <MenuItemCard
-                key={item.id}
-                item={item}
-                onAddToCart={addToCart}
-              />
-            ))}
-          </div>
+          /* Menu Items Section */
+          <>
+            {filteredItems.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-500 text-lg">Nenhum item encontrado.</p>
+                <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredItems.map((item: MenuItem) => (
+                  <MenuItemCard
+                    key={item.id}
+                    item={item}
+                    onAddToCart={addToCart}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -254,6 +343,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         onClose={() => setIsSuccessModalOpen(false)}
         order={lastCreatedOrder}
         locationId={locationId}
+        onTrackOrder={(orderId) => {
+          setTrackingOrderId(orderId);
+          setShowTracking(true);
+        }}
       />
     </div>
   );

@@ -8,9 +8,10 @@ interface OrderSuccessModalProps {
   onClose: () => void;
   order: Order | null;
   locationId: string;
+  onTrackOrder?: (orderId: string) => void;
 }
 
-export default function OrderSuccessModal({ isOpen, onClose, order, locationId }: OrderSuccessModalProps) {
+export default function OrderSuccessModal({ isOpen, onClose, order, locationId, onTrackOrder }: OrderSuccessModalProps) {
   const [copied, setCopied] = useState(false);
 
   if (!order) return null;
@@ -160,7 +161,14 @@ export default function OrderSuccessModal({ isOpen, onClose, order, locationId }
               className="space-y-3"
             >
               <button
-                onClick={() => window.location.href = '/rastreamento'}
+                onClick={() => {
+                  if (onTrackOrder) {
+                    onTrackOrder(order.id.toString());
+                    onClose();
+                  } else {
+                    window.location.href = '/rastreamento';
+                  }
+                }}
                 className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition-colors flex items-center justify-center gap-2"
               >
                 <Clock className="w-5 h-5" />
