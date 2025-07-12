@@ -50,7 +50,7 @@ export default function SimpleMenuShowcase() {
                     <span className="text-2xl font-bold text-red-600">{item.price}</span>
                     <button 
                       onClick={() => handleOrderItem(item.name)}
-                      className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors transform hover:scale-105"
+                      className="bg-green-700 text-white px-3 sm:px-4 py-2 rounded-full hover:bg-green-800 transition-colors transform hover:scale-105 text-sm sm:text-base"
                     >
                       Pedir
                     </button>
@@ -73,12 +73,13 @@ export default function SimpleMenuShowcase() {
               const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortillas Mexican Grill.');
               window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
             }}
-            className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center"
+            className="bg-red-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Ver Menu Completo
+            <span className="hidden sm:inline">Ver Menu Completo</span>
+            <span className="sm:hidden">Menu Completo</span>
           </button>
         </motion.div>
       </div>
