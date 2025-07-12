@@ -148,3 +148,7 @@ Preferred communication style: Simple, everyday language.
   - Updated all references across the website (navigation, hero, footer, features)
   - Updated WhatsApp messages and contact forms
   - Updated HTML title, meta tags, and project documentation
+- July 13, 2025: Updated restaurant slogan
+  - New slogan: "Quer passar o dia com a família? É no Las Tortillas"
+  - Updated hero section, meta descriptions, and restaurant description
+  - Reinforced family-friendly positioning and local connection

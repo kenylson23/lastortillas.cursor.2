@@ -60,7 +60,7 @@ export default function Hero() {
               textShadow: '3px 3px 6px rgba(0,0,0,0.8), 1px 1px 3px rgba(0,0,0,0.6), 0px 0px 15px rgba(0,0,0,0.4)'
             }}
           >
-            Autêntica culinária mexicana no coração de Luanda
+            Quer passar o dia com a família? É no Las Tortillas
           </motion.p>
           
           <motion.p 
@@ -72,7 +72,7 @@ export default function Hero() {
               textShadow: '2px 2px 4px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.6), 0px 0px 10px rgba(0,0,0,0.4)'
             }}
           >
-            Descubra os sabores vibrantes do México numa experiência gastronómica única. 
+            Descubra os sabores vibrantes do México no melhor ambiente familiar de Luanda. 
             Pratos tradicionais preparados com ingredientes frescos e muito amor.
           </motion.p>
           
