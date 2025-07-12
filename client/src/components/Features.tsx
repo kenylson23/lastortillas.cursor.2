@@ -42,7 +42,7 @@ export default function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Por que escolher Las Tortilhas?
+            Por que escolher Las Tortillas Mexican Grill?
           </h2>
         </ScrollReveal>
         

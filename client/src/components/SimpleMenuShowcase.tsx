@@ -70,7 +70,7 @@ export default function SimpleMenuShowcase() {
         >
           <button 
             onClick={() => {
-              const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortilhas.');
+              const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortillas Mexican Grill.');
               window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
             }}
             className="bg-red-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center"

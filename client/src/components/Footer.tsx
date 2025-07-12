@@ -20,7 +20,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="text-2xl font-bold mb-4">Las Tortilhas</h3>
+            <h3 className="text-2xl font-bold mb-4">Las Tortillas Mexican Grill</h3>
             <p className="text-gray-400 mb-4">
               {RESTAURANT_INFO.description}
             </p>
@@ -94,7 +94,7 @@ export default function Footer() {
         </div>
         
         <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Las Tortilhas. Todos os direitos reservados.</p>
+          <p>&copy; 2024 Las Tortillas Mexican Grill. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>

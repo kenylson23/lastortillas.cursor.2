@@ -72,7 +72,7 @@ export default function Contact() {
   }, [formData.date, formData.time]);
 
   const handleWhatsAppRedirect = () => {
-    const whatsappMessage = `Olá Las Tortilhas! Gostaria de fazer uma reserva:
+    const whatsappMessage = `Olá Las Tortillas Mexican Grill! Gostaria de fazer uma reserva:
       
 *Nome:* ${formData.name}
 *Telefone:* ${formData.phone}

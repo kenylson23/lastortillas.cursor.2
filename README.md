@@ -1,6 +1,6 @@
-# Las Tortilhas Restaurant Website
+# Las Tortillas Mexican Grill Website
 
-Uma landing page moderna para o restaurante mexicano Las Tortilhas, localizado na Ilha de Luanda, Angola.
+Uma landing page moderna para o restaurante mexicano Las Tortillas Mexican Grill, localizado na Ilha de Luanda, Angola.
 
 ## 🚀 Deploy no Vercel
 

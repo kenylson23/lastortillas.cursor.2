@@ -58,10 +58,10 @@ export const MENU_ITEMS = [
 ];
 
 export const RESTAURANT_INFO = {
-  name: "Las Tortilhas",
+  name: "Las Tortillas Mexican Grill",
   description: "Autêntica culinária mexicana no coração de Luanda",
   phone: "+244 949 639 932",
-  email: "info@lastortilhas.ao",
+  email: "info@lastortillas.ao",
   address: "Ilha de Luanda, Angola",
   hours: "Seg-Qui: 11:00 - 23:00 | Sex-Dom: 11:00 - 01:00"
 };
