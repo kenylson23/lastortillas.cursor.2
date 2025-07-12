@@ -45,8 +45,11 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
+      console.log('Creating order with data:', orderData);
       const response = await apiRequest('POST', '/api/orders', orderData);
-      return response.json();
+      const result = await response.json();
+      console.log('Order creation result:', result);
+      return result;
     },
     onSuccess: (order) => {
       setCart([]);
@@ -68,6 +71,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+    },
+    onError: (error) => {
+      console.error('Order creation failed:', error);
+      alert(`Erro ao criar pedido: ${error.message}`);
     }
   });
 
@@ -77,7 +84,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
     ? menuItems
     : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
 
-  // Debug logs
+  // Debug logs (temporarily enabled for troubleshooting)
   console.log('OnlineMenu - menuItems:', menuItems);
   console.log('OnlineMenu - filteredItems:', filteredItems);
   console.log('OnlineMenu - categories:', categories);
@@ -128,7 +135,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       menuItemId: item.id,
       quantity: item.quantity,
       unitPrice: item.price,
-      customizations: item.customizations,
+      customizations: item.customizations || [],
       subtotal: (parseFloat(item.price) * item.quantity).toString()
     }));
 
@@ -142,12 +149,14 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         locationId,
         totalAmount: getTotalPrice().toString(),
         paymentMethod: customerInfo.paymentMethod,
+        paymentStatus: 'pending',
         notes: customerInfo.notes || undefined,
-        estimatedDeliveryTime: new Date(Date.now() + 45 * 60 * 1000) // 45 minutes from now
+        estimatedDeliveryTime: new Date(Date.now() + 45 * 60 * 1000)
       },
       items: orderItems
     };
 
+    console.log('Submitting order data:', orderData);
     createOrderMutation.mutate(orderData);
   };
 
