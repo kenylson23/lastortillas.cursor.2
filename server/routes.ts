@@ -221,9 +221,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
+      
+      // Validar dados essenciais
+      if (updates.name && typeof updates.name !== 'string') {
+        return res.status(400).json({ error: "Nome deve ser uma string" });
+      }
+      if (updates.price && typeof updates.price !== 'string') {
+        return res.status(400).json({ error: "Preço deve ser uma string" });
+      }
+      if (updates.category && typeof updates.category !== 'string') {
+        return res.status(400).json({ error: "Categoria deve ser uma string" });
+      }
+      
       const menuItem = await storage.updateMenuItem(id, updates);
       res.json(menuItem);
     } catch (error: any) {
+      console.error("Erro ao atualizar item:", error);
       res.status(500).json({ error: error.message });
     }
   });

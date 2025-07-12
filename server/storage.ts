@@ -171,9 +171,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateMenuItem(id: number, updates: Partial<MenuItem>): Promise<MenuItem> {
+    // Remove campos que não devem ser atualizados manualmente
+    const { id: itemId, createdAt, ...validUpdates } = updates;
+    
     const [item] = await db
       .update(menuItems)
-      .set(updates)
+      .set(validUpdates)
       .where(eq(menuItems.id, id))
       .returning();
     return item;
