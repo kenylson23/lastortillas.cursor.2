@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function About() {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   
   const stats = [
     { number: "7+", label: "Anos de Experiência" },
@@ -15,22 +16,59 @@ export default function About() {
     const video = videoRef.current;
     if (!video) return;
 
+    // Otimizações para melhor performance
+    video.setAttribute('webkit-playsinline', 'true');
+    video.setAttribute('x5-playsinline', 'true');
+    
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            video.play().catch(error => {
-              console.log('Autoplay blocked:', error);
-            });
+            // Carrega o vídeo apenas quando necessário
+            if (video.readyState === 0) {
+              video.load();
+            }
+            
+            // Aguarda buffer antes de reproduzir
+            const playWhenReady = () => {
+              if (video.readyState >= 3) {
+                video.play().catch(error => {
+                  console.log('Autoplay blocked:', error);
+                });
+              } else {
+                video.addEventListener('canplaythrough', () => {
+                  video.play().catch(error => {
+                    console.log('Autoplay blocked:', error);
+                  });
+                }, { once: true });
+              }
+            };
+            
+            playWhenReady();
+          } else {
+            video.pause();
           }
         });
       },
-      { threshold: 0.5 }
+      { threshold: 0.3 }
     );
 
     observer.observe(video);
 
-    return () => observer.disconnect();
+    // Listener para erros de reprodução
+    const handleError = () => {
+      console.log('Video playback error, attempting to restart...');
+      video.load();
+    };
+
+    video.addEventListener('error', handleError);
+    video.addEventListener('stalled', handleError);
+
+    return () => {
+      observer.disconnect();
+      video.removeEventListener('error', handleError);
+      video.removeEventListener('stalled', handleError);
+    };
   }, []);
 
   return (
@@ -79,19 +117,32 @@ export default function About() {
             delay={0.4}
             duration={0.8}
           >
-            <video 
-              ref={videoRef}
-              src="/attached_assets/restaurant-video.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="rounded-2xl shadow-2xl w-full h-auto"
-              style={{ maxHeight: '600px', objectFit: 'cover' }}
-            >
-              Seu navegador não suporta vídeos HTML5.
-            </video>
+            <div className="relative rounded-2xl shadow-2xl overflow-hidden">
+              {!isVideoLoaded && (
+                <img 
+                  src="/attached_assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg"
+                  alt="Interior do restaurante Las Tortillas"
+                  className="w-full h-auto object-cover"
+                  style={{ maxHeight: '600px' }}
+                />
+              )}
+              
+              <video 
+                ref={videoRef}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="none"
+                className={`w-full h-auto object-cover ${!isVideoLoaded ? 'absolute inset-0 opacity-0' : ''}`}
+                style={{ maxHeight: '600px' }}
+                onLoadedData={() => setIsVideoLoaded(true)}
+                onCanPlay={() => console.log('Video ready')}
+                onError={() => console.log('Video error')}
+              >
+                <source src="/attached_assets/restaurant-video.mp4" type="video/mp4" />
+              </video>
+            </div>
           </ScrollReveal>
         </div>
       </div>
