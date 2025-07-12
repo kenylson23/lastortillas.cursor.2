@@ -1,47 +1,12 @@
 import { motion } from "framer-motion";
 import ScrollReveal from "./ScrollReveal";
-import { useEffect, useRef } from "react";
 
 export default function About() {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  
   const stats = [
     { number: "7+", label: "Anos de Experiência" },
     { number: "50+", label: "Pratos no Menu" },
     { number: "5000+", label: "Clientes Satisfeitos" },
   ];
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    // Configurações para carregamento rápido e streaming
-    video.setAttribute('webkit-playsinline', 'true');
-    video.setAttribute('x5-playsinline', 'true');
-    
-    // Força o carregamento imediato do vídeo otimizado
-    video.load();
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            // Reproduz imediatamente quando visível
-            video.play().catch(error => {
-              console.log('Autoplay blocked:', error);
-            });
-          } else {
-            video.pause();
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-
-    observer.observe(video);
-
-    return () => observer.disconnect();
-  }, []);
 
   return (
     <section id="sobre" className="py-20 bg-white">
@@ -89,23 +54,23 @@ export default function About() {
             delay={0.4}
             duration={0.8}
           >
-            <video 
-              ref={videoRef}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="auto"
-              className="rounded-2xl shadow-2xl w-full h-auto"
-              style={{ 
-                maxHeight: '600px', 
-                objectFit: 'cover',
-                backgroundColor: '#1f2937'
-              }}
-            >
-              <source src="/attached_assets/restaurant-video-optimized.mp4" type="video/mp4" />
-              Seu navegador não suporta vídeos HTML5.
-            </video>
+            {/* Substituir vídeo por imagem para melhor compatibilidade */}
+            <div className="relative rounded-2xl shadow-2xl w-full h-auto overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" 
+                alt="Interior do restaurante Las Tortillas Mexican Grill" 
+                className="w-full h-auto rounded-2xl shadow-2xl"
+                style={{ 
+                  maxHeight: '600px', 
+                  objectFit: 'cover'
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-lg font-semibold">Ambiente acolhedor e familiar</p>
+                <p className="text-sm opacity-90">Venha conhecer nosso espaço!</p>
+              </div>
+            </div>
           </ScrollReveal>
         </div>
       </div>

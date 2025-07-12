@@ -76,7 +76,7 @@ export default function Contact() {
 
   const handleWhatsAppRedirect = () => {
     const whatsappMessage = `Olá Las Tortillas Mexican Grill! Gostaria de fazer uma reserva:
-      
+
 *Nome:* ${formData.name}
 *Telefone:* ${formData.phone}
 ${formData.email ? `*Email:* ${formData.email}` : ''}
@@ -89,31 +89,82 @@ Obrigado!`;
 
     const encodedMessage = encodeURIComponent(whatsappMessage);
     const whatsappUrl = `https://wa.me/244949639932?text=${encodedMessage}`;
-    window.open(whatsappUrl, '_blank');
     
-    toast({
-      title: "Redirecionando para WhatsApp!",
-      description: "Você será direcionado para o WhatsApp para confirmar sua reserva.",
-    });
-    
-    setFormData({
-      name: "",
-      phone: "",
-      email: "",
-      date: "",
-      time: "",
-      guests: 2,
-      notes: ""
-    });
+    try {
+      window.open(whatsappUrl, '_blank');
+      
+      toast({
+        title: "Redirecionando para WhatsApp!",
+        description: "Você será direcionado para o WhatsApp para confirmar sua reserva.",
+      });
+      
+      // Resetar formulário após sucesso
+      setFormData({
+        name: "",
+        phone: "",
+        email: "",
+        date: "",
+        time: "",
+        guests: 2,
+        notes: ""
+      });
+      
+      // Limpar status de disponibilidade
+      setAvailabilityStatus(null);
+    } catch (error) {
+      toast({
+        title: "Erro ao abrir WhatsApp",
+        description: "Tente novamente ou entre em contato diretamente pelo telefone.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name || !formData.phone || !formData.date || !formData.time) {
+    // Validação dos campos obrigatórios
+    if (!formData.name.trim()) {
       toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos obrigatórios.",
+        title: "Nome obrigatório",
+        description: "Por favor, informe seu nome.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Telefone obrigatório",
+        description: "Por favor, informe seu telefone.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.date) {
+      toast({
+        title: "Data obrigatória",
+        description: "Por favor, selecione uma data.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!formData.time) {
+      toast({
+        title: "Horário obrigatório",
+        description: "Por favor, selecione um horário.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Verificar se horário está disponível
+    if (availabilityStatus && !availabilityStatus.available) {
+      toast({
+        title: "Horário não disponível",
+        description: "Por favor, escolha outro horário.",
         variant: "destructive",
       });
       return;

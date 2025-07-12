@@ -19,7 +19,7 @@ export default function Location() {
         </svg>
       ),
       title: "Horário de Funcionamento",
-      description: "Seg-Dom: 11:00 - 23:00"
+      description: "Seg-Qui: 11:00 - 23:00 | Sex-Dom: 11:00 - 01:00"
     },
     {
       icon: (
@@ -66,11 +66,19 @@ export default function Location() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <img 
-              src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Vista costeira da Ilha de Luanda" 
-              className="rounded-2xl shadow-2xl w-full h-auto"
-            />
+            <div className="relative rounded-2xl shadow-2xl w-full h-auto overflow-hidden">
+              <img 
+                src="https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" 
+                alt="Vista costeira da Ilha de Luanda" 
+                className="rounded-2xl shadow-2xl w-full h-auto"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              <div className="absolute bottom-4 left-4 right-4 text-white">
+                <p className="text-lg font-semibold">Ilha de Luanda</p>
+                <p className="text-sm opacity-90">Localização privilegiada</p>
+              </div>
+            </div>
           </motion.div>
           
           <motion.div 
@@ -105,12 +113,17 @@ export default function Location() {
                 </div>
                 
                 <div className="mt-8">
-                  <button className="w-full bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors flex items-center justify-center">
+                  <a 
+                    href="https://www.google.com/maps/search/Ilha+de+Luanda+Angola" 
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full bg-red-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors flex items-center justify-center"
+                  >
                     <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                     </svg>
                     Como Chegar
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
