@@ -3,8 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema } from "@shared/schema";
 import { z } from "zod";
-import { setupAuth, isAuthenticated } from "./replitAuth";
-
 // Cache otimizado para verificação de disponibilidade
 const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
 const CACHE_DURATION = 5000; // 5 segundos para dados mais atualizados
@@ -36,8 +34,6 @@ function cleanExpiredCache() {
 setInterval(cleanExpiredCache, 30 * 1000);
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup authentication
-  await setupAuth(app);
   
   // Headers otimizados para performance
   app.use((req, res, next) => {
@@ -197,16 +193,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
+  // Simplified auth - no authentication required
+  app.get('/api/auth/user', async (req, res) => {
+    // Return a simple admin user for development
+    res.json({ 
+      id: 'admin', 
+      email: 'admin@lastortillas.com', 
+      firstName: 'Admin', 
+      lastName: 'User' 
+    });
   });
 
   // Orders endpoints
@@ -227,7 +222,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/orders", isAuthenticated, async (req, res) => {
+  app.get("/api/orders", async (req, res) => {
     try {
       const { status, location } = req.query;
       
@@ -261,7 +256,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.patch("/api/orders/:id/status", isAuthenticated, async (req, res) => {
+  app.patch("/api/orders/:id/status", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       const { status } = req.body;

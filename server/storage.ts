@@ -1,6 +1,6 @@
 import { 
-  users, reservations, contacts, menuItems, orders, orderItems,
-  type User, type UpsertUser, type Reservation, type InsertReservation, 
+  reservations, contacts, menuItems, orders, orderItems,
+  type Reservation, type InsertReservation, 
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem
 } from "@shared/schema";
@@ -8,10 +8,6 @@ import { db } from "./db";
 import { eq, and } from "drizzle-orm";
 
 export interface IStorage {
-  // User operations for Replit Auth
-  getUser(id: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
-  
   // Reservation operations
   createReservation(reservation: InsertReservation): Promise<Reservation>;
   createContact(contact: InsertContact): Promise<Contact>;
@@ -39,27 +35,6 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  // User operations for Replit Auth
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
-  }
-
-  async upsertUser(userData: UpsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(userData)
-      .onConflictDoUpdate({
-        target: users.id,
-        set: {
-          ...userData,
-          updatedAt: new Date(),
-        },
-      })
-      .returning();
-    return user;
-  }
-
   // Reservation operations
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
     const [reservation] = await db

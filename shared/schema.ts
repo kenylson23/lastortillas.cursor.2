@@ -86,11 +86,6 @@ export const orderItems = pgTable("order_items", {
   subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
-export const insertUserSchema = createInsertSchema(users).omit({
-  createdAt: true,
-  updatedAt: true,
-});
-
 export const insertReservationSchema = createInsertSchema(reservations).omit({
   id: true,
   createdAt: true,
@@ -117,9 +112,6 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
   orderId: true,
 });
 
-export type InsertUser = z.infer<typeof insertUserSchema>;
-export type UpsertUser = typeof users.$inferInsert;
-export type User = typeof users.$inferSelect;
 export type InsertReservation = z.infer<typeof insertReservationSchema>;
 export type Reservation = typeof reservations.$inferSelect;
 export type InsertContact = z.infer<typeof insertContactSchema>;

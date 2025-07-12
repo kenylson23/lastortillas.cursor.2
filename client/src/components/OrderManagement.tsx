@@ -3,9 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { Order, OrderItem, MenuItem } from '@shared/schema';
-import { isUnauthorizedError } from '../lib/authUtils';
 import { useToast } from '../hooks/use-toast';
-import { useAuth } from '../hooks/useAuth';
 
 interface OrderWithItems extends Order {
   items: OrderItem[];
@@ -17,22 +15,6 @@ export default function OrderManagement() {
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const queryClient = useQueryClient();
   const { toast } = useToast();
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-
-  // Redirect to login if not authenticated
-  useEffect(() => {
-    if (!isAuthLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
-    }
-  }, [isAuthenticated, isAuthLoading, toast]);
 
   const { data: orders = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/orders', selectedStatus, selectedLocation],
@@ -79,17 +61,6 @@ export default function OrderManagement() {
       setSelectedOrder(null);
     },
     onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
         description: "Failed to update order status",
@@ -104,17 +75,6 @@ export default function OrderManagement() {
       const orderDetails = await response.json();
       setSelectedOrder(orderDetails);
     } catch (error) {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
       toast({
         title: "Error",
         description: "Failed to fetch order details",
