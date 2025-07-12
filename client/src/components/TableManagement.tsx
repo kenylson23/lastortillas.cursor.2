@@ -221,7 +221,10 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      // Invalidar todas as queries relacionadas a mesas
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 
@@ -238,7 +241,10 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      // Invalidar todas as queries relacionadas a mesas
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 
@@ -253,7 +259,10 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      // Invalidar todas as queries relacionadas a mesas
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 
@@ -270,7 +279,10 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/tables'] });
+      // Invalidar todas as queries relacionadas a mesas
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 

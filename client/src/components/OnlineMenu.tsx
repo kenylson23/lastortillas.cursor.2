@@ -93,6 +93,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      // Invalidar todas as queries relacionadas a mesas para sincronizar status
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
     },
     onError: (error) => {

@@ -67,6 +67,10 @@ export default function OrderManagement() {
     onSuccess: (data, variables) => {
       // Invalidar queries de forma mais específica
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      // Invalidar todas as queries relacionadas a mesas para sincronizar status
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
       
       // Atualizar o pedido selecionado se for o mesmo
       if (selectedOrder && selectedOrder.id === variables.orderId) {
@@ -94,6 +98,10 @@ export default function OrderManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      // Invalidar todas as queries relacionadas a mesas para sincronizar status
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
       setIsOrderModalOpen(false);
       setSelectedOrder(null);
       toast({
