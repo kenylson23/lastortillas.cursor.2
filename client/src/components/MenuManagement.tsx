@@ -34,6 +34,7 @@ export default function MenuManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
       toast({
         title: 'Item adicionado',
         description: 'O item foi adicionado ao menu com sucesso',
@@ -66,6 +67,7 @@ export default function MenuManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
       toast({
         title: 'Item atualizado',
         description: 'O item foi atualizado com sucesso',
@@ -111,7 +113,7 @@ export default function MenuManagement() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
       toast({
         title: 'Item removido',
         description: 'O item foi removido com sucesso',

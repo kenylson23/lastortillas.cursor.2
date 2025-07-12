@@ -32,9 +32,9 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   const queryClient = useQueryClient();
 
   const { data: menuItems = [], isLoading } = useQuery({
-    queryKey: ['/api/menu'],
+    queryKey: ['/api/menu-items'],
     queryFn: async () => {
-      const response = await apiRequest('/api/menu');
+      const response = await apiRequest('/api/menu-items');
       return response.json();
     }
   });
@@ -67,6 +67,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
     }
   });
 

@@ -4,7 +4,7 @@ import { MenuItem } from "../../shared/schema";
 
 export default function SimpleMenuShowcase() {
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
-    queryKey: ['/api/menu'],
+    queryKey: ['/api/menu-items'],
   });
 
   // Show only featured items (first 6 available items)

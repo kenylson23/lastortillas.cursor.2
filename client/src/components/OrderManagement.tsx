@@ -40,9 +40,9 @@ export default function OrderManagement() {
   });
 
   const { data: menuItems = [] } = useQuery({
-    queryKey: ['/api/menu'],
+    queryKey: ['/api/menu-items'],
     queryFn: async () => {
-      const response = await apiRequest('/api/menu');
+      const response = await apiRequest('/api/menu-items');
       return response.json();
     }
   });
