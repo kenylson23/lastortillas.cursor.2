@@ -57,7 +57,7 @@ export default function OurLocations() {
     },
     {
       id: "mobile",
-      name: "Las Tortillas Mobile",
+      name: "Las Tortillas Móvel",
       type: "Restaurante Móvel",
       shortDescription: "Levamos a autêntica culinária mexicana até você! Perfeito para eventos e festas.",
       description: "Nossa inovadora experiência móvel que leva toda a qualidade e sabor do Las Tortillas diretamente ao seu evento. Seja para festas corporativas, casamentos, aniversários ou qualquer celebração especial, oferecemos um serviço personalizado com nosso food truck totalmente equipado e nossa equipe especializada.",
