@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user } = useAuth();
 
   const navItems = [
     { href: "#inicio", label: "Início" },
@@ -47,6 +49,25 @@ export default function Navigation() {
               >
                 Pedir Online
               </a>
+              {!isAuthenticated && (
+                <a
+                  href="/api/login"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-300 font-medium"
+                >
+                  Login
+                </a>
+              )}
+              {isAuthenticated && (
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-700">Olá, {user?.firstName || 'Usuário'}</span>
+                  <a
+                    href="/api/logout"
+                    className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors duration-300 font-medium"
+                  >
+                    Logout
+                  </a>
+                </div>
+              )}
             </div>
           </div>
           
