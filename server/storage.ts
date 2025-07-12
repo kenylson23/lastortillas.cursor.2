@@ -214,10 +214,14 @@ export class DatabaseStorage implements IStorage {
     
     // If it's a dine-in order with a table, mark the table as occupied
     if (order.orderType === 'dine-in' && order.tableId) {
+      console.log(`Marking table ${order.tableId} as occupied for order ${order.id}`);
       await db
         .update(tables)
         .set({ status: 'occupied', updatedAt: new Date() })
         .where(eq(tables.id, order.tableId));
+      console.log(`Table ${order.tableId} marked as occupied`);
+    } else {
+      console.log(`Order ${order.id} - orderType: ${order.orderType}, tableId: ${order.tableId}`);
     }
     
     return order;
