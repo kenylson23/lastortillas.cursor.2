@@ -51,6 +51,14 @@ export default function OrderManagement() {
     }
   });
 
+  const { data: allTables = [] } = useQuery({
+    queryKey: ['/api/tables'],
+    queryFn: async () => {
+      const response = await fetch('/api/tables');
+      return response.json();
+    }
+  });
+
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
       const response = await apiRequest('PATCH', `/api/orders/${orderId}/status`, { status });
@@ -142,6 +150,7 @@ export default function OrderManagement() {
 *Status:* ${getStatusText(selectedOrder.status)}
 *Tipo:* ${getOrderTypeText(selectedOrder.orderType)}
 *Local:* ${getLocationName(selectedOrder.locationId)}
+${selectedOrder.orderType === 'dine-in' && selectedOrder.tableId ? `*Mesa:* ${getTableInfo(selectedOrder.tableId)}` : ''}
 *Total:* ${selectedOrder.totalAmount} AOA
 
 *Itens:*
@@ -198,6 +207,12 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
   const getMenuItemName = (menuItemId: number) => {
     const item = menuItems.find((item: MenuItem) => item.id === menuItemId);
     return item ? item.name : `Item #${menuItemId}`;
+  };
+
+  const getTableInfo = (tableId: number | null) => {
+    if (!tableId) return null;
+    const table = allTables.find(t => t.id === tableId);
+    return table ? `Mesa ${table.number} (${table.capacity} pessoas)` : `Mesa #${tableId}`;
   };
 
   if (isLoading) {
@@ -300,6 +315,12 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                   <span className="text-sm text-gray-600">Tipo:</span>
                   <span className="text-sm font-medium">{getOrderTypeText(order.orderType)}</span>
                 </div>
+                {order.orderType === 'dine-in' && order.tableId && (
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Mesa:</span>
+                    <span className="text-sm font-medium text-blue-600">{getTableInfo(order.tableId)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Total:</span>
                   <span className="text-sm font-bold text-red-600">{order.totalAmount} AOA</span>
@@ -414,6 +435,16 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                           <p className="text-sm text-gray-600">Localização:</p>
                           <p className="font-medium">{getLocationName(selectedOrder.locationId)}</p>
                         </div>
+                        <div>
+                          <p className="text-sm text-gray-600">Tipo:</p>
+                          <p className="font-medium">{getOrderTypeText(selectedOrder.orderType)}</p>
+                        </div>
+                        {selectedOrder.orderType === 'dine-in' && selectedOrder.tableId && (
+                          <div>
+                            <p className="text-sm text-gray-600">Mesa:</p>
+                            <p className="font-medium text-blue-600">{getTableInfo(selectedOrder.tableId)}</p>
+                          </div>
+                        )}
                         <div>
                           <p className="text-sm text-gray-600">Tipo:</p>
                           <p className="font-medium">{getOrderTypeText(selectedOrder.orderType)}</p>

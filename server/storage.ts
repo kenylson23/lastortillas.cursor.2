@@ -212,6 +212,14 @@ export class DatabaseStorage implements IStorage {
       items.map(item => ({ ...item, orderId: order.id }))
     );
     
+    // If it's a dine-in order with a table, mark the table as occupied
+    if (order.orderType === 'dine-in' && order.tableId) {
+      await db
+        .update(tables)
+        .set({ status: 'occupied', updatedAt: new Date() })
+        .where(eq(tables.id, order.tableId));
+    }
+    
     return order;
   }
 
@@ -242,15 +250,40 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order> {
+    // Get the current order first to check if it has a table
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+
     const [order] = await db
       .update(orders)
       .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id))
       .returning();
+
+    // If the order is completed or cancelled, and it was a dine-in order with a table,
+    // mark the table as available again
+    if (currentOrder && 
+        currentOrder.orderType === 'dine-in' && 
+        currentOrder.tableId && 
+        (status === 'delivered' || status === 'cancelled')) {
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
+        .where(eq(tables.id, currentOrder.tableId));
+    }
+
     return order;
   }
 
   async deleteOrder(id: number): Promise<void> {
+    // Get the order first to check if it has a table
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+
     // First delete order items
     await db
       .delete(orderItems)
@@ -260,6 +293,16 @@ export class DatabaseStorage implements IStorage {
     await db
       .delete(orders)
       .where(eq(orders.id, id));
+
+    // If it was a dine-in order with a table, mark the table as available again
+    if (currentOrder && 
+        currentOrder.orderType === 'dine-in' && 
+        currentOrder.tableId) {
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
+        .where(eq(tables.id, currentOrder.tableId));
+    }
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {

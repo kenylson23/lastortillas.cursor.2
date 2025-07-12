@@ -236,3 +236,15 @@ Preferred communication style: Simple, everyday language.
   - Implemented DELETE order API endpoint with proper validation
   - Removed duplicate status controls from order list to prevent confusion
   - Centralized all order management actions within the detailed modal interface
+- July 13, 2025: Integrated table selection for dine-in orders
+  - Added tableId field to order schema with foreign key relationship
+  - Implemented automatic table selection in online ordering system
+  - Added table availability query and display in cart component
+  - Created validation to require table selection for dine-in orders
+  - Integrated table information display in order management system
+  - Added table synchronization with order lifecycle management
+  - Implemented automatic table status updates (available/occupied)
+  - Tables are marked as occupied when dine-in order is created
+  - Tables are automatically freed when orders are completed/cancelled/deleted
+  - Enhanced order details with table information in admin panel
+  - Updated WhatsApp sharing to include table details for dine-in orders
