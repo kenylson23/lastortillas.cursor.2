@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../hooks/use-toast';
 import { MenuItem, InsertMenuItem } from '../../shared/schema';
 import { apiRequest } from '../lib/queryClient';
+import ImageUpload from './ImageUpload';
 
 export default function MenuManagement() {
   const [isAddingItem, setIsAddingItem] = useState(false);
@@ -163,12 +164,10 @@ export default function MenuManagement() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Imagem (URL)</label>
-                <input
-                  type="url"
-                  value={newItem.image}
-                  onChange={(e) => setNewItem({...newItem, image: e.target.value})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                <label className="block text-sm font-medium text-gray-700 mb-2">Imagem</label>
+                <ImageUpload
+                  onImageUploaded={(imageUrl) => setNewItem({...newItem, image: imageUrl})}
+                  currentImage={newItem.image}
                 />
               </div>
             </div>
@@ -297,12 +296,10 @@ export default function MenuManagement() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Imagem (URL)</label>
-                  <input
-                    type="url"
-                    value={editingItem.image || ''}
-                    onChange={(e) => setEditingItem({...editingItem, image: e.target.value})}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Imagem</label>
+                  <ImageUpload
+                    onImageUploaded={(imageUrl) => setEditingItem({...editingItem, image: imageUrl})}
+                    currentImage={editingItem.image || ''}
                   />
                 </div>
               </div>

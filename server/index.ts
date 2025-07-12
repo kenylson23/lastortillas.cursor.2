@@ -13,6 +13,9 @@ app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_as
 // Serve static files from public directory
 app.use(express.static(path.join(process.cwd(), 'public')));
 
+// Serve uploaded images
+app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
