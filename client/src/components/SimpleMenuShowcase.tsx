@@ -5,7 +5,7 @@ export default function SimpleMenuShowcase() {
   const handleOrderItem = (itemName: string) => {
     // Redirect to WhatsApp with order details
     const message = encodeURIComponent(`Olá! Gostaria de pedir: ${itemName}`);
-    window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
+    window.location.href = `https://wa.me/244949639932?text=${message}`;
   };
 
   return (
@@ -71,7 +71,7 @@ export default function SimpleMenuShowcase() {
           <button 
             onClick={() => {
               const message = encodeURIComponent('Olá! Gostaria de ver o menu completo do Las Tortillas Mexican Grill.');
-              window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
+              window.location.href = `https://wa.me/244949639932?text=${message}`;
             }}
             className="bg-red-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold hover:bg-red-700 transition-all duration-300 transform hover:scale-105 inline-flex items-center"
           >

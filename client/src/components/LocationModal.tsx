@@ -27,7 +27,7 @@ export default function LocationModal({ isOpen, onClose, location }: LocationMod
     const message = encodeURIComponent(
       `Olá! Gostaria de fazer uma reserva no ${location.name}. ${location.type === 'mobile' ? 'Gostaria de saber a disponibilidade para um evento.' : ''}`
     );
-    window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
+    window.location.href = `https://wa.me/244949639932?text=${message}`;
   };
 
   return (
@@ -161,7 +161,7 @@ export default function LocationModal({ isOpen, onClose, location }: LocationMod
                 <button
                   onClick={() => {
                     const message = encodeURIComponent(`Olá! Gostaria de mais informações sobre o ${location.name}.`);
-                    window.open(`https://wa.me/244949639932?text=${message}`, '_blank');
+                    window.location.href = `https://wa.me/244949639932?text=${message}`;
                   }}
                   className="flex-1 bg-green-600 text-white py-3 px-6 rounded-full font-semibold hover:bg-green-700 transition-colors"
                 >
