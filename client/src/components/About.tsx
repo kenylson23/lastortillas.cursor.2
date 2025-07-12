@@ -55,13 +55,18 @@ export default function About() {
           >
             <div className="relative rounded-2xl shadow-2xl w-full h-auto overflow-hidden">
               <img 
-                src="/images/restaurant-ambiente.jpg" 
+                src="/images/restaurant-ambiente.jpg?v=1" 
                 alt="Clientes felizes no Las Tortillas Mexican Grill - ambiente familiar e acolhedor com chapéus mexicanos" 
                 className="w-full h-auto rounded-2xl shadow-2xl"
                 loading="lazy"
                 style={{ 
                   maxHeight: '600px', 
                   objectFit: 'cover'
+                }}
+                onError={(e) => {
+                  console.error('Error loading image:', e);
+                  // Fallback to a working image
+                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80";
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
