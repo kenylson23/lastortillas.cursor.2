@@ -163,8 +163,27 @@ export default function OrderManagement() {
         </div>
 
         {/* Orders Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {orders.map((order: Order) => (
+        {orders.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+            <svg className="w-16 h-16 mx-auto text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M8 11v6a2 2 0 002 2h4a2 2 0 002-2v-6M8 11h8" />
+            </svg>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum pedido encontrado</h3>
+            <p className="text-gray-600 mb-4">
+              {selectedStatus !== 'all' || selectedLocation !== 'all' 
+                ? 'Nenhum pedido encontrado com os filtros aplicados.' 
+                : 'Ainda não há pedidos no sistema.'}
+            </p>
+            <a 
+              href="/menu" 
+              className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors"
+            >
+              Fazer Primeiro Pedido
+            </a>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {orders.map((order: Order) => (
             <motion.div
               key={order.id}
               initial={{ opacity: 0, y: 20 }}
@@ -239,8 +258,9 @@ export default function OrderManagement() {
                 )}
               </div>
             </motion.div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Order Details Modal */}
         <AnimatePresence>
