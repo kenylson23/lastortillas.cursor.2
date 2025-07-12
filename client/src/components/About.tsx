@@ -54,11 +54,17 @@ export default function About() {
             delay={0.4}
             duration={0.8}
           >
-            <img 
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-              alt="Interior moderno do restaurante" 
+            <video 
+              src="/attached_assets/AQNooJfUNYrVmIkcTdYIYYMveVz9mWIEP7sBJzYTQyEZ8wkuHfjk_LjoREZ9fV4dCJAJ0k6Y3c3BREGEthFmRXRsCLdE_pb4_1752327923427.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
               className="rounded-2xl shadow-2xl w-full h-auto"
-            />
+              style={{ maxHeight: '600px', objectFit: 'cover' }}
+            >
+              Seu navegador não suporta vídeos HTML5.
+            </video>
           </ScrollReveal>
         </div>
       </div>
