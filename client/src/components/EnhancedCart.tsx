@@ -28,6 +28,8 @@ export default function EnhancedCart({
   isSubmitting = false,
   availableTables = []
 }: EnhancedCartProps) {
+  console.log('EnhancedCart availableTables:', availableTables);
+  console.log('EnhancedCart locationId:', locationId);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -271,17 +273,23 @@ export default function EnhancedCart({
                       {customerInfo.orderType === 'dine-in' && (
                         <select
                           value={customerInfo.tableId || ''}
-                          onChange={(e) => setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }))}
+                          onChange={(e) => {
+                            console.log('Table selection changed:', e.target.value);
+                            setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }));
+                          }}
                           className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
                           required
                         >
                           <option value="">Selecione uma mesa *</option>
-                          {availableTables.filter(table => table.status === 'available').map(table => (
-                            <option key={table.id} value={table.id}>
-                              Mesa {table.number} - {table.capacity} pessoas
-                              {table.position && ` (${table.position})`}
-                            </option>
-                          ))}
+                          {availableTables.filter(table => table.status === 'available').map(table => {
+                            console.log('Rendering table option:', table);
+                            return (
+                              <option key={table.id} value={table.id}>
+                                Mesa {table.number} - {table.capacity} pessoas
+                                {table.position && ` (${table.position})`}
+                              </option>
+                            );
+                          })}
                         </select>
                       )}
                       <select

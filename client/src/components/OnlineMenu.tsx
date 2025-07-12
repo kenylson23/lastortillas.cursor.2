@@ -53,13 +53,16 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   const { data: availableTables = [] } = useQuery({
     queryKey: ['/api/tables', locationId],
     queryFn: async () => {
+      console.log('Fetching tables for location:', locationId);
       const response = await fetch(`/api/tables?location=${locationId}`);
+      console.log('Tables response status:', response.status);
       if (!response.ok) {
         throw new Error('Failed to fetch tables');
       }
-      return response.json();
-    },
-    enabled: customerInfo.orderType === 'dine-in'
+      const data = await response.json();
+      console.log('Tables data:', data);
+      return data;
+    }
   });
 
   const createOrderMutation = useMutation({
