@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { MenuItem, Order, OrderItem } from '@shared/schema';
 import EnhancedCart from './EnhancedCart';
+import OrderSuccessModal from './OrderSuccessModal';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -19,6 +20,8 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -64,9 +67,9 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       });
       setIsCartOpen(false);
       
-      // Show success message with order tracking info
-      const orderLink = `/rastreamento`;
-      alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA\n\nVocê pode acompanhar seu pedido em: ${window.location.origin}${orderLink}`);
+      // Show enhanced success modal
+      setLastCreatedOrder(order);
+      setIsSuccessModalOpen(true);
       
       onOrderCreated?.(order);
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
@@ -243,6 +246,14 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         }}
         locationId={locationId}
         isSubmitting={createOrderMutation.isPending}
+      />
+
+      {/* Success Modal */}
+      <OrderSuccessModal
+        isOpen={isSuccessModalOpen}
+        onClose={() => setIsSuccessModalOpen(false)}
+        order={lastCreatedOrder}
+        locationId={locationId}
       />
     </div>
   );
