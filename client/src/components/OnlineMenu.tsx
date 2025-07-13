@@ -260,7 +260,7 @@ export default function OnlineMenu({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                   </svg>
                   {cart.length > 0 && (
-                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg animate-bounce">
+                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-red-600 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg animate-bounce">
                       {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </span>
                   )}
@@ -282,8 +282,8 @@ export default function OnlineMenu({
                   onClick={() => onLocationChange('ilha')}
                   className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
                     locationId === 'ilha'
-                      ? 'bg-white text-mexican-red shadow-fiesta'
-                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                      ? 'bg-white text-red-600 shadow-md'
+                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
                   }`}
                 >
                   🏝️ Ilha
@@ -292,8 +292,8 @@ export default function OnlineMenu({
                   onClick={() => onLocationChange('talatona')}
                   className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
                     locationId === 'talatona'
-                      ? 'bg-white text-mexican-red shadow-fiesta'
-                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                      ? 'bg-white text-red-600 shadow-md'
+                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
                   }`}
                 >
                   🏢 Talatona
@@ -302,8 +302,8 @@ export default function OnlineMenu({
                   onClick={() => onLocationChange('movel')}
                   className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
                     locationId === 'movel'
-                      ? 'bg-white text-mexican-red shadow-fiesta'
-                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                      ? 'bg-white text-red-600 shadow-md'
+                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
                   }`}
                 >
                   🚚 Móvel
@@ -322,8 +322,8 @@ export default function OnlineMenu({
               onClick={() => setShowTracking(false)}
               className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
                 !showTracking
-                  ? 'bg-gradient-sunset/90 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-red-600 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-200'
               }`}
             >
               <span className="text-base sm:text-lg mr-2">🍽️</span>
@@ -333,8 +333,8 @@ export default function OnlineMenu({
               onClick={() => setShowTracking(true)}
               className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
                 showTracking
-                  ? 'bg-gradient-mexico/90 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
+                  ? 'bg-red-600 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-200'
               }`}
             >
               <span className="text-base sm:text-lg mr-2">📍</span>
@@ -352,8 +352,8 @@ export default function OnlineMenu({
                     onClick={() => setSelectedCategory(category)}
                     className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-medium border ${
                       selectedCategory === category
-                        ? 'bg-gradient-sunset/90 text-white shadow-md border-orange-200'
-                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                        ? 'bg-red-600 text-white shadow-md border-red-200'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700'
                     }`}
                   >
                     <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
@@ -383,7 +383,7 @@ export default function OnlineMenu({
                     value={trackingOrderId}
                     onChange={(e) => setTrackingOrderId(e.target.value)}
                     placeholder="Digite o número do seu pedido (ex: 1, 2, 3...)"
-                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-sm sm:text-base"
                   />
                 </div>
                 <button
@@ -395,7 +395,7 @@ export default function OnlineMenu({
                   disabled={!trackingOrderId.trim()}
                   className={`w-full sm:w-auto px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                     trackingOrderId.trim()
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
+                      ? 'bg-red-600 text-white hover:bg-red-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
