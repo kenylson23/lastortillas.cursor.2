@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench } from 'lucide-react';
+import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X } from 'lucide-react';
 import { Table, InsertTable } from '@shared/schema';
 
 interface TableModalProps {
@@ -71,29 +71,55 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium mb-1">Número da Mesa</label>
-              <input
-                type="number"
-                value={formData.number}
-                onChange={(e) => setFormData({ ...formData, number: parseInt(e.target.value) })}
-                className="w-full p-2 border rounded-md"
-                required
-                min="1"
-              />
-              {/* Mostrar mesas existentes para o local selecionado */}
               {(() => {
                 const existingNumbers = allTables
                   .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                  .map(t => t.number)
-                  .sort((a, b) => a - b);
+                  .map(t => t.number);
                 
-                if (existingNumbers.length > 0) {
-                  return (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Mesas existentes: {existingNumbers.join(', ')}
-                    </p>
-                  );
-                }
-                return null;
+                const isDuplicate = existingNumbers.includes(formData.number || 0);
+                
+                return (
+                  <>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        value={formData.number}
+                        onChange={(e) => setFormData({ ...formData, number: parseInt(e.target.value) })}
+                        className={`w-full p-2 border rounded-md ${isDuplicate 
+                          ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' 
+                          : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
+                        }`}
+                        required
+                        min="1"
+                      />
+                      {isDuplicate && (
+                        <div className="absolute right-2 top-2">
+                          <AlertCircle className="w-5 h-5 text-red-500" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {isDuplicate && (
+                      <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                          <p className="text-sm text-red-700">
+                            <strong>Mesa {formData.number} já existe</strong> no local {locations.find(l => l.id === formData.locationId)?.name}
+                          </p>
+                        </div>
+                        <p className="text-xs text-red-600 mt-1">
+                          Por favor, escolha um número diferente.
+                        </p>
+                      </div>
+                    )}
+                    
+                    {existingNumbers.length > 0 && !isDuplicate && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Mesas existentes: {existingNumbers.sort((a, b) => a - b).join(', ')}
+                      </p>
+                    )}
+                  </>
+                );
               })()}
             </div>
             
@@ -190,14 +216,72 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-            >
-              {table ? 'Atualizar' : 'Criar'}
-            </button>
+            {(() => {
+              const existingNumbers = allTables
+                .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
+                .map(t => t.number);
+              
+              const isDuplicate = existingNumbers.includes(formData.number || 0);
+              
+              return (
+                <button
+                  type="submit"
+                  disabled={isDuplicate}
+                  className={`px-4 py-2 rounded-md transition-colors ${
+                    isDuplicate 
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                      : 'bg-red-600 text-white hover:bg-red-700'
+                  }`}
+                >
+                  {table ? 'Atualizar' : 'Criar'}
+                </button>
+              );
+            })()}
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+// Toast Component para notificações elegantes
+function Toast({ message, type, onClose }: { message: string; type: 'error' | 'success' | 'info'; onClose: () => void }) {
+  const bgColor = type === 'error' ? 'bg-red-50 border-red-200' : 
+                  type === 'success' ? 'bg-green-50 border-green-200' : 
+                  'bg-blue-50 border-blue-200';
+  
+  const textColor = type === 'error' ? 'text-red-800' : 
+                    type === 'success' ? 'text-green-800' : 
+                    'text-blue-800';
+  
+  const iconColor = type === 'error' ? 'text-red-500' : 
+                    type === 'success' ? 'text-green-500' : 
+                    'text-blue-500';
+
+  return (
+    <div className={`fixed top-4 right-4 z-50 max-w-md ${bgColor} border rounded-lg shadow-lg p-4 animate-in slide-in-from-top-2`}>
+      <div className="flex items-start gap-3">
+        <div className={`flex-shrink-0 ${iconColor}`}>
+          {type === 'error' && <AlertCircle className="w-5 h-5" />}
+          {type === 'success' && <CheckCircle className="w-5 h-5" />}
+          {type === 'info' && <AlertCircle className="w-5 h-5" />}
+        </div>
+        <div className="flex-1">
+          <h3 className={`text-sm font-semibold ${textColor} mb-1`}>
+            {type === 'error' ? 'Erro ao criar mesa' : 
+             type === 'success' ? 'Sucesso' : 
+             'Informação'}
+          </h3>
+          <p className={`text-sm ${textColor.replace('800', '700')}`}>
+            {message}
+          </p>
+        </div>
+        <button
+          onClick={onClose}
+          className={`flex-shrink-0 ${iconColor} hover:opacity-70 transition-opacity`}
+        >
+          <X className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
@@ -207,6 +291,7 @@ export default function TableManagement() {
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
   const queryClient = useQueryClient();
 
   // Função centralizada para invalidar cache de mesas
@@ -262,10 +347,19 @@ export default function TableManagement() {
       invalidateTableCache();
       setModalOpen(false);
       setSelectedTable(null);
+      setToast({ message: 'Mesa criada com sucesso!', type: 'success' });
+      setTimeout(() => setToast(null), 3000);
     },
     onError: (error: Error) => {
       console.error('❌ Error creating table:', error.message);
-      alert(`Erro ao criar mesa: ${error.message}`);
+      setToast({ 
+        message: error.message.includes('Já existe') 
+          ? `${error.message}. Por favor, escolha um número diferente.`
+          : error.message, 
+        type: 'error' 
+      });
+      // Auto-hide toast after 5 seconds
+      setTimeout(() => setToast(null), 5000);
     }
   });
 
@@ -287,10 +381,19 @@ export default function TableManagement() {
       invalidateTableCache();
       setModalOpen(false);
       setSelectedTable(null);
+      setToast({ message: 'Mesa atualizada com sucesso!', type: 'success' });
+      setTimeout(() => setToast(null), 3000);
     },
     onError: (error: Error) => {
       console.error('❌ Error updating table:', error.message);
-      alert(`Erro ao atualizar mesa: ${error.message}`);
+      setToast({ 
+        message: error.message.includes('Já existe') 
+          ? `${error.message}. Por favor, escolha um número diferente.`
+          : error.message, 
+        type: 'error' 
+      });
+      // Auto-hide toast after 5 seconds
+      setTimeout(() => setToast(null), 5000);
     }
   });
 
@@ -545,6 +648,15 @@ export default function TableManagement() {
         onSave={handleSaveTable}
         allTables={tables || []}
       />
+
+      {/* Toast de notificação */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </div>
   );
 }
