@@ -192,6 +192,23 @@ export default function TableManagement() {
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const queryClient = useQueryClient();
 
+  // Função centralizada para invalidar cache de mesas
+  const invalidateTableCache = () => {
+    console.log('🔄 Invalidating table cache...');
+    // Invalidar todas as queries relacionadas a mesas
+    queryClient.invalidateQueries({ predicate: (query) => 
+      query.queryKey[0] === '/api/tables' 
+    });
+    // Remover cache para forçar refetch
+    queryClient.removeQueries({ predicate: (query) => 
+      query.queryKey[0] === '/api/tables' 
+    });
+    // Refetch imediato
+    queryClient.refetchQueries({ predicate: (query) => 
+      query.queryKey[0] === '/api/tables' 
+    });
+  };
+
   const { data: tables, isLoading, error } = useQuery({
     queryKey: ['/api/tables'],
     queryFn: async () => {
@@ -221,14 +238,8 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas a mesas
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
-      // Forçar refetch em todas as localizações
-      queryClient.refetchQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
+      console.log('✅ Table created successfully');
+      invalidateTableCache();
     }
   });
 
@@ -245,14 +256,8 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas a mesas
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
-      // Forçar refetch em todas as localizações
-      queryClient.refetchQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
+      console.log('✅ Table updated successfully');
+      invalidateTableCache();
     }
   });
 
@@ -267,14 +272,8 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas a mesas
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
-      // Forçar refetch em todas as localizações
-      queryClient.refetchQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
+      console.log('✅ Table deleted successfully');
+      invalidateTableCache();
     }
   });
 
@@ -291,14 +290,8 @@ export default function TableManagement() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidar todas as queries relacionadas a mesas
-      queryClient.invalidateQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
-      // Forçar refetch em todas as localizações
-      queryClient.refetchQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
+      console.log('✅ Table status updated successfully');
+      invalidateTableCache();
     }
   });
 

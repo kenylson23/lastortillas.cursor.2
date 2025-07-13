@@ -258,6 +258,9 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
             <button
               onClick={() => {
                 console.log('🔄 Forcing table refresh...');
+                queryClient.removeQueries({ predicate: (query) => 
+                  query.queryKey[0] === '/api/tables' 
+                });
                 refetchTables();
               }}
               className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
