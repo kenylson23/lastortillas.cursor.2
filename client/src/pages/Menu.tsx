@@ -8,8 +8,9 @@ export default function Menu() {
   const [selectedLocationId, setSelectedLocationId] = useState<string>('ilha');
 
   const handleOrderCreated = (order: Order) => {
-    // Show success message
-    alert(`Pedido #${order.id} criado com sucesso! Total: ${order.totalAmount} AOA. Entraremos em contato em breve para confirmar.`);
+    // Modal melhorado já é exibido automaticamente no OnlineMenu
+    // Não precisamos de mensagem adicional aqui
+    console.log('Pedido criado com sucesso:', order);
   };
 
   return (
