@@ -367,7 +367,7 @@ export default function OnlineMenu({
       </div>
 
       {/* Content Area */}
-      <div className="max-w-6xl mx-auto p-4 sm:p-6 relative z-10">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 relative z-10">
         {showTracking ? (
           /* Order Tracking Section */
           <div className="bg-white">
@@ -433,7 +433,7 @@ export default function OnlineMenu({
                 <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredItems.map((item: MenuItem, index) => (
                   <MenuItemCard
                     key={item.id}
@@ -513,7 +513,7 @@ function MenuItemCard({
       whileHover={{ y: -12, scale: 1.03 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="card-modern rounded-3xl overflow-hidden card-hover-modern group cursor-pointer"
+      className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 group cursor-pointer"
     >
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10"></div>
@@ -559,7 +559,7 @@ function MenuItemCard({
       
       <div className="p-4 sm:p-6 space-y-4">
         <div className="space-y-2">
-          <h3 className="text-lg sm:text-xl font-bold text-mexican-tierra group-hover:text-mexican-red transition-colors duration-300">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 group-hover:text-orange-600 transition-colors duration-300">
             {item.name}
           </h3>
           <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
@@ -570,7 +570,7 @@ function MenuItemCard({
         {/* Customizations */}
         {item.customizations && item.customizations.length > 0 && (
           <div className="space-y-3">
-            <p className="text-sm font-bold text-mexican-tierra flex items-center">
+            <p className="text-sm font-semibold text-gray-700 flex items-center">
               <span className="mr-2">🌶️</span>
               Personalizações
             </p>
@@ -597,7 +597,7 @@ function MenuItemCard({
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-gradient-sunset/90 text-white px-6 py-4 rounded-2xl hover:bg-gradient-sunset transition-all duration-500 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
+          className="w-full bg-gradient-sunset text-white px-6 py-3.5 rounded-xl hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
         >
           <motion.span
             animate={{ rotate: isHovered ? 360 : 0 }}
