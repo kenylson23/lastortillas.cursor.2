@@ -224,16 +224,16 @@ export default function OnlineMenu({
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 via-red-50 to-green-50 min-h-screen relative overflow-hidden">
+    <div className="bg-gradient-to-br from-orange-50/30 via-red-50/20 to-green-50/30 min-h-screen relative overflow-hidden">
       {/* Background decorative elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-fiesta rounded-full opacity-10 float-animation"></div>
-        <div className="absolute top-60 right-16 w-20 h-20 bg-gradient-fresh rounded-full opacity-15 float-animation" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-mexico rounded-full opacity-10 float-animation" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-fiesta rounded-full opacity-5 float-animation"></div>
+        <div className="absolute top-60 right-16 w-20 h-20 bg-gradient-fresh rounded-full opacity-8 float-animation" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-mexico rounded-full opacity-6 float-animation" style={{animationDelay: '2s'}}></div>
       </div>
       
       {/* Unified Header with Location Selection */}
-      <div className="glass-morphism-dark backdrop-blur-xl bg-gradient-sunset shadow-mexican text-white sticky top-0 z-40 border-b border-white/20">
+      <div className="glass-morphism backdrop-blur-xl bg-gradient-sunset/80 shadow-lg text-white sticky top-0 z-40 border-b border-white/10">
         {/* Main Header */}
         <div className="p-3 sm:p-4">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
@@ -247,14 +247,14 @@ export default function OnlineMenu({
             <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={onBackToSite}
-                className="bg-gradient-fiesta text-white px-3 sm:px-4 py-2 rounded-xl hover:bg-gradient-terra transition-all duration-300 text-xs sm:text-sm font-bold shadow-mexican hover-lift"
+                className="bg-white/20 text-white px-3 sm:px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-300 text-xs sm:text-sm font-semibold backdrop-blur-sm border border-white/20"
               >
                 🏠 Voltar
               </button>
               {!showTracking && (
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className={`relative bg-gradient-fiesta p-3 sm:p-4 rounded-2xl hover:scale-110 transition-all duration-500 shadow-fiesta hover-lift ${cart.length > 0 ? 'pulse-glow' : ''}`}
+                  className={`relative bg-white/20 p-3 sm:p-4 rounded-xl hover:bg-white/30 transition-all duration-300 backdrop-blur-sm border border-white/20 ${cart.length > 0 ? 'bg-white/30' : ''}`}
                 >
                   <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
@@ -315,56 +315,48 @@ export default function OnlineMenu({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-20 sm:top-24 z-30 glass-morphism shadow-xl border-b border-white/30">
+      <div className="sticky top-20 sm:top-24 z-30 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100">
         <div className="max-w-4xl mx-auto p-4 sm:p-6">
-          <div className="flex gap-3 sm:gap-6 mb-4 sm:mb-6">
+          <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
             <button
               onClick={() => setShowTracking(false)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-4 rounded-2xl font-bold transition-all duration-500 text-sm sm:text-base border-gradient-modern card-hover-modern ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
                 !showTracking
-                  ? 'bg-gradient-sunset text-white shadow-fiesta scale-105'
-                  : 'bg-white/80 text-mexican-tierra hover:bg-gradient-fresh hover:text-white hover:scale-105'
+                  ? 'bg-gradient-sunset/90 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              <span className="text-lg sm:text-xl mr-2">🍽️</span>
+              <span className="text-base sm:text-lg mr-2">🍽️</span>
               Menu
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-4 rounded-2xl font-bold transition-all duration-500 text-sm sm:text-base border-gradient-modern card-hover-modern ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
                 showTracking
-                  ? 'bg-gradient-mexico text-white shadow-mexican scale-105'
-                  : 'bg-white/80 text-mexican-tierra hover:bg-gradient-mexico hover:text-white hover:scale-105'
+                  ? 'bg-gradient-mexico/90 text-white shadow-md'
+                  : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
               }`}
             >
-              <span className="text-lg sm:text-xl mr-2">📍</span>
+              <span className="text-base sm:text-lg mr-2">📍</span>
               Rastrear Pedido
             </button>
           </div>
           
           {!showTracking && (
-            <div className="flex overflow-x-auto gap-3 pb-3 -mx-2 px-2">
+            <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
               {categories.map((category, index) => {
                 const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
-                const categoryColors = [
-                  'bg-gradient-sunset', 'bg-gradient-fiesta', 'bg-gradient-fresh', 
-                  'bg-gradient-terra', 'bg-mexican-red', 'bg-mexican-green'
-                ];
-                const hoverColors = [
-                  'hover:bg-gradient-fiesta', 'hover:bg-gradient-sunset', 'hover:bg-gradient-terra',
-                  'hover:bg-gradient-fresh', 'hover:bg-mexican-red-light', 'hover:bg-mexican-green-light'
-                ];
                 return (
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 sm:px-6 py-3 sm:py-4 rounded-2xl whitespace-nowrap transition-all duration-500 text-sm sm:text-base flex-shrink-0 font-bold card-hover-modern border ${
+                    className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-medium border ${
                       selectedCategory === category
-                        ? `${categoryColors[index % categoryColors.length]} text-white shadow-fiesta border-white/30 scale-105`
-                        : `glass-morphism text-mexican-tierra border-mexican-orange/30 hover:text-white hover:scale-105 ${hoverColors[index % hoverColors.length]}`
+                        ? 'bg-gradient-sunset/90 text-white shadow-md border-orange-200'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
                     }`}
                   >
-                    <span className="text-base sm:text-lg mr-2">{categoryEmojis[index % categoryEmojis.length]}</span>
+                    <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
                     {category}
                   </button>
                 );
@@ -533,7 +525,7 @@ function MenuItemCard({
         
         {/* Floating badges */}
         <motion.div 
-          className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-2xl shadow-lg z-20"
+          className="absolute top-3 right-3 bg-white/90 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-md backdrop-blur-sm z-20"
           animate={{ scale: isHovered ? 1.1 : 1 }}
           transition={{ duration: 0.3 }}
         >
@@ -542,7 +534,7 @@ function MenuItemCard({
         
         {item.category && (
           <motion.div 
-            className="absolute top-3 left-3 bg-gradient-mexico text-white text-xs font-bold px-3 py-1.5 rounded-2xl shadow-lg z-20"
+            className="absolute top-3 left-3 bg-gradient-mexico/80 text-white text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-md backdrop-blur-sm z-20"
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
@@ -560,7 +552,7 @@ function MenuItemCard({
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3 }}
           >
-            {item.price} <span className="text-lg text-yellow-300">AOA</span>
+            {item.price} <span className="text-lg text-orange-200">AOA</span>
           </motion.div>
         </div>
       </div>
@@ -590,8 +582,8 @@ function MenuItemCard({
                   whileTap={{ scale: 0.95 }}
                   className={`px-3 py-1.5 text-xs rounded-2xl transition-all duration-300 font-semibold border ${
                     selectedCustomizations.includes(customization)
-                      ? 'bg-gradient-sunset text-white shadow-lg border-orange-300 scale-105'
-                      : 'glass-morphism text-mexican-tierra border-mexican-orange/30 hover:bg-gradient-fiesta hover:text-white hover:scale-105'
+                      ? 'bg-gradient-sunset/80 text-white shadow-md border-orange-200 scale-105'
+                      : 'bg-white/80 text-gray-700 border-gray-200 hover:bg-gradient-sunset/70 hover:text-white hover:scale-105'
                   }`}
                 >
                   {customization}
@@ -605,7 +597,7 @@ function MenuItemCard({
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-gradient-sunset text-white px-6 py-4 rounded-2xl hover:bg-gradient-fiesta transition-all duration-500 text-base font-bold shadow-lg hover:shadow-xl group flex items-center justify-center space-x-2 card-hover-modern"
+          className="w-full bg-gradient-sunset/90 text-white px-6 py-4 rounded-2xl hover:bg-gradient-sunset transition-all duration-500 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
         >
           <motion.span
             animate={{ rotate: isHovered ? 360 : 0 }}

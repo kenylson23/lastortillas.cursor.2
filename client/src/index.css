@@ -24,31 +24,31 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Expanded Mexican Color Palette */
-  --mexican-green: hsl(156, 100%, 19.6%);
-  --mexican-green-light: hsl(156, 85%, 35%);
-  --mexican-green-dark: hsl(156, 100%, 15%);
+  /* Soft Mexican Color Palette */
+  --mexican-green: hsl(156, 45%, 35%);
+  --mexican-green-light: hsl(156, 35%, 50%);
+  --mexican-green-dark: hsl(156, 55%, 25%);
   
-  --mexican-red: hsl(348, 88.2%, 47.1%);
-  --mexican-red-light: hsl(348, 85%, 65%);
-  --mexican-red-dark: hsl(348, 90%, 35%);
+  --mexican-red: hsl(348, 55%, 55%);
+  --mexican-red-light: hsl(348, 50%, 70%);
+  --mexican-red-dark: hsl(348, 60%, 45%);
   
-  --warm-orange: hsl(25, 95%, 53%);
-  --warm-orange-light: hsl(25, 90%, 68%);
-  --warm-orange-dark: hsl(25, 95%, 45%);
+  --warm-orange: hsl(25, 65%, 60%);
+  --warm-orange-light: hsl(25, 60%, 75%);
+  --warm-orange-dark: hsl(25, 70%, 50%);
   
-  --golden-yellow: hsl(45, 100%, 60%);
-  --golden-yellow-light: hsl(45, 95%, 75%);
-  --golden-yellow-dark: hsl(45, 100%, 50%);
+  --golden-yellow: hsl(45, 70%, 65%);
+  --golden-yellow-light: hsl(45, 65%, 80%);
+  --golden-yellow-dark: hsl(45, 75%, 55%);
   
-  --tierra-brown: hsl(30, 67%, 35%);
-  --tierra-brown-light: hsl(30, 55%, 55%);
-  --tierra-brown-dark: hsl(30, 70%, 25%);
+  --tierra-brown: hsl(30, 45%, 45%);
+  --tierra-brown-light: hsl(30, 35%, 65%);
+  --tierra-brown-dark: hsl(30, 55%, 35%);
   
-  --chili-red: hsl(15, 95%, 55%);
-  --avocado-green: hsl(85, 60%, 35%);
-  --lime-green: hsl(75, 85%, 45%);
-  --paprika-orange: hsl(35, 90%, 58%);
+  --chili-red: hsl(15, 65%, 65%);
+  --avocado-green: hsl(85, 40%, 45%);
+  --lime-green: hsl(75, 55%, 55%);
+  --paprika-orange: hsl(35, 60%, 68%);
   
   /* Mexican Gradients */
   --gradient-mexico: linear-gradient(135deg, var(--mexican-green) 0%, var(--mexican-red) 100%);
