@@ -82,7 +82,7 @@ export default function Hero() {
       {/* Additional gradient overlay for text area */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent sm:from-black/40 lg:via-transparent" />
       
-      <div className="relative z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-16 sm:py-20">
+      <div className="relative z-10 text-center px-2 sm:px-4 lg:px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-16 sm:py-20">
         {/* Content without card */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
