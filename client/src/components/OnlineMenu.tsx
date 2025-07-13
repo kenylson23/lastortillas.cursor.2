@@ -62,11 +62,18 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       const data = await response.json();
       console.log('Tables data received:', data);
       console.log('Tables data length:', data.length);
+      console.log('Tables data type:', typeof data);
+      console.log('Tables data is array:', Array.isArray(data));
       if (data.length > 0) {
         console.log('First table:', data[0]);
+        console.log('First table locationId:', data[0].locationId);
+        console.log('First table status:', data[0].status);
       }
       return data;
-    }
+    },
+    staleTime: 30 * 1000, // 30 segundos
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
   });
 
   const createOrderMutation = useMutation({
@@ -102,6 +109,10 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         query.queryKey[0] === '/api/tables' 
       });
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      // Forçar re-fetch das mesas
+      queryClient.refetchQueries({ queryKey: ['/api/tables', locationId] });
+      // Remover também do cache se necessário
+      queryClient.removeQueries({ queryKey: ['/api/tables', locationId] });
     },
     onError: (error) => {
       console.error('Order creation failed:', error);
@@ -120,6 +131,9 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   console.log('OnlineMenu - filteredItems:', filteredItems);
   console.log('OnlineMenu - categories:', categories);
   console.log('OnlineMenu - selectedCategory:', selectedCategory);
+  console.log('OnlineMenu - locationId:', locationId);
+  console.log('OnlineMenu - availableTables:', availableTables);
+  console.log('OnlineMenu - tablesLoading:', tablesLoading);
 
   const addToCart = (item: MenuItem, customizations: string[] = []) => {
     setCart(prev => {

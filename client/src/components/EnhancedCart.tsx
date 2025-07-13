@@ -28,16 +28,8 @@ export default function EnhancedCart({
   isSubmitting = false,
   availableTables = []
 }: EnhancedCartProps) {
-  console.log('EnhancedCart availableTables:', availableTables);
-  console.log('EnhancedCart locationId:', locationId);
-  console.log('EnhancedCart availableTables length:', availableTables.length);
-  console.log('EnhancedCart availableTables type:', typeof availableTables);
-  console.log('EnhancedCart availableTables isArray:', Array.isArray(availableTables));
-  
-  // Debug available tables filtering
-  const availableTablesForLocation = availableTables.filter(table => table.status === 'available');
-  console.log('EnhancedCart filtered available tables:', availableTablesForLocation);
-  console.log('EnhancedCart filtered available tables length:', availableTablesForLocation.length);
+  // Debug logs (podem ser removidos em produção)
+  console.log('EnhancedCart availableTables:', availableTables.length, 'tables for location:', locationId);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
@@ -279,26 +271,38 @@ export default function EnhancedCart({
                         />
                       )}
                       {customerInfo.orderType === 'dine-in' && (
-                        <select
-                          value={customerInfo.tableId || ''}
-                          onChange={(e) => {
-                            console.log('Table selection changed:', e.target.value);
-                            setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }));
-                          }}
-                          className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
-                          required
-                        >
-                          <option value="">Selecione uma mesa *</option>
-                          {availableTables.filter(table => table.status === 'available').map(table => {
-                            console.log('Rendering table option:', table);
-                            return (
-                              <option key={table.id} value={table.id}>
-                                Mesa {table.number} - {table.capacity} pessoas
-                                {table.position && ` (${table.position})`}
-                              </option>
-                            );
-                          })}
-                        </select>
+                        <div className="md:col-span-2">
+                          <select
+                            value={customerInfo.tableId || ''}
+                            onChange={(e) => {
+                              console.log('Table selection changed:', e.target.value);
+                              setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }));
+                            }}
+                            className="border rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                            required
+                          >
+                            <option value="">Selecione uma mesa *</option>
+                            {availableTables.filter(table => table.status === 'available').length === 0 ? (
+                              <option disabled value="">Nenhuma mesa disponível para esta localização</option>
+                            ) : (
+                              availableTables.filter(table => table.status === 'available').map(table => {
+                                console.log('Rendering table option:', table);
+                                return (
+                                  <option key={table.id} value={table.id}>
+                                    Mesa {table.number} - {table.capacity} pessoas
+                                    {table.position && ` (${table.position})`}
+                                  </option>
+                                );
+                              })
+                            )}
+                          </select>
+                          {availableTables.filter(table => table.status === 'available').length === 0 && (
+                            <p className="text-sm text-red-600 mt-2">
+                              ⚠️ Nenhuma mesa disponível para {getLocationName(locationId)}. 
+                              Verifique se criou mesas para esta localização no painel administrativo.
+                            </p>
+                          )}
+                        </div>
                       )}
                       <select
                         value={customerInfo.paymentMethod}

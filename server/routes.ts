@@ -447,9 +447,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         tables = await storage.getAllTables();
       }
-      
       res.json(tables);
     } catch (error: any) {
+      console.error('Error fetching tables:', error);
       res.status(500).json({ error: error.message });
     }
   });
