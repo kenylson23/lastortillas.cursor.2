@@ -373,12 +373,18 @@ export class DatabaseStorage implements IStorage {
   async createTable(insertTable: InsertTable): Promise<Table> {
     await this.ensureInitialized();
     
+    console.log(`🔍 Verificando duplicação para mesa ${insertTable.number} no local ${insertTable.locationId}`);
+    
     // Verificar se já existe uma mesa com o mesmo número no mesmo local
     const existingTable = await db
       .select()
       .from(tables)
-      .where(eq(tables.locationId, insertTable.locationId))
-      .where(eq(tables.number, insertTable.number));
+      .where(and(
+        eq(tables.locationId, insertTable.locationId),
+        eq(tables.number, insertTable.number)
+      ));
+    
+    console.log(`🔍 Encontradas ${existingTable.length} mesas existentes:`, existingTable);
     
     if (existingTable.length > 0) {
       throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
@@ -409,9 +415,11 @@ export class DatabaseStorage implements IStorage {
       const existingTable = await db
         .select()
         .from(tables)
-        .where(eq(tables.locationId, newLocationId))
-        .where(eq(tables.number, newNumber))
-        .where(ne(tables.id, id)); // Excluir a mesa atual da verificação
+        .where(and(
+          eq(tables.locationId, newLocationId),
+          eq(tables.number, newNumber),
+          ne(tables.id, id) // Excluir a mesa atual da verificação
+        ));
       
       if (existingTable.length > 0) {
         throw new Error(`Já existe uma mesa número ${newNumber} no local ${newLocationId}`);
