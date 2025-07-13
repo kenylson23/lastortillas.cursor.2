@@ -47,15 +47,26 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
+  private initializationPromise: Promise<void> | null = null;
   
   constructor() {
-    this.initializeSampleMenuItems();
+    // Don't initialize in constructor to avoid blocking the app startup
+  }
+
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initializationPromise) {
+      this.initializationPromise = this.initializeSampleMenuItems();
+    }
+    await this.initializationPromise;
   }
 
   private async initializeSampleMenuItems(): Promise<void> {
     try {
+      // Test database connection first
+      await db.select().from(menuItems).limit(1);
+      
       // Check if menu items already exist
-      const existingItems = await this.getAllMenuItems();
+      const existingItems = await db.select().from(menuItems);
       if (existingItems.length === 0) {
         // Add sample menu items
         const sampleItems = [
@@ -110,16 +121,18 @@ export class DatabaseStorage implements IStorage {
         ];
 
         for (const item of sampleItems) {
-          await this.createMenuItem(item);
+          await db.insert(menuItems).values(item);
         }
         console.log('Sample menu items initialized successfully');
       }
     } catch (error) {
       console.error('Error initializing sample menu items:', error);
+      // Don't throw here, let the app continue without sample data
     }
   }
   // Reservation operations
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
+    await this.ensureInitialized();
     const [reservation] = await db
       .insert(reservations)
       .values(insertReservation)
@@ -128,6 +141,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
+    await this.ensureInitialized();
     const [contact] = await db
       .insert(contacts)
       .values(insertContact)
@@ -136,10 +150,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllReservations(): Promise<Reservation[]> {
+    await this.ensureInitialized();
     return await db.select().from(reservations);
   }
 
   async checkAvailability(date: string, time: string): Promise<boolean> {
+    await this.ensureInitialized();
     const existing = await db
       .select()
       .from(reservations)
@@ -148,6 +164,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getReservationsByDate(date: string): Promise<Reservation[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(reservations)
@@ -156,10 +173,12 @@ export class DatabaseStorage implements IStorage {
 
   // Menu Items
   async getAllMenuItems(): Promise<MenuItem[]> {
+    await this.ensureInitialized();
     return await db.select().from(menuItems);
   }
 
   async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(menuItems)
@@ -167,6 +186,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getMenuItem(id: number): Promise<MenuItem | undefined> {
+    await this.ensureInitialized();
     const [item] = await db
       .select()
       .from(menuItems)
@@ -175,6 +195,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMenuItem(insertItem: InsertMenuItem): Promise<MenuItem> {
+    await this.ensureInitialized();
     const [item] = await db
       .insert(menuItems)
       .values(insertItem)
@@ -183,6 +204,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateMenuItem(id: number, updates: Partial<MenuItem>): Promise<MenuItem> {
+    await this.ensureInitialized();
     // Remove campos que não devem ser atualizados manualmente
     const { id: itemId, createdAt, ...validUpdates } = updates;
     
@@ -195,6 +217,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteMenuItem(id: number): Promise<void> {
+    await this.ensureInitialized();
     await db
       .delete(menuItems)
       .where(eq(menuItems.id, id));
@@ -202,6 +225,7 @@ export class DatabaseStorage implements IStorage {
 
   // Orders
   async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+    await this.ensureInitialized();
     const [order] = await db
       .insert(orders)
       .values(insertOrder)
@@ -228,6 +252,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrder(id: number): Promise<Order | undefined> {
+    await this.ensureInitialized();
     const [order] = await db
       .select()
       .from(orders)
@@ -236,10 +261,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getAllOrders(): Promise<Order[]> {
+    await this.ensureInitialized();
     return await db.select().from(orders);
   }
 
   async getOrdersByStatus(status: string): Promise<Order[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(orders)
@@ -247,6 +274,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrdersByLocation(locationId: string): Promise<Order[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(orders)
@@ -254,6 +282,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order> {
+    await this.ensureInitialized();
     // Get the current order first to check if it has a table
     const [currentOrder] = await db
       .select()
@@ -282,6 +311,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteOrder(id: number): Promise<void> {
+    await this.ensureInitialized();
     // Get the order first to check if it has a table
     const [currentOrder] = await db
       .select()
@@ -310,6 +340,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(orderItems)
@@ -318,10 +349,12 @@ export class DatabaseStorage implements IStorage {
 
   // Tables operations
   async getAllTables(): Promise<Table[]> {
+    await this.ensureInitialized();
     return await db.select().from(tables);
   }
 
   async getTablesByLocation(locationId: string): Promise<Table[]> {
+    await this.ensureInitialized();
     return await db
       .select()
       .from(tables)
@@ -329,6 +362,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getTable(id: number): Promise<Table | undefined> {
+    await this.ensureInitialized();
     const [table] = await db
       .select()
       .from(tables)
@@ -337,6 +371,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTable(insertTable: InsertTable): Promise<Table> {
+    await this.ensureInitialized();
     const [table] = await db
       .insert(tables)
       .values(insertTable)
@@ -345,6 +380,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
+    await this.ensureInitialized();
     const [table] = await db
       .update(tables)
       .set({ ...updates, updatedAt: new Date() })
@@ -354,12 +390,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteTable(id: number): Promise<void> {
+    await this.ensureInitialized();
     await db
       .delete(tables)
       .where(eq(tables.id, id));
   }
 
   async updateTableStatus(id: number, status: string): Promise<Table> {
+    await this.ensureInitialized();
     const [table] = await db
       .update(tables)
       .set({ status, updatedAt: new Date() })
