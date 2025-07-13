@@ -118,6 +118,15 @@ export default function EnhancedCart({
     }
   };
 
+  const getLocationDisplayName = (locationId: string) => {
+    switch (locationId) {
+      case 'ilha': return 'Ilha';
+      case 'talatona': return 'Talatona';
+      case 'movel': return 'Móvel';
+      default: return locationId;
+    }
+  };
+
   const getAlternativeLocations = (currentLocationId: string) => {
     const locations = [
       { id: 'ilha', name: 'Ilha' },
@@ -317,7 +326,7 @@ export default function EnhancedCart({
                           </select>
                           {availableTables.filter(table => table.status === 'available').length === 0 && (
                             <p className="text-sm text-red-600 mt-2">
-                              ⚠️ Sentimos muito! O Las Tortillas {getLocationName(locationId)} está com todas as mesas ocupadas. 
+                              ⚠️ Sentimos muito! O Las Tortillas {getLocationDisplayName(locationId)} está com todas as mesas ocupadas. 
                               Tente nossas outras unidades {getAlternativeLocations(locationId)} ou peça para entrega.
                             </p>
                           )}
