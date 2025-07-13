@@ -6,6 +6,7 @@ import { MenuItem, Order, OrderItem } from '@shared/schema';
 import EnhancedCart from './EnhancedCart';
 import OrderSuccessModal from './OrderSuccessModal';
 import OrderTracking from './OrderTracking';
+import { useAuth } from '../hooks/useAuth';
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -44,6 +45,7 @@ export default function OnlineMenu({
   });
 
   const queryClient = useQueryClient();
+  const { isAuthenticated } = useAuth(); // Detectar se admin está logado
 
   const { data: menuItems = [], isLoading, error } = useQuery({
     queryKey: ['/api/menu-items'],
@@ -313,6 +315,67 @@ export default function OnlineMenu({
           </div>
         </div>
       </div>
+
+      {/* Admin Quick Access Panel - apenas para admins logados */}
+      {isAuthenticated && (
+        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 border-b">
+          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">👨‍💼</span>
+                <div>
+                  <h3 className="text-white font-bold text-sm">Modo Administrador</h3>
+                  <p className="text-blue-100 text-xs">Funcionalidades especiais ativadas</p>
+                </div>
+              </div>
+              
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => {
+                    // Preenchimento automático para teste rápido
+                    setCustomerInfo({
+                      ...customerInfo,
+                      name: 'Admin Test',
+                      phone: '+244999888777',
+                      email: 'admin@lastortillas.ao',
+                      address: 'Luanda Centro',
+                      orderType: 'delivery',
+                      paymentMethod: 'cash',
+                      notes: 'Pedido de teste - Admin'
+                    });
+                  }}
+                  className="bg-white text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-50 transition-colors flex items-center gap-1.5"
+                >
+                  <span>⚡</span>
+                  Preencher Teste
+                </button>
+                
+                <a
+                  href="/admin"
+                  className="bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-yellow-600 transition-colors flex items-center gap-1.5"
+                >
+                  <span>📊</span>
+                  Painel Admin
+                </a>
+                
+                <button
+                  onClick={() => {
+                    // Adicionar um item popular automaticamente para teste
+                    const popularItem = menuItems.find(item => item.name.includes('Nachos'));
+                    if (popularItem) {
+                      addToCart(popularItem);
+                    }
+                  }}
+                  className="bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-600 transition-colors flex items-center gap-1.5"
+                >
+                  <span>🌮</span>
+                  Add Popular
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Navigation Tabs */}
       <div className="sticky top-20 sm:top-24 z-30 bg-white shadow-sm border-b border-gray-200">

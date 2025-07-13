@@ -246,6 +246,65 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
   return (
     <div className="bg-gray-50 min-h-screen p-2 sm:p-4">
       <div className="max-w-7xl mx-auto">
+        {/* Painel de ações rápidas do admin */}
+        <div className="bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg shadow-lg p-4 mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div className="mb-4 sm:mb-0">
+              <h2 className="text-white text-lg font-bold flex items-center gap-2">
+                <span className="text-2xl">⚡</span>
+                Ações Rápidas Admin
+              </h2>
+              <p className="text-green-100 text-sm">Acesso direto às principais funcionalidades</p>
+            </div>
+            
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="/menu"
+                className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+              >
+                <span className="text-lg">🛒</span>
+                Novo Pedido
+              </a>
+              
+              <button
+                onClick={() => {
+                  // Mostrar apenas pedidos pendentes para ação rápida
+                  setSelectedStatus('received');
+                  setSelectedLocation('all');
+                }}
+                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+              >
+                <span className="text-lg">🔔</span>
+                Pendentes
+              </button>
+              
+              <button
+                onClick={() => {
+                  // Mostrar apenas pedidos prontos
+                  setSelectedStatus('ready');
+                  setSelectedLocation('all');
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+              >
+                <span className="text-lg">✅</span>
+                Prontos
+              </button>
+              
+              <button
+                onClick={() => {
+                  // Reset filtros para ver todos
+                  setSelectedStatus('all');
+                  setSelectedLocation('all');
+                }}
+                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+              >
+                <span className="text-lg">📊</span>
+                Ver Todos
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm p-3 sm:p-6 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-4 sm:space-y-0">
