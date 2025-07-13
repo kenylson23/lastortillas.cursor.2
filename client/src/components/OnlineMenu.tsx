@@ -27,25 +27,93 @@ export default function OnlineMenu({
   onBackToSite = () => {} 
 }: OnlineMenuProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
-  const [cart, setCart] = useState<CartItem[]>([]);
+  // Estados com persistência no localStorage
+  const [cart, setCart] = useState<CartItem[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`cart_${locationId}`);
+      return saved ? JSON.parse(saved) : [];
+    }
+    return [];
+  });
+  
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null);
   const [showTracking, setShowTracking] = useState(false);
   const [trackingOrderId, setTrackingOrderId] = useState('');
-  const [customerInfo, setCustomerInfo] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: '',
-    orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
-    paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
-    notes: '',
-    tableId: null as number | null
+  
+  const [customerInfo, setCustomerInfo] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(`customerInfo_${locationId}`);
+      if (saved) {
+        return JSON.parse(saved);
+      }
+    }
+    return {
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
+      paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
+      notes: '',
+      tableId: null as number | null
+    };
   });
 
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth(); // Detectar se admin está logado
+
+  // Salvar carrinho no localStorage automaticamente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`cart_${locationId}`, JSON.stringify(cart));
+    }
+  }, [cart, locationId]);
+
+  // Salvar informações do cliente no localStorage automaticamente
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(`customerInfo_${locationId}`, JSON.stringify(customerInfo));
+    }
+  }, [customerInfo, locationId]);
+
+  // Carregar carrinho e dados quando a localização muda
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCart = localStorage.getItem(`cart_${locationId}`);
+      const savedCustomerInfo = localStorage.getItem(`customerInfo_${locationId}`);
+      
+      if (savedCart) {
+        try {
+          setCart(JSON.parse(savedCart));
+        } catch (error) {
+          console.error('Erro ao recuperar carrinho:', error);
+          setCart([]);
+        }
+      } else {
+        setCart([]);
+      }
+      
+      if (savedCustomerInfo) {
+        try {
+          setCustomerInfo(JSON.parse(savedCustomerInfo));
+        } catch (error) {
+          console.error('Erro ao recuperar informações do cliente:', error);
+          setCustomerInfo({
+            name: '',
+            phone: '',
+            email: '',
+            address: '',
+            orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
+            paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
+            notes: '',
+            tableId: null as number | null
+          });
+        }
+      }
+    }
+  }, [locationId]);
 
   const { data: menuItems = [], isLoading, error } = useQuery({
     queryKey: ['/api/menu-items'],
@@ -88,6 +156,7 @@ export default function OnlineMenu({
       return result;
     },
     onSuccess: (order) => {
+      // Limpar carrinho e dados do cliente após pedido bem-sucedido
       setCart([]);
       setCustomerInfo({
         name: '',
@@ -100,6 +169,12 @@ export default function OnlineMenu({
         tableId: null
       });
       setIsCartOpen(false);
+      
+      // Limpar localStorage também
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(`cart_${locationId}`);
+        localStorage.removeItem(`customerInfo_${locationId}`);
+      }
       
       // Show enhanced success modal
       setLastCreatedOrder(order);
@@ -174,6 +249,29 @@ export default function OnlineMenu({
 
   const getTotalPrice = () => {
     return cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+  };
+
+  // Função para limpar completamente o carrinho e dados (útil para admin)
+  const clearAllData = () => {
+    setCart([]);
+    setCustomerInfo({
+      name: '',
+      phone: '',
+      email: '',
+      address: '',
+      orderType: 'delivery' as 'delivery' | 'takeaway' | 'dine-in',
+      paymentMethod: 'cash' as 'cash' | 'card' | 'transfer',
+      notes: '',
+      tableId: null as number | null
+    });
+    
+    if (typeof window !== 'undefined') {
+      // Limpar todos os dados salvos de todas as localizações
+      ['ilha', 'talatona', 'movel'].forEach(loc => {
+        localStorage.removeItem(`cart_${loc}`);
+        localStorage.removeItem(`customerInfo_${loc}`);
+      });
+    }
   };
 
   const handleSubmitOrder = () => {
@@ -370,6 +468,14 @@ export default function OnlineMenu({
                 >
                   <span>🌮</span>
                   Add Popular
+                </button>
+                
+                <button
+                  onClick={clearAllData}
+                  className="bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors flex items-center gap-1.5"
+                >
+                  <span>🗑️</span>
+                  Limpar Tudo
                 </button>
               </div>
             </div>
