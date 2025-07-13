@@ -50,7 +50,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
     }
   });
 
-  const { data: availableTables = [] } = useQuery({
+  const { data: availableTables = [], isLoading: tablesLoading } = useQuery({
     queryKey: ['/api/tables', locationId],
     queryFn: async () => {
       console.log('Fetching tables for location:', locationId);
@@ -60,7 +60,11 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
         throw new Error('Failed to fetch tables');
       }
       const data = await response.json();
-      console.log('Tables data:', data);
+      console.log('Tables data received:', data);
+      console.log('Tables data length:', data.length);
+      if (data.length > 0) {
+        console.log('First table:', data[0]);
+      }
       return data;
     }
   });

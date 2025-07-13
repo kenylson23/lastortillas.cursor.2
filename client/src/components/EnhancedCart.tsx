@@ -30,6 +30,14 @@ export default function EnhancedCart({
 }: EnhancedCartProps) {
   console.log('EnhancedCart availableTables:', availableTables);
   console.log('EnhancedCart locationId:', locationId);
+  console.log('EnhancedCart availableTables length:', availableTables.length);
+  console.log('EnhancedCart availableTables type:', typeof availableTables);
+  console.log('EnhancedCart availableTables isArray:', Array.isArray(availableTables));
+  
+  // Debug available tables filtering
+  const availableTablesForLocation = availableTables.filter(table => table.status === 'available');
+  console.log('EnhancedCart filtered available tables:', availableTablesForLocation);
+  console.log('EnhancedCart filtered available tables length:', availableTablesForLocation.length);
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     phone: '',
