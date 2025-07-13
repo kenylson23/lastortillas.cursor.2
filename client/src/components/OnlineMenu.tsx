@@ -50,28 +50,22 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
     }
   });
 
-  const { data: availableTables = [], isLoading: tablesLoading } = useQuery({
+  const { data: availableTables = [], isLoading: tablesLoading, refetch: refetchTables } = useQuery({
     queryKey: ['/api/tables', locationId],
     queryFn: async () => {
-      console.log('Fetching tables for location:', locationId);
+      console.log('🔍 Fetching tables for location:', locationId);
       const response = await fetch(`/api/tables?location=${locationId}`);
-      console.log('Tables response status:', response.status);
+      console.log('📡 Tables response status:', response.status);
       if (!response.ok) {
         throw new Error('Failed to fetch tables');
       }
       const data = await response.json();
-      console.log('Tables data received:', data);
-      console.log('Tables data length:', data.length);
-      console.log('Tables data type:', typeof data);
-      console.log('Tables data is array:', Array.isArray(data));
-      if (data.length > 0) {
-        console.log('First table:', data[0]);
-        console.log('First table locationId:', data[0].locationId);
-        console.log('First table status:', data[0].status);
-      }
+      console.log('📊 Tables data received:', data);
+      console.log('📊 Tables data length:', data.length);
+      console.log('📊 Available tables:', data.filter(t => t.status === 'available'));
       return data;
     },
-    staleTime: 30 * 1000, // 30 segundos
+    staleTime: 5 * 1000, // 5 segundos para debug
     refetchOnWindowFocus: true,
     refetchOnMount: true
   });
@@ -260,6 +254,15 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
               }`}
             >
               📍 Rastrear Pedido
+            </button>
+            <button
+              onClick={() => {
+                console.log('🔄 Forcing table refresh...');
+                refetchTables();
+              }}
+              className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              🔄 Debug: Refresh Tables
             </button>
           </div>
           

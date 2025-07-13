@@ -225,6 +225,10 @@ export default function TableManagement() {
       queryClient.invalidateQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
+      // Forçar refetch em todas as localizações
+      queryClient.refetchQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 
@@ -245,6 +249,10 @@ export default function TableManagement() {
       queryClient.invalidateQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
+      // Forçar refetch em todas as localizações
+      queryClient.refetchQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
     }
   });
 
@@ -261,6 +269,10 @@ export default function TableManagement() {
     onSuccess: () => {
       // Invalidar todas as queries relacionadas a mesas
       queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
+      // Forçar refetch em todas as localizações
+      queryClient.refetchQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
     }
@@ -281,6 +293,10 @@ export default function TableManagement() {
     onSuccess: () => {
       // Invalidar todas as queries relacionadas a mesas
       queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
+      // Forçar refetch em todas as localizações
+      queryClient.refetchQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
     }
