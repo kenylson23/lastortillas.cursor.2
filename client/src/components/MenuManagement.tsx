@@ -155,13 +155,13 @@ export default function MenuManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Gestão de Menu</h2>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Gestão de Menu</h2>
         <button
           onClick={() => setIsAddingItem(true)}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
         >
           Adicionar Item
         </button>
@@ -169,10 +169,10 @@ export default function MenuManagement() {
 
       {/* Add Item Form */}
       {isAddingItem && (
-        <div className="bg-white rounded-lg shadow-sm p-6 border">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-6 border">
           <h3 className="text-lg font-semibold mb-4">Adicionar Novo Item</h3>
           <form onSubmit={handleAddItem} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Nome</label>
                 <input
@@ -231,18 +231,18 @@ export default function MenuManagement() {
               />
               <label className="text-sm text-gray-700">Disponível</label>
             </div>
-            <div className="flex space-x-4">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <button
                 type="submit"
                 disabled={addItemMutation.isPending}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 text-sm sm:text-base w-full sm:w-auto"
               >
                 {addItemMutation.isPending ? 'Adicionando...' : 'Adicionar Item'}
               </button>
               <button
                 type="button"
                 onClick={() => setIsAddingItem(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+                className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
               >
                 Cancelar
               </button>
@@ -253,31 +253,31 @@ export default function MenuManagement() {
 
       {/* Menu Items by Category */}
       {categories.map(category => (
-        <div key={category} className="bg-white rounded-lg shadow-sm p-6">
+        <div key={category} className="bg-white rounded-lg shadow-sm p-3 sm:p-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">{category}</h3>
           <div className="space-y-4">
             {menuItems
               .filter(item => item.category === category)
               .map(item => (
-                <div key={item.id} className="flex items-center justify-between p-4 border rounded-lg">
-                  <div className="flex items-center space-x-4">
+                <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
+                  <div className="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
                     {item.image && (
                       <img 
                         src={item.image} 
                         alt={item.name}
-                        className="w-16 h-16 object-cover rounded-lg"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                       />
                     )}
-                    <div>
-                      <h4 className="font-medium text-gray-900">{item.name}</h4>
-                      <p className="text-sm text-gray-600">{item.description}</p>
-                      <p className="text-lg font-semibold text-red-600">{Number(item.price).toLocaleString('pt-AO', { style: 'currency', currency: 'AOA' })}</p>
+                    <div className="min-w-0 flex-1 sm:flex-initial">
+                      <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.name}</h4>
+                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{item.description}</p>
+                      <p className="text-sm sm:text-lg font-semibold text-red-600">{Number(item.price).toLocaleString('pt-AO', { style: 'currency', currency: 'AOA' })}</p>
                     </div>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
                     <button
                       onClick={() => toggleAvailability(item)}
-                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      className={`px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium ${
                         item.available
                           ? 'bg-green-100 text-green-800 hover:bg-green-200'
                           : 'bg-red-100 text-red-800 hover:bg-red-200'
@@ -287,14 +287,14 @@ export default function MenuManagement() {
                     </button>
                     <button
                       onClick={() => setEditingItem(item)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      className="bg-blue-600 text-white px-2 sm:px-3 py-1 rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm"
                     >
                       Editar
                     </button>
                     <button
                       onClick={() => handleDeleteItem(item)}
                       disabled={deleteItemMutation.isPending}
-                      className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 transition-colors text-sm disabled:opacity-50"
+                      className="bg-red-600 text-white px-2 sm:px-3 py-1 rounded-lg hover:bg-red-700 transition-colors text-xs sm:text-sm disabled:opacity-50"
                     >
                       {deleteItemMutation.isPending ? 'Removendo...' : 'Apagar'}
                     </button>
@@ -307,8 +307,8 @@ export default function MenuManagement() {
 
       {/* Edit Item Modal */}
       {editingItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+          <div className="bg-white rounded-lg p-4 sm:p-6 max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-semibold mb-4">Editar Item</h3>
             <form onSubmit={handleUpdateItem} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

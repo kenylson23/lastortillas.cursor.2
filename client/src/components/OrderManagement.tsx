@@ -232,26 +232,26 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen p-4">
+    <div className="bg-gray-50 min-h-screen p-2 sm:p-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold">Gestão de Pedidos</h1>
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-6 mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-4 sm:space-y-0">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Gestão de Pedidos</h1>
             <button
               onClick={() => refetch()}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
             >
               Atualizar
             </button>
           </div>
 
           {/* Filters */}
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="border rounded-lg px-4 py-2"
+              className="border rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base w-full"
             >
               <option value="all">Todos os Status</option>
               <option value="received">Recebido</option>
@@ -264,7 +264,7 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
             <select
               value={selectedLocation}
               onChange={(e) => setSelectedLocation(e.target.value)}
-              className="border rounded-lg px-4 py-2"
+              className="border rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base w-full"
             >
               <option value="all">Todas as Localizações</option>
               <option value="ilha">Las Tortillas Ilha</option>
@@ -294,7 +294,7 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
             </a>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {orders.map((order: Order) => (
             <motion.div
               key={order.id}
