@@ -27,12 +27,12 @@ export default function Navigation() {
 
   return (
     <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-md z-50 border-b border-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+        <div className="flex justify-between items-center h-14 sm:h-16">
+          <div className="flex items-center flex-1 min-w-0">
             <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-green-700">Las Tortillas</h1>
-              <span className="text-xs sm:text-sm text-red-600 font-medium -mt-1 sm:mt-0">Mexican Grill</span>
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-green-700 truncate">Las Tortillas</h1>
+              <span className="text-xs sm:text-sm text-red-600 font-medium -mt-0.5 sm:mt-0">Mexican Grill</span>
             </div>
           </div>
           
@@ -80,24 +80,29 @@ export default function Navigation() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            {/* Menu hambúrguer - muito mais visível */}
-            <div className="md:hidden">
-              <button 
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="bg-red-600 text-white p-3 rounded-lg hover:bg-red-700 transition-colors duration-200 shadow-lg"
-              >
-                {isMenuOpen ? (
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                ) : (
-                  <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
-                  </svg>
-                )}
-              </button>
-            </div>
+          {/* Menu hambúrguer - posicionamento otimizado para mobile */}
+          <div className="md:hidden flex-shrink-0 ml-2">
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="bg-red-600 text-white p-2.5 sm:p-3 rounded-lg hover:bg-red-700 transition-all duration-200 shadow-lg border border-red-500 min-w-[48px] min-h-[48px] sm:min-w-[52px] sm:min-h-[52px] flex items-center justify-center"
+              style={{ 
+                position: 'relative',
+                zIndex: 9998,
+                touchAction: 'manipulation',
+                WebkitTapHighlightColor: 'transparent'
+              }}
+              aria-label={isMenuOpen ? 'Fechar menu' : 'Abrir menu'}
+            >
+              {isMenuOpen ? (
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
           </div>
         </div>
         
