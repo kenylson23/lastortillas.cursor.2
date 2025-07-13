@@ -6,7 +6,7 @@ import {
   type Table, type InsertTable
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne } from "drizzle-orm";
 
 export interface IStorage {
   // Reservation operations
@@ -372,6 +372,18 @@ export class DatabaseStorage implements IStorage {
 
   async createTable(insertTable: InsertTable): Promise<Table> {
     await this.ensureInitialized();
+    
+    // Verificar se já existe uma mesa com o mesmo número no mesmo local
+    const existingTable = await db
+      .select()
+      .from(tables)
+      .where(eq(tables.locationId, insertTable.locationId))
+      .where(eq(tables.number, insertTable.number));
+    
+    if (existingTable.length > 0) {
+      throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
+    }
+    
     const [table] = await db
       .insert(tables)
       .values(insertTable)
@@ -381,6 +393,31 @@ export class DatabaseStorage implements IStorage {
 
   async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
     await this.ensureInitialized();
+    
+    // Se está atualizando o número ou localização, verificar duplicação
+    if (updates.number !== undefined || updates.locationId !== undefined) {
+      // Buscar a mesa atual para obter os dados completos
+      const currentTable = await this.getTable(id);
+      if (!currentTable) {
+        throw new Error('Mesa não encontrada');
+      }
+      
+      const newNumber = updates.number !== undefined ? updates.number : currentTable.number;
+      const newLocationId = updates.locationId !== undefined ? updates.locationId : currentTable.locationId;
+      
+      // Verificar se existe outra mesa com o mesmo número no mesmo local
+      const existingTable = await db
+        .select()
+        .from(tables)
+        .where(eq(tables.locationId, newLocationId))
+        .where(eq(tables.number, newNumber))
+        .where(ne(tables.id, id)); // Excluir a mesa atual da verificação
+      
+      if (existingTable.length > 0) {
+        throw new Error(`Já existe uma mesa número ${newNumber} no local ${newLocationId}`);
+      }
+    }
+    
     const [table] = await db
       .update(tables)
       .set({ ...updates, updatedAt: new Date() })

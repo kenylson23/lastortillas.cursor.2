@@ -8,9 +8,10 @@ interface TableModalProps {
   onClose: () => void;
   table: Table | null;
   onSave: (table: Partial<Table>) => void;
+  allTables: Table[];
 }
 
-function TableModal({ isOpen, onClose, table, onSave }: TableModalProps) {
+function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalProps) {
   const [formData, setFormData] = useState<Partial<InsertTable>>({
     number: table?.number || 1,
     locationId: table?.locationId || 'talatona',
@@ -78,6 +79,22 @@ function TableModal({ isOpen, onClose, table, onSave }: TableModalProps) {
                 required
                 min="1"
               />
+              {/* Mostrar mesas existentes para o local selecionado */}
+              {(() => {
+                const existingNumbers = allTables
+                  .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
+                  .map(t => t.number)
+                  .sort((a, b) => a - b);
+                
+                if (existingNumbers.length > 0) {
+                  return (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Mesas existentes: {existingNumbers.join(', ')}
+                    </p>
+                  );
+                }
+                return null;
+              })()}
             </div>
             
             <div>
@@ -235,13 +252,20 @@ export default function TableManagement() {
         body: JSON.stringify(table)
       });
       if (!response.ok) {
-        throw new Error('Failed to create table');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Falha ao criar mesa');
       }
       return response.json();
     },
     onSuccess: () => {
       console.log('✅ Table created successfully');
       invalidateTableCache();
+      setModalOpen(false);
+      setSelectedTable(null);
+    },
+    onError: (error: Error) => {
+      console.error('❌ Error creating table:', error.message);
+      alert(`Erro ao criar mesa: ${error.message}`);
     }
   });
 
@@ -253,13 +277,20 @@ export default function TableManagement() {
         body: JSON.stringify(table)
       });
       if (!response.ok) {
-        throw new Error('Failed to update table');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Falha ao atualizar mesa');
       }
       return response.json();
     },
     onSuccess: () => {
       console.log('✅ Table updated successfully');
       invalidateTableCache();
+      setModalOpen(false);
+      setSelectedTable(null);
+    },
+    onError: (error: Error) => {
+      console.error('❌ Error updating table:', error.message);
+      alert(`Erro ao atualizar mesa: ${error.message}`);
     }
   });
 
@@ -512,6 +543,7 @@ export default function TableManagement() {
         onClose={() => setModalOpen(false)}
         table={selectedTable}
         onSave={handleSaveTable}
+        allTables={tables || []}
       />
     </div>
   );
