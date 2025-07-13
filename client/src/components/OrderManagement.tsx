@@ -40,7 +40,8 @@ export default function OrderManagement() {
       const response = await apiRequest('GET', url);
       return response.json();
     },
-    refetchInterval: 10000, // Refetch every 10 seconds
+    refetchInterval: 3000, // Auto-refresh every 3 seconds for real-time updates
+    refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
   });
 
   const { data: menuItems = [] } = useQuery({
@@ -48,7 +49,9 @@ export default function OrderManagement() {
     queryFn: async () => {
       const response = await apiRequest('GET', '/api/menu-items');
       return response.json();
-    }
+    },
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
+    refetchIntervalInBackground: true,
   });
 
   const { data: allTables = [] } = useQuery({
@@ -56,7 +59,9 @@ export default function OrderManagement() {
     queryFn: async () => {
       const response = await fetch('/api/tables');
       return response.json();
-    }
+    },
+    refetchInterval: 3000, // Auto-refresh every 3 seconds to sync with orders
+    refetchIntervalInBackground: true,
   });
 
   const updateStatusMutation = useMutation({
@@ -65,10 +70,13 @@ export default function OrderManagement() {
       return response.json();
     },
     onSuccess: (data, variables) => {
-      // Invalidar queries de forma mais específica
+      // Invalidar e forçar refetch imediato para atualização instantânea
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
-      // Invalidar todas as queries relacionadas a mesas para sincronizar status
       queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
+      queryClient.refetchQueries({ queryKey: ['/api/orders'] });
+      queryClient.refetchQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
       
@@ -97,9 +105,13 @@ export default function OrderManagement() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidar e forçar refetch imediato para atualização instantânea
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
-      // Invalidar todas as queries relacionadas a mesas para sincronizar status
       queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
+      queryClient.refetchQueries({ queryKey: ['/api/orders'] });
+      queryClient.refetchQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
       setIsOrderModalOpen(false);

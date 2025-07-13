@@ -5,6 +5,7 @@ import OrderManagement from '../components/OrderManagement';
 import MenuManagement from '../components/MenuManagement';
 import OrderStats from '../components/OrderStats';
 import TableManagement from '../components/TableManagement';
+import { RefreshCw } from 'lucide-react';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
@@ -44,8 +45,15 @@ export default function Admin() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="min-w-0 flex-1">
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 truncate">Painel Admin</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-1">Gestão Las Tortillas</p>
+              <div className="flex items-center gap-3">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 truncate">Painel Admin</h1>
+                <div className="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs">
+                  <RefreshCw className="w-3 h-3 animate-spin" />
+                  <span className="hidden sm:inline">Auto-refresh ativo</span>
+                  <span className="sm:hidden">Live</span>
+                </div>
+              </div>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Gestão Las Tortillas • Dados em tempo real</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-end">
               <button

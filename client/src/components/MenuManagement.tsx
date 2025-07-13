@@ -21,9 +21,11 @@ export default function MenuManagement() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch menu items
+  // Fetch menu items with auto-refresh
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
     queryKey: ['/api/menu-items'],
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
+    refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
   });
 
   // Add item mutation
@@ -33,8 +35,11 @@ export default function MenuManagement() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidar todas as queries relacionadas ao menu
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
+      // Força refetch imediato para atualização instantânea
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
       toast({
         title: 'Item adicionado',
         description: 'O item foi adicionado ao menu com sucesso',
@@ -66,8 +71,10 @@ export default function MenuManagement() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidar e forçar refetch para atualização instantânea
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
       toast({
         title: 'Item atualizado',
         description: 'O item foi atualizado com sucesso',
@@ -112,13 +119,16 @@ export default function MenuManagement() {
       return response.json();
     },
     onSuccess: () => {
+      // Invalidar e forçar refetch para atualização instantânea
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/menu'] }); // Sync with public menu
+      queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
       toast({
         title: 'Item removido',
         description: 'O item foi removido com sucesso',
         variant: 'success'
       });
+      setItemToDelete(null);
     },
     onError: (error) => {
       toast({

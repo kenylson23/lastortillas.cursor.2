@@ -218,6 +218,8 @@ export default function TableManagement() {
       }
       return response.json();
     },
+    refetchInterval: 5000, // Auto-refresh every 5 seconds
+    refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
   });
 
   // Debug log

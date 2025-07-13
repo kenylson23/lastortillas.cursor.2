@@ -16,7 +16,8 @@ export default function OrderStats({ className = '' }: OrderStatsProps) {
       const response = await apiRequest('GET', '/api/orders');
       return response.json();
     },
-    refetchInterval: 30000, // Atualiza a cada 30 segundos
+    refetchInterval: 5000, // Auto-refresh every 5 seconds for real-time stats
+    refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
   });
 
   const getFilteredOrders = () => {
