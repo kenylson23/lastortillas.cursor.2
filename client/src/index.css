@@ -24,10 +24,38 @@
   --ring: hsl(20, 14.3%, 4.1%);
   --radius: 0.5rem;
   
-  /* Mexican flag colors */
+  /* Expanded Mexican Color Palette */
   --mexican-green: hsl(156, 100%, 19.6%);
+  --mexican-green-light: hsl(156, 85%, 35%);
+  --mexican-green-dark: hsl(156, 100%, 15%);
+  
   --mexican-red: hsl(348, 88.2%, 47.1%);
+  --mexican-red-light: hsl(348, 85%, 65%);
+  --mexican-red-dark: hsl(348, 90%, 35%);
+  
   --warm-orange: hsl(25, 95%, 53%);
+  --warm-orange-light: hsl(25, 90%, 68%);
+  --warm-orange-dark: hsl(25, 95%, 45%);
+  
+  --golden-yellow: hsl(45, 100%, 60%);
+  --golden-yellow-light: hsl(45, 95%, 75%);
+  --golden-yellow-dark: hsl(45, 100%, 50%);
+  
+  --tierra-brown: hsl(30, 67%, 35%);
+  --tierra-brown-light: hsl(30, 55%, 55%);
+  --tierra-brown-dark: hsl(30, 70%, 25%);
+  
+  --chili-red: hsl(15, 95%, 55%);
+  --avocado-green: hsl(85, 60%, 35%);
+  --lime-green: hsl(75, 85%, 45%);
+  --paprika-orange: hsl(35, 90%, 58%);
+  
+  /* Mexican Gradients */
+  --gradient-mexico: linear-gradient(135deg, var(--mexican-green) 0%, var(--mexican-red) 100%);
+  --gradient-sunset: linear-gradient(135deg, var(--warm-orange) 0%, var(--mexican-red) 50%, var(--mexican-red-dark) 100%);
+  --gradient-fiesta: linear-gradient(135deg, var(--golden-yellow) 0%, var(--warm-orange) 50%, var(--chili-red) 100%);
+  --gradient-terra: linear-gradient(135deg, var(--tierra-brown-light) 0%, var(--tierra-brown-dark) 100%);
+  --gradient-fresh: linear-gradient(135deg, var(--lime-green) 0%, var(--avocado-green) 100%);
 }
 
 .dark {
@@ -71,12 +99,83 @@
     color: hsl(var(--foreground));
     min-width: 100vw;
   }
+}
+
+@layer utilities {
+  /* Mexican Gradient Utilities */
+  .bg-gradient-mexico {
+    background: var(--gradient-mexico);
+  }
   
+  .bg-gradient-sunset {
+    background: var(--gradient-sunset);
+  }
+  
+  .bg-gradient-fiesta {
+    background: var(--gradient-fiesta);
+  }
+  
+  .bg-gradient-terra {
+    background: var(--gradient-terra);
+  }
+  
+  .bg-gradient-fresh {
+    background: var(--gradient-fresh);
+  }
+  
+  /* Text gradients */
+  .text-gradient-mexico {
+    background: var(--gradient-mexico);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-sunset {
+    background: var(--gradient-sunset);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .text-gradient-fiesta {
+    background: var(--gradient-fiesta);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  /* Mexican shadows */
+  .shadow-mexican {
+    box-shadow: 0 4px 20px rgba(220, 38, 127, 0.2), 0 2px 8px rgba(0, 104, 55, 0.1);
+  }
+  
+  .shadow-fiesta {
+    box-shadow: 0 4px 20px rgba(255, 140, 0, 0.3), 0 2px 8px rgba(220, 38, 127, 0.15);
+  }
+  
+  /* Mexican themed borders */
+  .border-gradient-mexico {
+    border: 2px solid transparent;
+    background: linear-gradient(white, white) padding-box, var(--gradient-mexico) border-box;
+  }
+  
+  /* Hover effects for Mexican elements */
+  .hover-lift {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Base styles */
   html {
     scroll-behavior: smooth;
   }
 
-  /* Garantir que todos os containers usem toda a largura no mobile */
+  /* Mobile container optimizations */
   @media (max-width: 768px) {
     .container, 
     .max-w-7xl, 

@@ -66,6 +66,28 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        // Mexican Brand Colors
+        mexican: {
+          green: "var(--mexican-green)",
+          "green-light": "var(--mexican-green-light)",
+          "green-dark": "var(--mexican-green-dark)",
+          red: "var(--mexican-red)",
+          "red-light": "var(--mexican-red-light)",
+          "red-dark": "var(--mexican-red-dark)",
+          orange: "var(--warm-orange)",
+          "orange-light": "var(--warm-orange-light)",
+          "orange-dark": "var(--warm-orange-dark)",
+          gold: "var(--golden-yellow)",
+          "gold-light": "var(--golden-yellow-light)",
+          "gold-dark": "var(--golden-yellow-dark)",
+          tierra: "var(--tierra-brown)",
+          "tierra-light": "var(--tierra-brown-light)",
+          "tierra-dark": "var(--tierra-brown-dark)",
+          chili: "var(--chili-red)",
+          avocado: "var(--avocado-green)",
+          lime: "var(--lime-green)",
+          paprika: "var(--paprika-orange)",
+        },
       },
       keyframes: {
         "accordion-down": {

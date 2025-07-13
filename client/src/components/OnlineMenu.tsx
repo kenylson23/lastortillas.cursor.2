@@ -208,21 +208,27 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   }
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-gradient-to-br from-orange-50 via-red-50 to-green-50 min-h-screen">
       {/* Header */}
-      <div className="bg-red-600 text-white p-3 sm:p-4 sticky top-0 z-40">
+      <div className="bg-gradient-sunset shadow-mexican text-white p-3 sm:p-4 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Las Tortillas Online</h1>
+          <div className="flex items-center space-x-3">
+            <div className="text-2xl">🌮</div>
+            <div>
+              <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Las Tortillas</h1>
+              <p className="text-xs sm:text-sm text-orange-100 font-medium">Pedidos Online</p>
+            </div>
+          </div>
           {!showTracking && (
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-red-700 p-2 sm:p-3 rounded-full hover:bg-red-800 transition-colors"
+              className="relative bg-gradient-fiesta p-2 sm:p-3 rounded-full hover:scale-105 transition-all duration-300 shadow-fiesta hover-lift"
             >
               <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
               </svg>
               {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-yellow-500 text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold">
+                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-mexican-gold text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold animate-pulse">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               )}
@@ -232,25 +238,25 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-12 sm:top-16 z-30 bg-white shadow-sm">
+      <div className="sticky top-12 sm:top-16 z-30 bg-white shadow-lg border-b-2 border-gradient-mexico">
         <div className="max-w-4xl mx-auto p-3 sm:p-4">
           <div className="flex gap-2 sm:gap-4 mb-3 sm:mb-4">
             <button
               onClick={() => setShowTracking(false)}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base ${
                 !showTracking
-                  ? 'bg-red-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-sunset text-white shadow-fiesta hover-lift'
+                  : 'bg-gray-100 text-mexican-tierra hover:bg-gradient-fresh hover:text-white'
               }`}
             >
               🍽️ Menu
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base ${
                 showTracking
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-mexico text-white shadow-mexican hover-lift'
+                  : 'bg-gray-100 text-mexican-tierra hover:bg-gradient-mexico hover:text-white'
               }`}
             >
               📍 Rastrear Pedido
@@ -260,19 +266,29 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
           
           {!showTracking && (
             <div className="flex overflow-x-auto gap-2 pb-2 -mx-1 px-1">
-              {categories.map(category => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap transition-colors text-sm sm:text-base flex-shrink-0 ${
-                    selectedCategory === category
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {category}
-                </button>
-              ))}
+              {categories.map((category, index) => {
+                const categoryColors = [
+                  'bg-gradient-sunset', 'bg-gradient-fiesta', 'bg-gradient-fresh', 
+                  'bg-gradient-terra', 'bg-mexican-red', 'bg-mexican-green'
+                ];
+                const hoverColors = [
+                  'hover:bg-gradient-fiesta', 'hover:bg-gradient-sunset', 'hover:bg-gradient-terra',
+                  'hover:bg-gradient-fresh', 'hover:bg-mexican-red-light', 'hover:bg-mexican-green-light'
+                ];
+                return (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold hover-lift ${
+                      selectedCategory === category
+                        ? `${categoryColors[index % categoryColors.length]} text-white shadow-fiesta`
+                        : `bg-white text-mexican-tierra border-2 border-mexican-orange hover:text-white ${hoverColors[index % hoverColors.length]}`
+                    }`}
+                  >
+                    {category}
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
@@ -405,30 +421,40 @@ function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (ite
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white border rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow"
+      className="bg-white border-2 border-mexican-orange-light rounded-xl shadow-fiesta overflow-hidden hover-lift hover:shadow-mexican transition-all duration-300"
     >
-      <img
-        src={item.image || 'https://via.placeholder.com/300x200'}
-        alt={item.name}
-        className="w-full h-40 sm:h-48 object-cover"
-      />
+      <div className="relative overflow-hidden">
+        <img
+          src={item.image || 'https://via.placeholder.com/300x200'}
+          alt={item.name}
+          className="w-full h-40 sm:h-48 object-cover transition-transform duration-300 hover:scale-105"
+        />
+        <div className="absolute top-2 right-2 bg-gradient-fiesta text-white text-xs font-bold px-2 py-1 rounded-full">
+          {item.preparationTime} min
+        </div>
+        {item.category && (
+          <div className="absolute top-2 left-2 bg-gradient-mexico text-white text-xs font-bold px-2 py-1 rounded-full">
+            {item.category}
+          </div>
+        )}
+      </div>
       <div className="p-3 sm:p-4">
-        <h3 className="text-base sm:text-lg font-semibold mb-2">{item.name}</h3>
+        <h3 className="text-base sm:text-lg font-bold mb-2 text-mexican-tierra">{item.name}</h3>
         <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{item.description}</p>
         
         {/* Customizations */}
         {item.customizations && item.customizations.length > 0 && (
           <div className="mb-4">
-            <p className="text-sm font-medium text-gray-700 mb-2">Personalizações:</p>
+            <p className="text-sm font-semibold text-mexican-tierra mb-2">🌶️ Personalizações:</p>
             <div className="flex flex-wrap gap-2">
               {item.customizations.map(customization => (
                 <button
                   key={customization}
                   onClick={() => toggleCustomization(customization)}
-                  className={`px-2 py-1 text-xs rounded-full transition-colors ${
+                  className={`px-2 py-1 text-xs rounded-full transition-all duration-300 font-medium ${
                     selectedCustomizations.includes(customization)
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-gradient-sunset text-white shadow-fiesta'
+                      : 'bg-mexican-gold-light text-mexican-tierra hover:bg-gradient-fiesta hover:text-white'
                   }`}
                 >
                   {customization}
@@ -438,18 +464,16 @@ function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (ite
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
-          <span className="text-lg sm:text-xl font-bold text-red-600">{item.price} AOA</span>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-2">
+          <div className="text-lg sm:text-xl font-bold text-gradient-sunset">
+            {item.price} AOA
+          </div>
           <button
             onClick={() => onAddToCart(item, selectedCustomizations)}
-            className="w-full sm:w-auto bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+            className="w-full sm:w-auto bg-gradient-sunset text-white px-4 sm:px-6 py-2.5 rounded-xl hover:bg-gradient-fiesta transition-all duration-300 text-sm sm:text-base font-bold shadow-fiesta hover-lift hover:shadow-mexican"
           >
-            Adicionar
+            🛒 Adicionar
           </button>
-        </div>
-        
-        <div className="mt-2 text-xs text-gray-500">
-          Tempo de preparo: {item.preparationTime} min
         </div>
       </div>
     </motion.div>
