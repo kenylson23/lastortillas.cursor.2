@@ -81,22 +81,6 @@ export default function Navigation() {
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Desktop: Botão completo */}
-            <button 
-              onClick={() => scrollToSection("#contato")}
-              className="hidden md:block bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300 floating-btn"
-            >
-              Reservar Mesa
-            </button>
-            
-            {/* Mobile: Botão compacto */}
-            <button 
-              onClick={() => scrollToSection("#contato")}
-              className="md:hidden bg-red-600 text-white px-3 py-2 rounded-full hover:bg-red-700 transition-all duration-300 text-sm"
-            >
-              Reservar
-            </button>
-            
             {/* Menu hambúrguer */}
             <div className="md:hidden">
               <button 
@@ -124,14 +108,6 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
-              
-              {/* Botão de reserva destacado no menu mobile */}
-              <button
-                onClick={() => scrollToSection("#contato")}
-                className="block bg-red-600 text-white px-3 py-3 rounded-lg hover:bg-red-700 transition-all duration-300 text-base font-semibold w-full text-center mt-4 mx-3"
-              >
-                🍽️ Reservar Mesa
-              </button>
               
               {/* Botão de pedido online no menu mobile */}
               <a

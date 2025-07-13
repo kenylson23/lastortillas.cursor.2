@@ -248,3 +248,8 @@ Preferred communication style: Simple, everyday language.
   - Tables are automatically freed when orders are completed/cancelled/deleted
   - Enhanced order details with table information in admin panel
   - Updated WhatsApp sharing to include table details for dine-in orders
+- July 13, 2025: Removed reservation button from navigation
+  - Removed reservation button from both desktop and mobile navigation
+  - Cleaned up navigation component to focus on menu links only
+  - Maintained only menu hamburger button for mobile navigation
+  - Removed duplicate reservation button from mobile menu
