@@ -552,14 +552,14 @@ function MenuItemCard({
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3 }}
           >
-            {item.price} <span className="text-lg text-orange-200">AOA</span>
+            {item.price} <span className="text-lg text-red-200">AOA</span>
           </motion.div>
         </div>
       </div>
       
       <div className="p-4 sm:p-6 space-y-4">
         <div className="space-y-2">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-800 group-hover:text-orange-600 transition-colors duration-300">
+          <h3 className="text-lg sm:text-xl font-bold text-red-600 group-hover:text-red-700 transition-colors duration-300">
             {item.name}
           </h3>
           <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
@@ -582,8 +582,8 @@ function MenuItemCard({
                   whileTap={{ scale: 0.95 }}
                   className={`px-3 py-1.5 text-xs rounded-2xl transition-all duration-300 font-semibold border ${
                     selectedCustomizations.includes(customization)
-                      ? 'bg-gradient-sunset/80 text-white shadow-md border-orange-200 scale-105'
-                      : 'bg-white/80 text-gray-700 border-gray-200 hover:bg-gradient-sunset/70 hover:text-white hover:scale-105'
+                      ? 'bg-red-600 text-white shadow-md border-red-200 scale-105'
+                      : 'bg-white/80 text-gray-700 border-gray-200 hover:bg-red-500 hover:text-white hover:scale-105'
                   }`}
                 >
                   {customization}
@@ -597,7 +597,7 @@ function MenuItemCard({
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-gradient-sunset text-white px-6 py-3.5 rounded-xl hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
+          className="w-full bg-red-600 text-white px-6 py-3.5 rounded-xl hover:bg-red-700 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
         >
           <motion.span
             animate={{ rotate: isHovered ? 360 : 0 }}
