@@ -12,9 +12,12 @@ export default function Login() {
     e.preventDefault();
     setIsLoading(true);
 
+    console.log('Tentando login com:', credentials);
+
     // Simple authentication - in production, this would be handled by the backend
     if (credentials.username === 'admin' && credentials.password === 'admin123') {
       localStorage.setItem('isAuthenticated', 'true');
+      console.log('Login bem-sucedido');
       toast({
         title: "Login realizado com sucesso",
         description: "Redirecionando para o painel de gestão...",
@@ -24,6 +27,7 @@ export default function Login() {
         setLocation('/admin');
       }, 1000);
     } else {
+      console.log('Credenciais inválidas:', credentials);
       toast({
         title: "Credenciais inválidas",
         description: "Nome de usuário ou senha incorretos",
@@ -89,7 +93,10 @@ export default function Login() {
             </button>
           </div>
 
-          <div className="text-center">
+          <div className="text-center space-y-2">
+            <div className="text-xs text-gray-500 bg-gray-100 p-2 rounded">
+              Credenciais: admin / admin123
+            </div>
             <button
               type="button"
               onClick={() => setLocation('/')}
