@@ -224,9 +224,16 @@ export default function OnlineMenu({
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-50 via-red-50 to-green-50 min-h-screen">
+    <div className="bg-gradient-to-br from-orange-50 via-red-50 to-green-50 min-h-screen relative overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-fiesta rounded-full opacity-10 float-animation"></div>
+        <div className="absolute top-60 right-16 w-20 h-20 bg-gradient-fresh rounded-full opacity-15 float-animation" style={{animationDelay: '1s'}}></div>
+        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-mexico rounded-full opacity-10 float-animation" style={{animationDelay: '2s'}}></div>
+      </div>
+      
       {/* Unified Header with Location Selection */}
-      <div className="bg-gradient-sunset shadow-mexican text-white sticky top-0 z-40">
+      <div className="glass-morphism-dark backdrop-blur-xl bg-gradient-sunset shadow-mexican text-white sticky top-0 z-40 border-b border-white/20">
         {/* Main Header */}
         <div className="p-3 sm:p-4">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
@@ -247,13 +254,13 @@ export default function OnlineMenu({
               {!showTracking && (
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className="relative bg-gradient-fiesta p-2 sm:p-3 rounded-full hover:scale-105 transition-all duration-300 shadow-fiesta hover-lift"
+                  className={`relative bg-gradient-fiesta p-3 sm:p-4 rounded-2xl hover:scale-110 transition-all duration-500 shadow-fiesta hover-lift ${cart.length > 0 ? 'pulse-glow' : ''}`}
                 >
-                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                  <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                   </svg>
                   {cart.length > 0 && (
-                    <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-mexican-gold text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold animate-pulse">
+                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg animate-bounce">
                       {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </span>
                   )}
@@ -308,35 +315,37 @@ export default function OnlineMenu({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-20 sm:top-24 z-30 bg-white shadow-lg border-b-2 border-gradient-mexico">
-        <div className="max-w-4xl mx-auto p-3 sm:p-4">
-          <div className="flex gap-2 sm:gap-4 mb-3 sm:mb-4">
+      <div className="sticky top-20 sm:top-24 z-30 glass-morphism shadow-xl border-b border-white/30">
+        <div className="max-w-4xl mx-auto p-4 sm:p-6">
+          <div className="flex gap-3 sm:gap-6 mb-4 sm:mb-6">
             <button
               onClick={() => setShowTracking(false)}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-4 rounded-2xl font-bold transition-all duration-500 text-sm sm:text-base border-gradient-modern card-hover-modern ${
                 !showTracking
-                  ? 'bg-gradient-sunset text-white shadow-fiesta hover-lift'
-                  : 'bg-gray-100 text-mexican-tierra hover:bg-gradient-fresh hover:text-white'
+                  ? 'bg-gradient-sunset text-white shadow-fiesta scale-105'
+                  : 'bg-white/80 text-mexican-tierra hover:bg-gradient-fresh hover:text-white hover:scale-105'
               }`}
             >
-              🍽️ Menu
+              <span className="text-lg sm:text-xl mr-2">🍽️</span>
+              Menu
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`flex-1 sm:flex-none px-4 sm:px-6 py-3 rounded-xl font-bold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-4 rounded-2xl font-bold transition-all duration-500 text-sm sm:text-base border-gradient-modern card-hover-modern ${
                 showTracking
-                  ? 'bg-gradient-mexico text-white shadow-mexican hover-lift'
-                  : 'bg-gray-100 text-mexican-tierra hover:bg-gradient-mexico hover:text-white'
+                  ? 'bg-gradient-mexico text-white shadow-mexican scale-105'
+                  : 'bg-white/80 text-mexican-tierra hover:bg-gradient-mexico hover:text-white hover:scale-105'
               }`}
             >
-              📍 Rastrear Pedido
+              <span className="text-lg sm:text-xl mr-2">📍</span>
+              Rastrear Pedido
             </button>
-
           </div>
           
           {!showTracking && (
-            <div className="flex overflow-x-auto gap-2 pb-2 -mx-1 px-1">
+            <div className="flex overflow-x-auto gap-3 pb-3 -mx-2 px-2">
               {categories.map((category, index) => {
+                const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
                 const categoryColors = [
                   'bg-gradient-sunset', 'bg-gradient-fiesta', 'bg-gradient-fresh', 
                   'bg-gradient-terra', 'bg-mexican-red', 'bg-mexican-green'
@@ -349,12 +358,13 @@ export default function OnlineMenu({
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-full whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold hover-lift ${
+                    className={`px-4 sm:px-6 py-3 sm:py-4 rounded-2xl whitespace-nowrap transition-all duration-500 text-sm sm:text-base flex-shrink-0 font-bold card-hover-modern border ${
                       selectedCategory === category
-                        ? `${categoryColors[index % categoryColors.length]} text-white shadow-fiesta`
-                        : `bg-white text-mexican-tierra border-2 border-mexican-orange hover:text-white ${hoverColors[index % hoverColors.length]}`
+                        ? `${categoryColors[index % categoryColors.length]} text-white shadow-fiesta border-white/30 scale-105`
+                        : `glass-morphism text-mexican-tierra border-mexican-orange/30 hover:text-white hover:scale-105 ${hoverColors[index % hoverColors.length]}`
                     }`}
                   >
+                    <span className="text-base sm:text-lg mr-2">{categoryEmojis[index % categoryEmojis.length]}</span>
                     {category}
                   </button>
                 );
@@ -365,7 +375,7 @@ export default function OnlineMenu({
       </div>
 
       {/* Content Area */}
-      <div className="max-w-4xl mx-auto p-3 sm:p-4">
+      <div className="max-w-6xl mx-auto p-4 sm:p-6 relative z-10">
         {showTracking ? (
           /* Order Tracking Section */
           <div className="bg-white">
@@ -431,12 +441,13 @@ export default function OnlineMenu({
                 <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {filteredItems.map((item: MenuItem) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+                {filteredItems.map((item: MenuItem, index) => (
                   <MenuItemCard
                     key={item.id}
                     item={item}
                     onAddToCart={addToCart}
+                    delay={index * 0.1}
                   />
                 ))}
               </div>
@@ -476,8 +487,17 @@ export default function OnlineMenu({
 }
 
 // Menu Item Card Component
-function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (item: MenuItem, customizations: string[]) => void }) {
+function MenuItemCard({ 
+  item, 
+  onAddToCart, 
+  delay = 0 
+}: { 
+  item: MenuItem; 
+  onAddToCart: (item: MenuItem, customizations: string[]) => void;
+  delay?: number;
+}) {
   const [selectedCustomizations, setSelectedCustomizations] = useState<string[]>([]);
+  const [isHovered, setIsHovered] = useState(false);
 
   const toggleCustomization = (customization: string) => {
     setSelectedCustomizations(prev =>
@@ -489,62 +509,113 @@ function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (ite
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white border-2 border-mexican-orange-light rounded-xl shadow-fiesta overflow-hidden hover-lift hover:shadow-mexican transition-all duration-300"
+      initial={{ opacity: 0, y: 30, scale: 0.9 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ 
+        duration: 0.6, 
+        delay,
+        type: "spring", 
+        stiffness: 100,
+        damping: 15 
+      }}
+      whileHover={{ y: -12, scale: 1.03 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="card-modern rounded-3xl overflow-hidden card-hover-modern group cursor-pointer"
     >
       <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10"></div>
         <img
-          src={item.image || 'https://via.placeholder.com/300x200'}
+          src={item.image || '/api/placeholder/400/300'}
           alt={item.name}
-          className="w-full h-40 sm:h-48 object-cover transition-transform duration-300 hover:scale-105"
+          className="w-full h-48 sm:h-56 object-cover transition-all duration-700 group-hover:scale-110"
         />
-        <div className="absolute top-2 right-2 bg-gradient-fiesta text-white text-xs font-bold px-2 py-1 rounded-full">
-          {item.preparationTime} min
-        </div>
+        
+        {/* Floating badges */}
+        <motion.div 
+          className="absolute top-3 right-3 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-3 py-1.5 rounded-2xl shadow-lg z-20"
+          animate={{ scale: isHovered ? 1.1 : 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          ⏱️ {item.preparationTime} min
+        </motion.div>
+        
         {item.category && (
-          <div className="absolute top-2 left-2 bg-gradient-mexico text-white text-xs font-bold px-2 py-1 rounded-full">
+          <motion.div 
+            className="absolute top-3 left-3 bg-gradient-mexico text-white text-xs font-bold px-3 py-1.5 rounded-2xl shadow-lg z-20"
+            animate={{ scale: isHovered ? 1.1 : 1 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
+          >
             {item.category}
-          </div>
+          </motion.div>
         )}
+
+        {/* Overlay gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10"></div>
+        
+        {/* Price overlay */}
+        <div className="absolute bottom-4 left-4 z-20">
+          <motion.div 
+            className="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg"
+            animate={{ scale: isHovered ? 1.1 : 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            {item.price} <span className="text-lg text-yellow-300">AOA</span>
+          </motion.div>
+        </div>
       </div>
-      <div className="p-3 sm:p-4">
-        <h3 className="text-base sm:text-lg font-bold mb-2 text-mexican-tierra">{item.name}</h3>
-        <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{item.description}</p>
+      
+      <div className="p-4 sm:p-6 space-y-4">
+        <div className="space-y-2">
+          <h3 className="text-lg sm:text-xl font-bold text-mexican-tierra group-hover:text-mexican-red transition-colors duration-300">
+            {item.name}
+          </h3>
+          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+            {item.description}
+          </p>
+        </div>
         
         {/* Customizations */}
         {item.customizations && item.customizations.length > 0 && (
-          <div className="mb-4">
-            <p className="text-sm font-semibold text-mexican-tierra mb-2">🌶️ Personalizações:</p>
+          <div className="space-y-3">
+            <p className="text-sm font-bold text-mexican-tierra flex items-center">
+              <span className="mr-2">🌶️</span>
+              Personalizações
+            </p>
             <div className="flex flex-wrap gap-2">
               {item.customizations.map(customization => (
-                <button
+                <motion.button
                   key={customization}
                   onClick={() => toggleCustomization(customization)}
-                  className={`px-2 py-1 text-xs rounded-full transition-all duration-300 font-medium ${
+                  whileTap={{ scale: 0.95 }}
+                  className={`px-3 py-1.5 text-xs rounded-2xl transition-all duration-300 font-semibold border ${
                     selectedCustomizations.includes(customization)
-                      ? 'bg-gradient-sunset text-white shadow-fiesta'
-                      : 'bg-mexican-gold-light text-mexican-tierra hover:bg-gradient-fiesta hover:text-white'
+                      ? 'bg-gradient-sunset text-white shadow-lg border-orange-300 scale-105'
+                      : 'glass-morphism text-mexican-tierra border-mexican-orange/30 hover:bg-gradient-fiesta hover:text-white hover:scale-105'
                   }`}
                 >
                   {customization}
-                </button>
+                </motion.button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 sm:gap-2">
-          <div className="text-lg sm:text-xl font-bold text-gradient-sunset">
-            {item.price} AOA
-          </div>
-          <button
-            onClick={() => onAddToCart(item, selectedCustomizations)}
-            className="w-full sm:w-auto bg-gradient-sunset text-white px-4 sm:px-6 py-2.5 rounded-xl hover:bg-gradient-fiesta transition-all duration-300 text-sm sm:text-base font-bold shadow-fiesta hover-lift hover:shadow-mexican"
+        {/* Action button */}
+        <motion.button
+          onClick={() => onAddToCart(item, selectedCustomizations)}
+          whileTap={{ scale: 0.95 }}
+          className="w-full bg-gradient-sunset text-white px-6 py-4 rounded-2xl hover:bg-gradient-fiesta transition-all duration-500 text-base font-bold shadow-lg hover:shadow-xl group flex items-center justify-center space-x-2 card-hover-modern"
+        >
+          <motion.span
+            animate={{ rotate: isHovered ? 360 : 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-lg"
           >
-            🛒 Adicionar
-          </button>
-        </div>
+            🛒
+          </motion.span>
+          <span>Adicionar ao Carrinho</span>
+        </motion.button>
       </div>
     </motion.div>
   );

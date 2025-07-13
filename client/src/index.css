@@ -154,6 +154,84 @@
     box-shadow: 0 4px 20px rgba(255, 140, 0, 0.3), 0 2px 8px rgba(220, 38, 127, 0.15);
   }
   
+  /* Modern Glassmorphism Effects */
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .glass-morphism-dark {
+    background: rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* Modern Card Effects */
+  .card-modern {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.1),
+      0 4px 16px rgba(0, 0, 0, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  }
+  
+  .card-hover-modern {
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  
+  .card-hover-modern:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      0 8px 24px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Floating animations */
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .float-animation {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Pulse effect for cart */
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 193, 7, 0.5); }
+    50% { box-shadow: 0 0 40px rgba(255, 193, 7, 0.8), 0 0 60px rgba(255, 193, 7, 0.4); }
+  }
+  
+  .pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+  
+  /* Modern gradient borders */
+  .border-gradient-modern {
+    position: relative;
+    background: white;
+    border-radius: 16px;
+  }
+  
+  .border-gradient-modern::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    padding: 2px;
+    background: var(--gradient-sunset);
+    border-radius: inherit;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: xor;
+    -webkit-mask-composite: xor;
+  }
+  
   /* Mexican themed borders */
   .border-gradient-mexico {
     border: 2px solid transparent;
