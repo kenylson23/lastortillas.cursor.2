@@ -32,21 +32,21 @@ export default function Features() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-green-700 to-red-600">
+    <section className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-green-700 to-red-600">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             Por que escolher Las Tortillas Mexican Grill?
           </h2>
         </motion.div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -54,13 +54,13 @@ export default function Features() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 + (index * 0.2) }}
               viewport={{ once: true }}
-              className="text-center text-white card-3d bg-white/10 backdrop-blur-lg rounded-2xl p-8 hover:bg-white/20 transition-all duration-300"
+              className="text-center text-white card-3d bg-white/10 backdrop-blur-lg rounded-2xl p-6 sm:p-8 hover:bg-white/20 transition-all duration-300"
             >
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
-              <p className="text-white/90">{feature.description}</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">{feature.title}</h3>
+              <p className="text-sm sm:text-base text-white/90">{feature.description}</p>
             </motion.div>
           ))}
         </div>

@@ -109,7 +109,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.6 }}
-            className="text-xl md:text-2xl text-white mb-6 font-light"
+            className="text-lg sm:text-xl md:text-2xl text-white mb-4 sm:mb-6 font-light"
             style={{
               textShadow: '3px 3px 6px rgba(0,0,0,0.8), 1px 1px 3px rgba(0,0,0,0.6), 0px 0px 15px rgba(0,0,0,0.4)'
             }}
@@ -121,7 +121,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.8 }}
-            className="text-lg text-white mb-8"
+            className="text-base sm:text-lg text-white mb-6 sm:mb-8"
             style={{
               textShadow: '2px 2px 4px rgba(0,0,0,0.8), 1px 1px 2px rgba(0,0,0,0.6), 0px 0px 10px rgba(0,0,0,0.4)'
             }}

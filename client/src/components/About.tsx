@@ -8,29 +8,29 @@ export default function About() {
   ];
 
   return (
-    <section id="sobre" className="py-20 bg-white">
+    <section id="sobre" className="py-12 sm:py-16 lg:py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
               Nossa História
             </h2>
-            <p className="text-lg text-gray-600 mb-6">
+            <p className="text-base sm:text-lg text-gray-600 mb-4 sm:mb-6">
               Las Tortillas Mexican Grill nasceu do sonho de trazer os autênticos sabores mexicanos para Luanda. 
               Fundado em 14 de Fevereiro de 2018, somos um restaurante familiar que se dedica a preparar cada prato 
               com ingredientes frescos e receitas tradicionais passadas de geração em geração.
             </p>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-base sm:text-lg text-gray-600 mb-6 sm:mb-8">
               Há mais de 7 anos localizado na bela Ilha de Luanda, oferecemos uma experiência gastronómica única, 
               combinando a hospitalidade angolana com a paixão pela culinária mexicana. Nossa história começou 
               no Dia dos Namorados, simbolizando o amor que dedicamos à nossa culinária e aos nossos clientes.
             </p>
-            <div className="flex items-center space-x-8">
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-8">
               {stats.map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -38,10 +38,10 @@ export default function About() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.6 + (index * 0.2) }}
                   viewport={{ once: true }}
-                  className="text-center"
+                  className="text-center min-w-[100px]"
                 >
-                  <div className="text-3xl font-bold text-red-600">{stat.number}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
+                  <div className="text-2xl sm:text-3xl font-bold text-red-600">{stat.number}</div>
+                  <div className="text-xs sm:text-sm text-gray-600">{stat.label}</div>
                 </motion.div>
               ))}
             </div>

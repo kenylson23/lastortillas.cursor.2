@@ -187,14 +187,14 @@ Obrigado!`;
   ];
 
   return (
-    <section id="contato" className="py-20 bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4">
+    <section id="contato" className="py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-gray-50 to-gray-100">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
             Faça Sua Reserva
@@ -213,7 +213,7 @@ Obrigado!`;
           >
             <div className="bg-gray-50 rounded-2xl p-4 sm:p-6 lg:p-8">
               <div className="p-0">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Informações de Contato</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Informações de Contato</h3>
                 
                 <div className="space-y-6">
                   {contactInfo.map((info, index) => (
@@ -225,12 +225,12 @@ Obrigado!`;
                       viewport={{ once: true }}
                       className="flex items-center"
                     >
-                      <div className={`w-12 h-12 ${info.bgColor} rounded-full flex items-center justify-center mr-4 text-white`}>
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 ${info.bgColor} rounded-full flex items-center justify-center mr-3 sm:mr-4 text-white flex-shrink-0`}>
                         {info.icon}
                       </div>
                       <div>
-                        <div className="font-semibold text-gray-900">{info.title}</div>
-                        <div className="text-gray-600">{info.description}</div>
+                        <div className="font-semibold text-gray-900 text-sm sm:text-base">{info.title}</div>
+                        <div className="text-gray-600 text-sm sm:text-base">{info.description}</div>
                       </div>
                     </motion.div>
                   ))}
