@@ -153,64 +153,64 @@ export default function EnhancedCart({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-2 sm:p-4"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
           >
-            <div className="p-6">
+            <div className="p-3 sm:p-6">
               {/* Header */}
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-4 sm:mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-800">Carrinho</h2>
-                  <p className="text-sm text-gray-600">{getLocationName(locationId)}</p>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Carrinho</h2>
+                  <p className="text-xs sm:text-sm text-gray-600">{getLocationName(locationId)}</p>
                 </div>
                 <button
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 text-2xl"
+                  className="text-gray-500 hover:text-gray-700 text-xl sm:text-2xl p-1 rounded-full hover:bg-gray-100"
                 >
                   ×
                 </button>
               </div>
 
               {cart.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="text-gray-400 text-6xl mb-4">🛒</div>
-                  <p className="text-gray-500 text-lg">Seu carrinho está vazio</p>
-                  <p className="text-gray-400 text-sm mt-2">Adicione alguns itens deliciosos!</p>
+                <div className="text-center py-8 sm:py-12">
+                  <div className="text-gray-400 text-4xl sm:text-6xl mb-4">🛒</div>
+                  <p className="text-gray-500 text-base sm:text-lg">Seu carrinho está vazio</p>
+                  <p className="text-gray-400 text-xs sm:text-sm mt-2">Adicione alguns itens deliciosos!</p>
                 </div>
               ) : (
                 <>
                   {/* Cart Items */}
-                  <div className="space-y-4 mb-6">
+                  <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                     {cart.map((item, index) => (
                       <motion.div
                         key={`${item.id}-${index}`}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 border rounded-lg hover:bg-gray-50 transition-colors"
                       >
                         <img
                           src={item.image || '/api/placeholder/80/80'}
                           alt={item.name}
-                          className="w-16 h-16 object-cover rounded-lg"
+                          className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
                         />
-                        <div className="flex-1">
-                          <h4 className="font-semibold text-gray-800">{item.name}</h4>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-800 text-sm sm:text-base truncate">{item.name}</h4>
                           {item.customizations.length > 0 && (
-                            <p className="text-sm text-gray-600 mt-1">
+                            <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">
                               {item.customizations.join(', ')}
                             </p>
                           )}
-                          <div className="flex items-center justify-between mt-2">
-                            <p className="text-red-600 font-bold">{item.price} AOA</p>
-                            <div className="flex items-center gap-2">
+                          <div className="flex items-center justify-between mt-1 sm:mt-2">
+                            <p className="text-red-600 font-bold text-sm sm:text-base">{item.price} AOA</p>
+                            <div className="flex items-center gap-1 sm:gap-2">
                               <button
                                 onClick={() => onUpdateQuantity(item.id, item.customizations, item.quantity - 1)}
-                                className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors"
+                                className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300 transition-colors text-sm sm:text-base"
                               >
                                 −
                               </button>

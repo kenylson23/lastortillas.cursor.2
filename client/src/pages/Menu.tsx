@@ -16,15 +16,15 @@ export default function Menu() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Menu Online</h1>
-              <p className="text-gray-600 mt-1">Faça seu pedido online para entrega ou retirada</p>
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 truncate">Menu Online</h1>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Faça seu pedido online</p>
             </div>
             <button
               onClick={() => setLocation('/')}
-              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base w-full sm:w-auto"
             >
               Voltar ao Site
             </button>
@@ -34,13 +34,13 @@ export default function Menu() {
 
       {/* Location Selection */}
       <div className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700">Selecione a localização:</span>
-            <div className="flex gap-2">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-4">
+          <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:gap-4">
+            <span className="text-xs sm:text-sm font-medium text-gray-700 flex-shrink-0">Localização:</span>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setSelectedLocationId('ilha')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium w-full sm:w-auto ${
                   selectedLocationId === 'ilha'
                     ? 'bg-red-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -50,7 +50,7 @@ export default function Menu() {
               </button>
               <button
                 onClick={() => setSelectedLocationId('talatona')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium w-full sm:w-auto ${
                   selectedLocationId === 'talatona'
                     ? 'bg-red-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -60,7 +60,7 @@ export default function Menu() {
               </button>
               <button
                 onClick={() => setSelectedLocationId('movel')}
-                className={`px-4 py-2 rounded-lg transition-colors ${
+                className={`px-3 sm:px-4 py-2 rounded-lg transition-colors text-xs sm:text-sm font-medium w-full sm:w-auto ${
                   selectedLocationId === 'movel'
                     ? 'bg-red-600 text-white'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
