@@ -118,6 +118,25 @@ export default function EnhancedCart({
     }
   };
 
+  const getAlternativeLocations = (currentLocationId: string) => {
+    const locations = [
+      { id: 'ilha', name: 'Ilha' },
+      { id: 'talatona', name: 'Talatona' },
+      { id: 'movel', name: 'Móvel' }
+    ];
+    
+    const alternatives = locations
+      .filter(loc => loc.id !== currentLocationId)
+      .map(loc => loc.name);
+    
+    if (alternatives.length === 2) {
+      return `(${alternatives[0]} ou ${alternatives[1]})`;
+    } else if (alternatives.length === 1) {
+      return `(${alternatives[0]})`;
+    }
+    return '';
+  };
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -298,8 +317,8 @@ export default function EnhancedCart({
                           </select>
                           {availableTables.filter(table => table.status === 'available').length === 0 && (
                             <p className="text-sm text-red-600 mt-2">
-                              ⚠️ Nenhuma mesa disponível para {getLocationName(locationId)}. 
-                              Verifique se criou mesas para esta localização no painel administrativo.
+                              ⚠️ Sentimos muito! O Las Tortillas {getLocationName(locationId)} está com todas as mesas ocupadas. 
+                              Tente nossas outras unidades {getAlternativeLocations(locationId)} ou peça para entrega.
                             </p>
                           )}
                         </div>
