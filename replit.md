@@ -260,3 +260,16 @@ Preferred communication style: Simple, everyday language.
   - Applied consistent styling across desktop and mobile versions
   - Enhanced mobile menu buttons with rounded corners and improved spacing
   - Added admin and logout buttons with matching modern design system
+- July 13, 2025: Mexican branding and visual identity implementation
+  - Created comprehensive Mexican color palette with authentic gradients (sunset, fiesta, terra, fresh)
+  - Added Mexican-themed CSS utilities with gradient backgrounds and text effects
+  - Implemented Mexican shadows and hover-lift animations for premium feel
+  - Applied consistent Mexican flag colors throughout the interface
+  - Added themed emojis and visual elements (🌮, 🌶️, 📍) for cultural authenticity
+- July 13, 2025: Unified header design for online ordering
+  - Removed duplicate headers between Menu.tsx and OnlineMenu.tsx components
+  - Created single unified header with gradient sunset background
+  - Integrated location selection directly into main header as sub-bar
+  - Added current location indicator with dynamic switching
+  - Streamlined navigation with consolidated "Voltar" button and cart icon
+  - Improved sticky positioning for better mobile experience

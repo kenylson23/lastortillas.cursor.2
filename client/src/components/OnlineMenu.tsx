@@ -15,9 +15,16 @@ interface CartItem extends MenuItem {
 interface OnlineMenuProps {
   locationId: string;
   onOrderCreated?: (order: Order) => void;
+  onLocationChange?: (locationId: string) => void;
+  onBackToSite?: () => void;
 }
 
-export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuProps) {
+export default function OnlineMenu({ 
+  locationId, 
+  onOrderCreated, 
+  onLocationChange = () => {}, 
+  onBackToSite = () => {} 
+}: OnlineMenuProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -207,38 +214,101 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
     );
   }
 
+  const getLocationName = (id: string) => {
+    switch (id) {
+      case 'ilha': return 'Las Tortillas Ilha';
+      case 'talatona': return 'Las Tortillas Talatona';
+      case 'movel': return 'Las Tortillas Móvel';
+      default: return 'Las Tortillas';
+    }
+  };
+
   return (
     <div className="bg-gradient-to-br from-orange-50 via-red-50 to-green-50 min-h-screen">
-      {/* Header */}
-      <div className="bg-gradient-sunset shadow-mexican text-white p-3 sm:p-4 sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <div className="flex items-center space-x-3">
-            <div className="text-2xl">🌮</div>
-            <div>
-              <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Las Tortillas</h1>
-              <p className="text-xs sm:text-sm text-orange-100 font-medium">Pedidos Online</p>
+      {/* Unified Header with Location Selection */}
+      <div className="bg-gradient-sunset shadow-mexican text-white sticky top-0 z-40">
+        {/* Main Header */}
+        <div className="p-3 sm:p-4">
+          <div className="max-w-4xl mx-auto flex justify-between items-center">
+            <div className="flex items-center space-x-3">
+              <div className="text-2xl">🌮</div>
+              <div>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Las Tortillas</h1>
+                <p className="text-xs sm:text-sm text-orange-100 font-medium">Pedidos Online</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <button
+                onClick={onBackToSite}
+                className="bg-gradient-fiesta text-white px-3 sm:px-4 py-2 rounded-xl hover:bg-gradient-terra transition-all duration-300 text-xs sm:text-sm font-bold shadow-mexican hover-lift"
+              >
+                🏠 Voltar
+              </button>
+              {!showTracking && (
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="relative bg-gradient-fiesta p-2 sm:p-3 rounded-full hover:scale-105 transition-all duration-300 shadow-fiesta hover-lift"
+                >
+                  <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                  </svg>
+                  {cart.length > 0 && (
+                    <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-mexican-gold text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold animate-pulse">
+                      {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                    </span>
+                  )}
+                </button>
+              )}
             </div>
           </div>
-          {!showTracking && (
-            <button
-              onClick={() => setIsCartOpen(true)}
-              className="relative bg-gradient-fiesta p-2 sm:p-3 rounded-full hover:scale-105 transition-all duration-300 shadow-fiesta hover-lift"
-            >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
-              </svg>
-              {cart.length > 0 && (
-                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-mexican-gold text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold animate-pulse">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
-          )}
+        </div>
+        
+        {/* Location Selection Bar */}
+        <div className="bg-black bg-opacity-20 border-t border-orange-300 border-opacity-30">
+          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
+            <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:gap-4">
+              <span className="text-xs sm:text-sm font-bold text-orange-100 flex-shrink-0 flex items-center">
+                📍 Localização atual: {getLocationName(locationId)}
+              </span>
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                <button
+                  onClick={() => onLocationChange('ilha')}
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                    locationId === 'ilha'
+                      ? 'bg-white text-mexican-red shadow-fiesta'
+                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                  }`}
+                >
+                  🏝️ Ilha
+                </button>
+                <button
+                  onClick={() => onLocationChange('talatona')}
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                    locationId === 'talatona'
+                      ? 'bg-white text-mexican-red shadow-fiesta'
+                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                  }`}
+                >
+                  🏢 Talatona
+                </button>
+                <button
+                  onClick={() => onLocationChange('movel')}
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                    locationId === 'movel'
+                      ? 'bg-white text-mexican-red shadow-fiesta'
+                      : 'bg-transparent text-white border border-orange-300 hover:bg-white hover:text-mexican-red'
+                  }`}
+                >
+                  🚚 Móvel
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-12 sm:top-16 z-30 bg-white shadow-lg border-b-2 border-gradient-mexico">
+      <div className="sticky top-20 sm:top-24 z-30 bg-white shadow-lg border-b-2 border-gradient-mexico">
         <div className="max-w-4xl mx-auto p-3 sm:p-4">
           <div className="flex gap-2 sm:gap-4 mb-3 sm:mb-4">
             <button
