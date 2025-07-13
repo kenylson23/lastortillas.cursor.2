@@ -103,15 +103,15 @@ export default function Navigation() {
         
         {/* Mobile menu - menu lateral completo */}
         {isMenuOpen && (
-          <div className="md:hidden">
+          <div className="md:hidden mobile-menu-overlay">
             {/* Overlay escuro */}
             <div 
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="absolute inset-0 bg-black bg-opacity-50"
               onClick={() => setIsMenuOpen(false)}
             />
             
             {/* Menu lateral */}
-            <div className="fixed top-0 right-0 h-full w-full max-w-sm bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-in-out">
+            <div className="mobile-menu-panel">
               <div className="flex flex-col h-full">
                 {/* Header do menu */}
                 <div className="bg-red-600 text-white p-4 flex justify-between items-center">
@@ -130,11 +130,14 @@ export default function Navigation() {
                 </div>
 
                 {/* Menu items */}
-                <div className="flex-1 p-4 space-y-3">
+                <div className="flex-1 p-4 space-y-3 overflow-y-auto">
                   {navItems.map((item) => (
                     <button
                       key={item.href}
-                      onClick={() => handleNavigation(item.href, item.isRoute)}
+                      onClick={() => {
+                        handleNavigation(item.href, item.isRoute);
+                        setIsMenuOpen(false);
+                      }}
                       className="block w-full text-left text-gray-700 hover:text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg text-lg font-medium transition-colors"
                     >
                       {item.label}
