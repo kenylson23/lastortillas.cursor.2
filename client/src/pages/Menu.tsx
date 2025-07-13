@@ -13,7 +13,7 @@ export default function Menu() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-red-50 to-green-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100">
       {/* Menu Component - Header será unificado dentro do componente */}
       <OnlineMenu
         locationId={selectedLocationId}

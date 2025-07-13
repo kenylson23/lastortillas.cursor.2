@@ -224,43 +224,43 @@ export default function OnlineMenu({
   };
 
   return (
-    <div className="bg-gradient-to-br from-orange-50/30 via-red-50/20 to-green-50/30 min-h-screen relative overflow-hidden">
-      {/* Background decorative elements */}
+    <div className="bg-gradient-to-br from-slate-50 to-gray-100 min-h-screen relative">
+      {/* Simplified background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-fiesta rounded-full opacity-5 float-animation"></div>
-        <div className="absolute top-60 right-16 w-20 h-20 bg-gradient-fresh rounded-full opacity-8 float-animation" style={{animationDelay: '1s'}}></div>
-        <div className="absolute bottom-32 left-1/4 w-24 h-24 bg-gradient-mexico rounded-full opacity-6 float-animation" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-20 left-10 w-16 h-16 bg-red-100 rounded-full opacity-20 animate-pulse"></div>
+        <div className="absolute top-60 right-16 w-12 h-12 bg-orange-100 rounded-full opacity-15 animate-pulse" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-32 left-1/4 w-14 h-14 bg-red-50 rounded-full opacity-25 animate-pulse" style={{animationDelay: '4s'}}></div>
       </div>
       
       {/* Unified Header with Location Selection */}
-      <div className="glass-morphism backdrop-blur-xl bg-gradient-sunset/80 shadow-lg text-white sticky top-0 z-40 border-b border-white/10">
+      <div className="bg-white shadow-md text-gray-800 sticky top-0 z-40 border-b border-gray-200">
         {/* Main Header */}
         <div className="p-3 sm:p-4">
           <div className="max-w-4xl mx-auto flex justify-between items-center">
             <div className="flex items-center space-x-3">
               <div className="text-2xl">🌮</div>
               <div>
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide">Las Tortillas</h1>
-                <p className="text-xs sm:text-sm text-orange-100 font-medium">Pedidos Online</p>
+                <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
+                <p className="text-xs sm:text-sm text-gray-600 font-medium">Pedidos Online</p>
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-3">
               <button
                 onClick={onBackToSite}
-                className="bg-white/20 text-white px-3 sm:px-4 py-2 rounded-xl hover:bg-white/30 transition-all duration-300 text-xs sm:text-sm font-semibold backdrop-blur-sm border border-white/20"
+                className="bg-gray-100 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-300 text-xs sm:text-sm font-semibold border border-gray-300"
               >
                 🏠 Voltar
               </button>
               {!showTracking && (
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className={`relative bg-white/20 p-3 sm:p-4 rounded-xl hover:bg-white/30 transition-all duration-300 backdrop-blur-sm border border-white/20 ${cart.length > 0 ? 'bg-white/30' : ''}`}
+                  className={`relative p-3 sm:p-4 rounded-lg transition-all duration-300 border ${cart.length > 0 ? 'bg-red-500 text-white border-red-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-red-500 hover:text-white hover:border-red-600'}`}
                 >
                   <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                   </svg>
                   {cart.length > 0 && (
-                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-red-600 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg animate-bounce">
+                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-orange-500 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg">
                       {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </span>
                   )}
@@ -271,39 +271,39 @@ export default function OnlineMenu({
         </div>
         
         {/* Location Selection Bar */}
-        <div className="bg-black bg-opacity-20 border-t border-orange-300 border-opacity-30">
+        <div className="bg-gray-50 border-t border-gray-200">
           <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
             <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-xs sm:text-sm font-bold text-orange-100 flex-shrink-0 flex items-center">
-                📍 Localização atual: {getLocationName(locationId)}
+              <span className="text-xs sm:text-sm font-semibold text-gray-700 flex-shrink-0 flex items-center">
+                📍 Localização: {getLocationName(locationId)}
               </span>
               <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => onLocationChange('ilha')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
                     locationId === 'ilha'
-                      ? 'bg-white text-red-600 shadow-md'
-                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
                   }`}
                 >
                   🏝️ Ilha
                 </button>
                 <button
                   onClick={() => onLocationChange('talatona')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
                     locationId === 'talatona'
-                      ? 'bg-white text-red-600 shadow-md'
-                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
                   }`}
                 >
                   🏢 Talatona
                 </button>
                 <button
                   onClick={() => onLocationChange('movel')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-bold w-full sm:w-auto hover-lift ${
+                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
                     locationId === 'movel'
-                      ? 'bg-white text-red-600 shadow-md'
-                      : 'bg-transparent text-white border border-red-300 hover:bg-white hover:text-red-600'
+                      ? 'bg-red-500 text-white shadow-md'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
                   }`}
                 >
                   🚚 Móvel
@@ -315,15 +315,15 @@ export default function OnlineMenu({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-20 sm:top-24 z-30 bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100">
+      <div className="sticky top-20 sm:top-24 z-30 bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto p-4 sm:p-6">
           <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
             <button
               onClick={() => setShowTracking(false)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
                 !showTracking
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-200'
+                  ? 'bg-red-500 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white border border-gray-300'
               }`}
             >
               <span className="text-base sm:text-lg mr-2">🍽️</span>
@@ -331,10 +331,10 @@ export default function OnlineMenu({
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
                 showTracking
-                  ? 'bg-red-600 text-white shadow-md'
-                  : 'bg-gray-50 text-gray-700 hover:bg-red-100 hover:text-red-700 border border-gray-200'
+                  ? 'bg-red-500 text-white shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white border border-gray-300'
               }`}
             >
               <span className="text-base sm:text-lg mr-2">📍</span>
@@ -350,10 +350,10 @@ export default function OnlineMenu({
                   <button
                     key={category}
                     onClick={() => setSelectedCategory(category)}
-                    className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-medium border ${
+                    className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
                       selectedCategory === category
-                        ? 'bg-red-600 text-white shadow-md border-red-200'
-                        : 'bg-white text-gray-700 border-gray-200 hover:bg-red-50 hover:border-red-300 hover:text-red-700'
+                        ? 'bg-red-500 text-white shadow-md border-red-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
                     }`}
                   >
                     <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
@@ -395,7 +395,7 @@ export default function OnlineMenu({
                   disabled={!trackingOrderId.trim()}
                   className={`w-full sm:w-auto px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                     trackingOrderId.trim()
-                      ? 'bg-red-600 text-white hover:bg-red-700'
+                      ? 'bg-red-500 text-white hover:bg-red-600'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   }`}
                 >
@@ -411,13 +411,13 @@ export default function OnlineMenu({
             )}
             
             {!trackingOrderId.trim() && (
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-                <div className="text-blue-600 text-4xl mb-4">📱</div>
-                <h3 className="text-lg font-semibold text-blue-900 mb-2">Como rastrear seu pedido?</h3>
-                <p className="text-blue-700 mb-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+                <div className="text-gray-600 text-4xl mb-4">📱</div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Como rastrear seu pedido?</h3>
+                <p className="text-gray-600 mb-4">
                   Digite o número do seu pedido no campo acima para acompanhar o status em tempo real.
                 </p>
-                <div className="text-sm text-blue-600">
+                <div className="text-sm text-gray-600">
                   <p>💡 Você recebeu o número do pedido na confirmação</p>
                   <p>📞 Dúvidas? Entre em contato: +244 949 639 932</p>
                 </div>
@@ -534,7 +534,7 @@ function MenuItemCard({
         
         {item.category && (
           <motion.div 
-            className="absolute top-3 left-3 bg-gradient-mexico/80 text-white text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-md backdrop-blur-sm z-20"
+            className="absolute top-3 left-3 bg-red-500/90 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md backdrop-blur-sm z-20"
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
@@ -580,10 +580,10 @@ function MenuItemCard({
                   key={customization}
                   onClick={() => toggleCustomization(customization)}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-3 py-1.5 text-xs rounded-2xl transition-all duration-300 font-semibold border ${
+                  className={`px-3 py-1.5 text-xs rounded-lg transition-all duration-300 font-semibold border ${
                     selectedCustomizations.includes(customization)
-                      ? 'bg-red-600 text-white shadow-md border-red-200 scale-105'
-                      : 'bg-white/80 text-gray-700 border-gray-200 hover:bg-red-500 hover:text-white hover:scale-105'
+                      ? 'bg-red-500 text-white shadow-md border-red-500'
+                      : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-red-500 hover:text-white hover:border-red-500'
                   }`}
                 >
                   {customization}
@@ -597,7 +597,7 @@ function MenuItemCard({
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-red-600 text-white px-6 py-3.5 rounded-xl hover:bg-red-700 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
+          className="w-full bg-red-500 text-white px-6 py-3.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
         >
           <motion.span
             animate={{ rotate: isHovered ? 360 : 0 }}

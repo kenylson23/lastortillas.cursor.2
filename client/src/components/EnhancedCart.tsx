@@ -206,7 +206,7 @@ export default function EnhancedCart({
                             </p>
                           )}
                           <div className="flex items-center justify-between mt-1 sm:mt-2">
-                            <p className="text-red-600 font-bold text-sm sm:text-base">{item.price} AOA</p>
+                            <p className="text-red-500 font-bold text-sm sm:text-base">{item.price} AOA</p>
                             <div className="flex items-center gap-1 sm:gap-2">
                               <button
                                 onClick={() => onUpdateQuantity(item.id, item.customizations, item.quantity - 1)}
@@ -244,7 +244,7 @@ export default function EnhancedCart({
                       )}
                       <div className="border-t pt-2 flex justify-between font-bold text-lg">
                         <span>Total:</span>
-                        <span className="text-red-600">{getTotalPrice().toFixed(2)} AOA</span>
+                        <span className="text-red-500">{getTotalPrice().toFixed(2)} AOA</span>
                       </div>
                     </div>
                     <div className="mt-3 text-sm text-gray-600">
@@ -261,7 +261,7 @@ export default function EnhancedCart({
                         placeholder="Nome completo *"
                         value={customerInfo.name}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
-                        className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                         required
                       />
                       <input
@@ -269,7 +269,7 @@ export default function EnhancedCart({
                         placeholder="Telefone *"
                         value={customerInfo.phone}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
-                        className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                         required
                       />
                       <input
@@ -277,12 +277,12 @@ export default function EnhancedCart({
                         placeholder="Email (opcional)"
                         value={customerInfo.email}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
-                        className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                       />
                       <select
                         value={customerInfo.orderType}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, orderType: e.target.value as any }))}
-                        className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                       >
                         <option value="delivery">🚚 Delivery (+500 AOA)</option>
                         <option value="takeaway">🏃 Takeaway</option>
@@ -294,7 +294,7 @@ export default function EnhancedCart({
                           placeholder="Endereço de entrega *"
                           value={customerInfo.address}
                           onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
-                          className="border rounded-lg p-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                          className="border border-gray-300 rounded-lg p-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                           required
                         />
                       )}
@@ -306,7 +306,7 @@ export default function EnhancedCart({
                               console.log('Table selection changed:', e.target.value);
                               setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }));
                             }}
-                            className="border rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                            className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                             required
                           >
                             <option value="">Selecione uma mesa *</option>
@@ -335,7 +335,7 @@ export default function EnhancedCart({
                       <select
                         value={customerInfo.paymentMethod}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, paymentMethod: e.target.value as any }))}
-                        className="border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                       >
                         <option value="cash">💵 Dinheiro</option>
                         <option value="card">💳 Cartão</option>
@@ -345,7 +345,7 @@ export default function EnhancedCart({
                         placeholder="Observações (opcional)"
                         value={customerInfo.notes}
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, notes: e.target.value }))}
-                        className="border rounded-lg p-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+                        className="border border-gray-300 rounded-lg p-3 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                         rows={3}
                       />
                     </div>
@@ -357,7 +357,7 @@ export default function EnhancedCart({
                     disabled={!isFormValid() || isSubmitting}
                     className={`w-full mt-6 py-4 rounded-lg font-semibold text-lg transition-colors ${
                       isFormValid() && !isSubmitting
-                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        ? 'bg-red-500 text-white hover:bg-red-600 shadow-md'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     }`}
                   >
