@@ -210,19 +210,19 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
   return (
     <div className="bg-white min-h-screen">
       {/* Header */}
-      <div className="bg-red-600 text-white p-4 sticky top-0 z-40">
+      <div className="bg-red-600 text-white p-3 sm:p-4 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Las Tortillas Online</h1>
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold">Las Tortillas Online</h1>
           {!showTracking && (
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative bg-red-700 p-2 rounded-full hover:bg-red-800 transition-colors"
+              className="relative bg-red-700 p-2 sm:p-3 rounded-full hover:bg-red-800 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
               </svg>
               {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 bg-yellow-500 text-black text-xs rounded-full w-4 h-4 sm:w-5 sm:h-5 flex items-center justify-center font-bold">
                   {cart.reduce((sum, item) => sum + item.quantity, 0)}
                 </span>
               )}
@@ -232,12 +232,12 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-16 z-30 bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="flex gap-4 mb-4">
+      <div className="sticky top-12 sm:top-16 z-30 bg-white shadow-sm">
+        <div className="max-w-4xl mx-auto p-3 sm:p-4">
+          <div className="flex gap-2 sm:gap-4 mb-3 sm:mb-4">
             <button
               onClick={() => setShowTracking(false)}
-              className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                 !showTracking
                   ? 'bg-red-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -247,7 +247,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                 showTracking
                   ? 'bg-blue-600 text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -259,12 +259,12 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
           </div>
           
           {!showTracking && (
-            <div className="flex overflow-x-auto gap-2 pb-2">
+            <div className="flex overflow-x-auto gap-2 pb-2 -mx-1 px-1">
               {categories.map(category => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full whitespace-nowrap transition-colors text-sm sm:text-base flex-shrink-0 ${
                     selectedCategory === category
                       ? 'bg-red-600 text-white'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -279,13 +279,13 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
       </div>
 
       {/* Content Area */}
-      <div className="max-w-4xl mx-auto p-4">
+      <div className="max-w-4xl mx-auto p-3 sm:p-4">
         {showTracking ? (
           /* Order Tracking Section */
           <div className="bg-white">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Rastrear Pedido</h2>
-              <div className="flex gap-4 items-end">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Rastrear Pedido</h2>
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Número do Pedido
@@ -295,7 +295,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
                     value={trackingOrderId}
                     onChange={(e) => setTrackingOrderId(e.target.value)}
                     placeholder="Digite o número do seu pedido (ex: 1, 2, 3...)"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
                   />
                 </div>
                 <button
@@ -305,7 +305,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
                     }
                   }}
                   disabled={!trackingOrderId.trim()}
-                  className={`px-6 py-2 rounded-lg font-semibold transition-colors ${
+                  className={`w-full sm:w-auto px-4 sm:px-6 py-2 rounded-lg font-semibold transition-colors text-sm sm:text-base ${
                     trackingOrderId.trim()
                       ? 'bg-blue-600 text-white hover:bg-blue-700'
                       : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -345,7 +345,7 @@ export default function OnlineMenu({ locationId, onOrderCreated }: OnlineMenuPro
                 <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                 {filteredItems.map((item: MenuItem) => (
                   <MenuItemCard
                     key={item.id}
@@ -410,11 +410,11 @@ function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (ite
       <img
         src={item.image || 'https://via.placeholder.com/300x200'}
         alt={item.name}
-        className="w-full h-48 object-cover"
+        className="w-full h-40 sm:h-48 object-cover"
       />
-      <div className="p-4">
-        <h3 className="text-lg font-semibold mb-2">{item.name}</h3>
-        <p className="text-gray-600 text-sm mb-3">{item.description}</p>
+      <div className="p-3 sm:p-4">
+        <h3 className="text-base sm:text-lg font-semibold mb-2">{item.name}</h3>
+        <p className="text-gray-600 text-xs sm:text-sm mb-3 line-clamp-2">{item.description}</p>
         
         {/* Customizations */}
         {item.customizations && item.customizations.length > 0 && (
@@ -438,11 +438,11 @@ function MenuItemCard({ item, onAddToCart }: { item: MenuItem; onAddToCart: (ite
           </div>
         )}
 
-        <div className="flex justify-between items-center">
-          <span className="text-xl font-bold text-red-600">{item.price} AOA</span>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 sm:gap-0">
+          <span className="text-lg sm:text-xl font-bold text-red-600">{item.price} AOA</span>
           <button
             onClick={() => onAddToCart(item, selectedCustomizations)}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+            className="w-full sm:w-auto bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
           >
             Adicionar
           </button>

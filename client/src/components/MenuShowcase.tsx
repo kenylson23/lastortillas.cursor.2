@@ -26,17 +26,17 @@ const MenuItemCard = memo(({ item, index }: { item: typeof MENU_ITEMS[0], index:
           <LazyImage
             src={item.image}
             alt={item.name}
-            className="w-full h-48 transition-transform duration-300 hover:scale-110"
+            className="w-full h-40 sm:h-48 transition-transform duration-300 hover:scale-110"
           />
         </div>
-        <div className="p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
-          <p className="text-gray-600 mb-4">{item.description}</p>
-          <div className="flex justify-between items-center">
-            <span className="text-2xl font-bold text-red-600">{item.price}</span>
+        <div className="p-4 sm:p-6">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
+          <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-2">{item.description}</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0">
+            <span className="text-xl sm:text-2xl font-bold text-red-600">{item.price}</span>
             <button 
               onClick={() => handleOrderItem(item.name)}
-              className="bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors"
+              className="w-full sm:w-auto bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800 transition-colors text-sm sm:text-base"
             >
               Pedir
             </button>
@@ -67,7 +67,7 @@ export default function MenuShowcase() {
           </p>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {MENU_ITEMS.map((item, index) => (
             <MenuItemCard key={item.id} item={item} index={index} />
           ))}

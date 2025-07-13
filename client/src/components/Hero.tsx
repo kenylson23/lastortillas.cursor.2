@@ -50,7 +50,7 @@ export default function Hero() {
         style={{
           backgroundImage: `url(${heroImage})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
           willChange: 'opacity'
         }}
@@ -77,31 +77,31 @@ export default function Hero() {
       )}
       
       {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/40 sm:bg-black/30" />
       
       {/* Additional gradient overlay for text area */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-transparent lg:block hidden" />
+      <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-transparent sm:from-black/40 lg:via-transparent" />
       
-      <div className="relative z-10 text-center px-4 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-20">
+      <div className="relative z-10 text-center px-4 sm:px-6 max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center min-h-screen py-16 sm:py-20">
         {/* Content without card */}
         <motion.div 
           initial={{ opacity: 0, x: -50 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
-          className="lg:text-left"
+          className="text-center lg:text-left"
         >
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 sm:mb-6"
             style={{
               textShadow: '4px 4px 8px rgba(0,0,0,0.8), 2px 2px 4px rgba(0,0,0,0.6), 0px 0px 20px rgba(0,0,0,0.5)'
             }}
           >
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-start text-center lg:text-left">
+            <div className="flex flex-col space-y-1 sm:space-y-2 lg:space-y-0 lg:flex-row lg:items-center lg:justify-start text-center lg:text-left">
               <span className="text-green-300" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Las Tortillas</span>
-              <span className="text-red-400 text-2xl md:text-4xl lg:text-5xl lg:ml-4 mt-2 lg:mt-0" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Mexican Grill</span>
+              <span className="text-red-400 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl lg:ml-4" style={{ textShadow: '4px 4px 8px rgba(0,0,0,0.9), 2px 2px 4px rgba(0,0,0,0.7)' }}>Mexican Grill</span>
             </div>
           </motion.h1>
           
