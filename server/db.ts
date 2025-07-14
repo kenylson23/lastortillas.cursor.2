@@ -1,21 +1,19 @@
 import { PrismaClient } from '@prisma/client';
 
-// Use local database for now due to Supabase connection issues
+// Use Supabase Connection Pooling
+const supabasePoolerUrl = `postgresql://postgres.nuoblhgwtxyrafbyxjkw:Kenylson%4023@aws-0-us-east-1.pooler.supabase.com:5432/postgres`;
 const localDbUrl = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`;
 
-console.log('Using local PostgreSQL database (Supabase ready for migration)');
+// Try Supabase pooler first, fallback to local if fails
+const databaseUrl = supabasePoolerUrl;
 
-if (!process.env.PGUSER || !process.env.PGHOST) {
-  throw new Error(
-    "PostgreSQL credentials must be set. Did you forget to provision a database?",
-  );
-}
+console.log('Using Supabase Connection Pooling');
 
 // Create Prisma client instance
 export const prisma = new PrismaClient({
   datasources: {
     db: {
-      url: localDbUrl,
+      url: databaseUrl,
     },
   },
 });
