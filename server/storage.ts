@@ -1,12 +1,10 @@
 import { 
-  reservations, contacts, menuItems, orders, orderItems, tables,
   type Reservation, type InsertReservation, 
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type Table, type InsertTable
-} from "@shared/schema";
-import { db } from "./db";
-import { eq, and, ne } from "drizzle-orm";
+} from "@shared/prisma-types";
+import { prisma } from "./db";
 
 export interface IStorage {
   // Reservation operations
@@ -62,67 +60,70 @@ export class DatabaseStorage implements IStorage {
 
   private async initializeSampleMenuItems(): Promise<void> {
     try {
-      // Test database connection first
-      await db.select().from(menuItems).limit(1);
-      
       // Check if menu items already exist
-      const existingItems = await db.select().from(menuItems);
+      const existingItems = await prisma.menuItem.findMany();
       if (existingItems.length === 0) {
         // Add sample menu items
         const sampleItems = [
           {
             name: 'Tacos al Pastor',
             description: 'Tacos tradicionais com carne de porco marinada, abacaxi e coentro',
-            price: '2500',
+            price: 2500,
             category: 'Tacos',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           },
           {
             name: 'Burrito Supremo',
             description: 'Burrito gigante com carne, feijão, arroz, queijo e molho especial',
-            price: '3200',
+            price: 3200,
             category: 'Burritos',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           },
           {
             name: 'Quesadilla de Queijo',
             description: 'Tortilla crocante recheada com queijo derretido e temperos',
-            price: '2000',
+            price: 2000,
             category: 'Quesadillas',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           },
           {
             name: 'Nachos Especiais',
             description: 'Chips de tortilla com queijo derretido, guacamole e molho picante',
-            price: '2800',
+            price: 2800,
             category: 'Aperitivos',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           },
           {
             name: 'Enchiladas Verdes',
             description: 'Tortillas recheadas com frango e cobertas com molho verde',
-            price: '3000',
+            price: 3000,
             category: 'Enchiladas',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           },
           {
             name: 'Fajitas de Frango',
             description: 'Frango grelhado com pimentos e cebolas, servido com tortillas',
-            price: '3500',
+            price: 3500,
             category: 'Fajitas',
             image: '/api/placeholder/400/300',
-            available: true
+            available: true,
+            customizations: []
           }
         ];
 
-        for (const item of sampleItems) {
-          await db.insert(menuItems).values(item);
-        }
+        await prisma.menuItem.createMany({
+          data: sampleItems
+        });
         console.log('Sample menu items initialized successfully');
       }
     } catch (error) {
@@ -133,74 +134,72 @@ export class DatabaseStorage implements IStorage {
   // Reservation operations
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
     await this.ensureInitialized();
-    const [reservation] = await db
-      .insert(reservations)
-      .values(insertReservation)
-      .returning();
-    return reservation;
+    return await prisma.reservation.create({
+      data: insertReservation
+    });
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
     await this.ensureInitialized();
-    const [contact] = await db
-      .insert(contacts)
-      .values(insertContact)
-      .returning();
-    return contact;
+    return await prisma.contact.create({
+      data: insertContact
+    });
   }
 
   async getAllReservations(): Promise<Reservation[]> {
     await this.ensureInitialized();
-    return await db.select().from(reservations);
+    return await prisma.reservation.findMany();
   }
 
   async checkAvailability(date: string, time: string): Promise<boolean> {
     await this.ensureInitialized();
-    const existing = await db
-      .select()
-      .from(reservations)
-      .where(and(eq(reservations.date, date), eq(reservations.time, time)));
-    return existing.length === 0;
+    const existing = await prisma.reservation.findFirst({
+      where: {
+        date: date,
+        time: time
+      }
+    });
+    return existing === null;
   }
 
   async getReservationsByDate(date: string): Promise<Reservation[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(reservations)
-      .where(eq(reservations.date, date));
+    return await prisma.reservation.findMany({
+      where: {
+        date: date
+      }
+    });
   }
 
   // Menu Items
   async getAllMenuItems(): Promise<MenuItem[]> {
     await this.ensureInitialized();
-    return await db.select().from(menuItems);
+    return await prisma.menuItem.findMany();
   }
 
   async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(menuItems)
-      .where(eq(menuItems.category, category));
+    return await prisma.menuItem.findMany({
+      where: {
+        category: category
+      }
+    });
   }
 
   async getMenuItem(id: number): Promise<MenuItem | undefined> {
     await this.ensureInitialized();
-    const [item] = await db
-      .select()
-      .from(menuItems)
-      .where(eq(menuItems.id, id));
-    return item;
+    return await prisma.menuItem.findUnique({
+      where: {
+        id: id
+      }
+    }) || undefined;
   }
 
   async createMenuItem(insertItem: InsertMenuItem): Promise<MenuItem> {
     await this.ensureInitialized();
-    const [item] = await db
-      .insert(menuItems)
-      .values(insertItem)
-      .returning();
-    return item;
+    return await prisma.menuItem.create({
+      data: insertItem
+    });
   }
 
   async updateMenuItem(id: number, updates: Partial<MenuItem>): Promise<MenuItem> {
@@ -208,41 +207,52 @@ export class DatabaseStorage implements IStorage {
     // Remove campos que não devem ser atualizados manualmente
     const { id: itemId, createdAt, ...validUpdates } = updates;
     
-    const [item] = await db
-      .update(menuItems)
-      .set(validUpdates)
-      .where(eq(menuItems.id, id))
-      .returning();
-    return item;
+    return await prisma.menuItem.update({
+      where: {
+        id: id
+      },
+      data: validUpdates
+    });
   }
 
   async deleteMenuItem(id: number): Promise<void> {
     await this.ensureInitialized();
-    await db
-      .delete(menuItems)
-      .where(eq(menuItems.id, id));
+    await prisma.menuItem.delete({
+      where: {
+        id: id
+      }
+    });
   }
 
   // Orders
   async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     await this.ensureInitialized();
-    const [order] = await db
-      .insert(orders)
-      .values(insertOrder)
-      .returning();
     
-    // Create order items
-    await db.insert(orderItems).values(
-      items.map(item => ({ ...item, orderId: order.id }))
-    );
+    // Create order with transaction
+    const order = await prisma.order.create({
+      data: {
+        ...insertOrder,
+        items: {
+          create: items.map(item => ({
+            menuItemId: item.menuItemId,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice,
+            customizations: item.customizations
+          }))
+        }
+      },
+      include: {
+        items: true
+      }
+    });
     
     // If it's a dine-in order with a table, mark the table as occupied
     if (order.orderType === 'dine-in' && order.tableId) {
       console.log(`Marking table ${order.tableId} as occupied for order ${order.id}`);
-      await db
-        .update(tables)
-        .set({ status: 'occupied', updatedAt: new Date() })
-        .where(eq(tables.id, order.tableId));
+      await prisma.table.update({
+        where: { id: order.tableId },
+        data: { status: 'occupied' }
+      });
       console.log(`Table ${order.tableId} marked as occupied`);
     } else {
       console.log(`Order ${order.id} - orderType: ${order.orderType}, tableId: ${order.tableId}`);
@@ -253,47 +263,80 @@ export class DatabaseStorage implements IStorage {
 
   async getOrder(id: number): Promise<Order | undefined> {
     await this.ensureInitialized();
-    const [order] = await db
-      .select()
-      .from(orders)
-      .where(eq(orders.id, id));
-    return order;
+    return await prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: {
+          include: {
+            menuItem: true
+          }
+        }
+      }
+    }) || undefined;
   }
 
   async getAllOrders(): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db.select().from(orders);
+    return await prisma.order.findMany({
+      include: {
+        items: {
+          include: {
+            menuItem: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
   }
 
   async getOrdersByStatus(status: string): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.status, status));
+    return await prisma.order.findMany({
+      where: { status },
+      include: {
+        items: {
+          include: {
+            menuItem: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
   }
 
   async getOrdersByLocation(locationId: string): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(orders)
-      .where(eq(orders.locationId, locationId));
+    return await prisma.order.findMany({
+      where: { locationId },
+      include: {
+        items: {
+          include: {
+            menuItem: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order> {
     await this.ensureInitialized();
+    
     // Get the current order first to check if it has a table
-    const [currentOrder] = await db
-      .select()
-      .from(orders)
-      .where(eq(orders.id, id));
+    const currentOrder = await prisma.order.findUnique({
+      where: { id }
+    });
 
-    const [order] = await db
-      .update(orders)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(orders.id, id))
-      .returning();
+    const order = await prisma.order.update({
+      where: { id },
+      data: { status }
+    });
 
     // If the order is completed or cancelled, and it was a dine-in order with a table,
     // mark the table as available again
@@ -301,10 +344,10 @@ export class DatabaseStorage implements IStorage {
         currentOrder.orderType === 'dine-in' && 
         currentOrder.tableId && 
         (status === 'delivered' || status === 'cancelled')) {
-      await db
-        .update(tables)
-        .set({ status: 'available', updatedAt: new Date() })
-        .where(eq(tables.id, currentOrder.tableId));
+      await prisma.table.update({
+        where: { id: currentOrder.tableId },
+        data: { status: 'available' }
+      });
     }
 
     return order;
@@ -312,143 +355,129 @@ export class DatabaseStorage implements IStorage {
 
   async deleteOrder(id: number): Promise<void> {
     await this.ensureInitialized();
-    // Get the order first to check if it has a table
-    const [currentOrder] = await db
-      .select()
-      .from(orders)
-      .where(eq(orders.id, id));
-
-    // First delete order items
-    await db
-      .delete(orderItems)
-      .where(eq(orderItems.orderId, id));
     
-    // Then delete the order
-    await db
-      .delete(orders)
-      .where(eq(orders.id, id));
+    // Get the order first to check if it has a table
+    const currentOrder = await prisma.order.findUnique({
+      where: { id }
+    });
+
+    // Delete the order (order items will be deleted automatically due to cascade)
+    await prisma.order.delete({
+      where: { id }
+    });
 
     // If it was a dine-in order with a table, mark the table as available again
     if (currentOrder && 
         currentOrder.orderType === 'dine-in' && 
         currentOrder.tableId) {
-      await db
-        .update(tables)
-        .set({ status: 'available', updatedAt: new Date() })
-        .where(eq(tables.id, currentOrder.tableId));
+      await prisma.table.update({
+        where: { id: currentOrder.tableId },
+        data: { status: 'available' }
+      });
     }
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(orderItems)
-      .where(eq(orderItems.orderId, orderId));
+    return await prisma.orderItem.findMany({
+      where: { orderId },
+      include: {
+        menuItem: true
+      }
+    });
   }
 
   // Tables operations
   async getAllTables(): Promise<Table[]> {
     await this.ensureInitialized();
-    return await db.select().from(tables);
+    return await prisma.table.findMany();
   }
 
   async getTablesByLocation(locationId: string): Promise<Table[]> {
     await this.ensureInitialized();
-    return await db
-      .select()
-      .from(tables)
-      .where(eq(tables.locationId, locationId));
+    return await prisma.table.findMany({
+      where: { locationId }
+    });
   }
 
   async getTable(id: number): Promise<Table | undefined> {
     await this.ensureInitialized();
-    const [table] = await db
-      .select()
-      .from(tables)
-      .where(eq(tables.id, id));
-    return table;
+    return await prisma.table.findUnique({
+      where: { id }
+    }) || undefined;
   }
 
   async createTable(insertTable: InsertTable): Promise<Table> {
     await this.ensureInitialized();
     
-    console.log(`🔍 Verificando duplicação para mesa ${insertTable.number} no local ${insertTable.locationId}`);
+    console.log(`🔍 Verificando duplicação para mesa ${insertTable.tableNumber} no local ${insertTable.locationId}`);
     
     // Verificar se já existe uma mesa com o mesmo número no mesmo local
-    const existingTable = await db
-      .select()
-      .from(tables)
-      .where(and(
-        eq(tables.locationId, insertTable.locationId),
-        eq(tables.number, insertTable.number)
-      ));
+    const existingTable = await prisma.table.findFirst({
+      where: {
+        locationId: insertTable.locationId,
+        tableNumber: insertTable.tableNumber
+      }
+    });
     
-    console.log(`🔍 Encontradas ${existingTable.length} mesas existentes:`, existingTable);
+    console.log(`🔍 Mesa existente encontrada:`, existingTable);
     
-    if (existingTable.length > 0) {
-      throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
+    if (existingTable) {
+      throw new Error(`Já existe uma mesa número ${insertTable.tableNumber} no local ${insertTable.locationId}`);
     }
     
-    const [table] = await db
-      .insert(tables)
-      .values(insertTable)
-      .returning();
-    return table;
+    return await prisma.table.create({
+      data: insertTable
+    });
   }
 
   async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
     await this.ensureInitialized();
     
     // Se está atualizando o número ou localização, verificar duplicação
-    if (updates.number !== undefined || updates.locationId !== undefined) {
+    if (updates.tableNumber !== undefined || updates.locationId !== undefined) {
       // Buscar a mesa atual para obter os dados completos
       const currentTable = await this.getTable(id);
       if (!currentTable) {
         throw new Error('Mesa não encontrada');
       }
       
-      const newNumber = updates.number !== undefined ? updates.number : currentTable.number;
+      const newNumber = updates.tableNumber !== undefined ? updates.tableNumber : currentTable.tableNumber;
       const newLocationId = updates.locationId !== undefined ? updates.locationId : currentTable.locationId;
       
       // Verificar se existe outra mesa com o mesmo número no mesmo local
-      const existingTable = await db
-        .select()
-        .from(tables)
-        .where(and(
-          eq(tables.locationId, newLocationId),
-          eq(tables.number, newNumber),
-          ne(tables.id, id) // Excluir a mesa atual da verificação
-        ));
+      const existingTable = await prisma.table.findFirst({
+        where: {
+          locationId: newLocationId,
+          tableNumber: newNumber,
+          NOT: { id: id } // Excluir a mesa atual da verificação
+        }
+      });
       
-      if (existingTable.length > 0) {
+      if (existingTable) {
         throw new Error(`Já existe uma mesa número ${newNumber} no local ${newLocationId}`);
       }
     }
     
-    const [table] = await db
-      .update(tables)
-      .set({ ...updates, updatedAt: new Date() })
-      .where(eq(tables.id, id))
-      .returning();
-    return table;
+    return await prisma.table.update({
+      where: { id },
+      data: updates
+    });
   }
 
   async deleteTable(id: number): Promise<void> {
     await this.ensureInitialized();
-    await db
-      .delete(tables)
-      .where(eq(tables.id, id));
+    await prisma.table.delete({
+      where: { id }
+    });
   }
 
   async updateTableStatus(id: number, status: string): Promise<Table> {
     await this.ensureInitialized();
-    const [table] = await db
-      .update(tables)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(tables.id, id))
-      .returning();
-    return table;
+    return await prisma.table.update({
+      where: { id },
+      data: { status }
+    });
   }
 }
 

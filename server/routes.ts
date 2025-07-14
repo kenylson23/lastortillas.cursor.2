@@ -1,8 +1,68 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema, insertTableSchema } from "@shared/schema";
+// Zod schemas for validation (will be replaced with Prisma types)
 import { z } from "zod";
+
+// Validation schemas
+const insertReservationSchema = z.object({
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  email: z.string().email().optional(),
+  date: z.string().min(1),
+  time: z.string().min(1),
+  guests: z.number().min(1),
+  notes: z.string().optional(),
+});
+
+const insertContactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  message: z.string().min(1),
+});
+
+const insertMenuItemSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+  price: z.number().min(0),
+  category: z.string().min(1),
+  image: z.string().optional(),
+  available: z.boolean().default(true),
+  preparationTime: z.number().default(15),
+  customizations: z.array(z.string()).default([]),
+});
+
+const insertOrderSchema = z.object({
+  customerName: z.string().min(1),
+  customerPhone: z.string().min(1),
+  customerEmail: z.string().email().optional(),
+  deliveryAddress: z.string().optional(),
+  orderType: z.enum(['delivery', 'takeaway', 'dine-in']),
+  locationId: z.string().min(1),
+  tableId: z.number().optional(),
+  totalAmount: z.number().min(0),
+  paymentMethod: z.enum(['cash', 'card', 'transfer']),
+  paymentStatus: z.enum(['pending', 'paid', 'failed']).default('pending'),
+  notes: z.string().optional(),
+  estimatedDeliveryTime: z.string().optional(),
+});
+
+const insertOrderItemSchema = z.object({
+  orderId: z.number(),
+  menuItemId: z.number(),
+  quantity: z.number().min(1),
+  unitPrice: z.number().min(0),
+  customizations: z.array(z.string()).default([]),
+});
+
+const insertTableSchema = z.object({
+  locationId: z.string().min(1),
+  tableNumber: z.number().min(1),
+  seats: z.number().min(1),
+  status: z.enum(['available', 'occupied', 'reserved', 'maintenance']).default('available'),
+});
+
 import multer from "multer";
 import path from "path";
 import fs from "fs";

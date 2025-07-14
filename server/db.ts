@@ -1,9 +1,4 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from "ws";
-import * as schema from "../shared/schema";
-
-neonConfig.webSocketConstructor = ws;
+import { PrismaClient } from '@prisma/client';
 
 if (!process.env.DATABASE_URL) {
   throw new Error(
@@ -11,17 +6,16 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Create pool with better error handling
-export const pool = new Pool({ 
-  connectionString: process.env.DATABASE_URL,
-  max: 20,
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
+// Create Prisma client instance
+export const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: process.env.DATABASE_URL,
+    },
+  },
 });
 
-// Add error handling for pool
-pool.on('error', (err) => {
-  console.error('Database pool error:', err);
+// Handle graceful shutdown
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
 });
-
-export const db = drizzle({ client: pool, schema });

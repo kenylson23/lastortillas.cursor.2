@@ -19,10 +19,10 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js framework
 - **Language**: TypeScript with ES modules
-- **Database**: PostgreSQL with Drizzle ORM
+- **Database**: PostgreSQL with Prisma ORM
 - **Database Provider**: Neon Database (serverless PostgreSQL)
 - **Validation**: Zod schemas for API request/response validation
-- **Development**: Currently uses in-memory storage with plans for PostgreSQL integration
+- **Development**: Using PostgreSQL with Prisma ORM for data persistence
 
 ## Key Components
 
@@ -43,8 +43,8 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 4. **Error Handling**: Structured error responses with proper HTTP status codes
 
 ### Shared Components
-1. **Database Schema**: Drizzle schema definitions for users, reservations, and contacts
-2. **Type Definitions**: Shared TypeScript types between frontend and backend
+1. **Database Schema**: Prisma schema definitions for users, reservations, contacts, menu items, orders, and tables
+2. **Type Definitions**: Shared TypeScript types between frontend and backend generated from Prisma Client
 3. **Validation Schemas**: Zod schemas for data validation
 
 ## Data Flow
@@ -82,8 +82,8 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 
 ### Backend Dependencies
 - **express**: Web application framework
-- **drizzle-orm**: Type-safe ORM for database operations
-- **@neondatabase/serverless**: Neon database client
+- **prisma**: Modern database toolkit with type-safe client
+- **@prisma/client**: Auto-generated Prisma client for database operations
 - **zod**: TypeScript-first schema validation
 - **connect-pg-simple**: PostgreSQL session store
 
@@ -310,3 +310,14 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
+- July 14, 2025: Migrated from Drizzle ORM to Prisma ORM
+  - Completely removed Drizzle ORM dependencies (drizzle-orm, drizzle-kit, drizzle-zod)
+  - Added Prisma and @prisma/client dependencies
+  - Created comprehensive Prisma schema with all database models
+  - Migrated all database operations from Drizzle to Prisma syntax
+  - Updated storage layer to use Prisma Client for type-safe database operations
+  - Generated Prisma Client and migrated database schema successfully
+  - All APIs now functioning with Prisma ORM (menu, orders, reservations, tables, contacts)
+  - Improved type safety and developer experience with Prisma's auto-generated types
+  - Database operations now use Prisma's intuitive and modern API
+  - Updated shared types to use Prisma-generated types instead of Drizzle schemas
