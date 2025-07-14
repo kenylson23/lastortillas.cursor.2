@@ -1,6 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { 
+  validateCredentials, 
+  generateToken, 
+  authenticateToken, 
+  optionalAuth, 
+  requireAdmin,
+  type AuthRequest 
+} from "./auth";
 // Zod schemas for validation (will be replaced with Prisma types)
 import { z } from "zod";
 
@@ -141,6 +149,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.set('X-XSS-Protection', '1; mode=block');
     
     next();
+  });
+
+  // ================================
+  // AUTHENTICATION ROUTES
+  // ================================
+  
+  // Login endpoint
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { username, password } = req.body;
+
+      if (!username || !password) {
+        return res.status(400).json({ 
+          message: 'Username e password são obrigatórios' 
+        });
+      }
+
+      // Validar credenciais
+      const user = await validateCredentials(username, password);
+      
+      if (!user) {
+        return res.status(401).json({ 
+          message: 'Credenciais inválidas' 
+        });
+      }
+
+      // Gerar token JWT
+      const token = generateToken(user);
+
+      // Retornar dados do usuário e token
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role
+        },
+        token,
+        expiresIn: '7d'
+      });
+
+    } catch (error) {
+      console.error('Login error:', error);
+      res.status(500).json({ 
+        message: 'Erro interno do servidor' 
+      });
+    }
+  });
+
+  // Token verification endpoint
+  app.get("/api/auth/verify", authenticateToken, async (req: AuthRequest, res) => {
+    try {
+      // Se chegou até aqui, o token é válido
+      res.json({
+        authenticated: true,
+        user: req.user
+      });
+    } catch (error) {
+      console.error('Token verification error:', error);
+      res.status(500).json({ 
+        message: 'Erro interno do servidor',
+        authenticated: false 
+      });
+    }
+  });
+
+  // Logout endpoint
+  app.post("/api/auth/logout", async (req, res) => {
+    try {
+      // Para JWT, logout é principalmente client-side (remover token)
+      res.json({
+        success: true,
+        message: 'Logout realizado com sucesso'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+      res.status(500).json({ 
+        message: 'Erro interno do servidor' 
+      });
+    }
   });
 
   // Check availability endpoint com cache

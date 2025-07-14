@@ -1,36 +1,47 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
-    console.log('Tentando login com:', credentials);
+    console.log('Tentando login com JWT:', credentials);
 
-    // Simple authentication - in production, this would be handled by the backend
-    if (credentials.username === 'administrador' && credentials.password === 'lasTortillas2025!') {
-      localStorage.setItem('isAuthenticated', 'true');
-      console.log('Login bem-sucedido');
+    try {
+      const result = await login(credentials.username, credentials.password);
+      
+      if (result.success) {
+        console.log('Login JWT bem-sucedido');
+        toast({
+          title: "Login realizado com sucesso",
+          description: "Redirecionando para o painel de gestão...",
+          variant: "success",
+        });
+        setTimeout(() => {
+          setLocation('/admin');
+        }, 1000);
+      } else {
+        console.log('Erro no login JWT:', result.message);
+        toast({
+          title: "Erro no login",
+          description: result.message || "Credenciais inválidas",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro no login:', error);
       toast({
-        title: "Login realizado com sucesso",
-        description: "Redirecionando para o painel de gestão...",
-        variant: "success",
-      });
-      setTimeout(() => {
-        setLocation('/admin');
-      }, 1000);
-    } else {
-      console.log('Credenciais inválidas:', credentials);
-      toast({
-        title: "Credenciais inválidas",
-        description: "Nome de usuário ou senha incorretos",
+        title: "Erro de conexão",
+        description: "Não foi possível conectar ao servidor",
         variant: "destructive",
       });
     }
