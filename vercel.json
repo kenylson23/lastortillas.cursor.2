@@ -1,9 +1,22 @@
 {
-  "framework": "vite",
-  "buildCommand": "node build-vercel.js",
-  "outputDirectory": "dist/public",
+  "version": 2,
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "installCommand": "npm install",
+  "functions": {
+    "api/*.ts": {
+      "runtime": "nodejs20.x"
+    }
+  },
   "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "/uploads/$1"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
