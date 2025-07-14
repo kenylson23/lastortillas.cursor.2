@@ -1,9 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 
-// Force use of local PostgreSQL database
+// Use local database for now due to Supabase connection issues
 const localDbUrl = `postgresql://${process.env.PGUSER}:${process.env.PGPASSWORD}@${process.env.PGHOST}:${process.env.PGPORT}/${process.env.PGDATABASE}`;
 
-console.log('Using local database:', localDbUrl.replace(/:[^@]+@/, ':***@'));
+console.log('Using local PostgreSQL database (Supabase ready for migration)');
 
 if (!process.env.PGUSER || !process.env.PGHOST) {
   throw new Error(
@@ -11,7 +11,7 @@ if (!process.env.PGUSER || !process.env.PGHOST) {
   );
 }
 
-// Create Prisma client instance with local database
+// Create Prisma client instance
 export const prisma = new PrismaClient({
   datasources: {
     db: {
