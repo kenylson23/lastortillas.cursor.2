@@ -19,7 +19,7 @@ const insertReservationSchema = z.object({
   email: z.string().email().optional(),
   date: z.string().min(1),
   time: z.string().min(1),
-  guests: z.number().min(1),
+  guests: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
   notes: z.string().optional(),
 });
 
@@ -33,11 +33,11 @@ const insertContactSchema = z.object({
 const insertMenuItemSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  price: z.number().min(0),
+  price: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseFloat(val) : val),
   category: z.string().min(1),
   image: z.string().optional(),
   available: z.boolean().default(true),
-  preparationTime: z.number().default(15),
+  preparationTime: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val).default(15),
   customizations: z.array(z.string()).default([]),
 });
 
@@ -48,8 +48,8 @@ const insertOrderSchema = z.object({
   deliveryAddress: z.string().optional(),
   orderType: z.enum(['delivery', 'takeaway', 'dine-in']),
   locationId: z.string().min(1),
-  tableId: z.number().optional(),
-  totalAmount: z.number().min(0),
+  tableId: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val).optional(),
+  totalAmount: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseFloat(val) : val),
   paymentMethod: z.enum(['cash', 'card', 'transfer']),
   paymentStatus: z.enum(['pending', 'paid', 'failed']).default('pending'),
   notes: z.string().optional(),
@@ -57,17 +57,17 @@ const insertOrderSchema = z.object({
 });
 
 const insertOrderItemSchema = z.object({
-  orderId: z.number(),
-  menuItemId: z.number(),
-  quantity: z.number().min(1),
-  unitPrice: z.number().min(0),
+  orderId: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
+  menuItemId: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
+  quantity: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
+  unitPrice: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseFloat(val) : val),
   customizations: z.array(z.string()).default([]),
 });
 
 const insertTableSchema = z.object({
   locationId: z.string().min(1),
-  tableNumber: z.number().min(1),
-  seats: z.number().min(1),
+  tableNumber: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
+  seats: z.union([z.string(), z.number()]).transform(val => typeof val === 'string' ? parseInt(val) : val),
   status: z.enum(['available', 'occupied', 'reserved', 'maintenance']).default('available'),
 });
 
