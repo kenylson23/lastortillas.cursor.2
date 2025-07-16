@@ -11,8 +11,9 @@ if (!connectionString) {
   throw new Error('Database URL not found in Supabase configuration');
 }
 
-// Create postgres client
+// Create postgres client with optimized configuration
 const client = postgres(connectionString, {
+  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
   max: 10, // Maximum number of connections
   idle_timeout: 20, // Close connections after 20 seconds of inactivity
   connect_timeout: 10, // Connection timeout
