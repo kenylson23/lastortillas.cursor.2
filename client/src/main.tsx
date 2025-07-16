@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./styles/performance.css";
-import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
+const heroImage = "/assets/hero-image.jpg";
 
 // Preload crítico da imagem do hero
 const preloadHeroImage = () => {

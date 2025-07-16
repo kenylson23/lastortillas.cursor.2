@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getHealthStatus } from '../server/monitoring';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -11,13 +12,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (req.method === 'GET') {
-    return res.json({ 
-      status: 'ok', 
-      timestamp: new Date().toISOString(),
-      service: 'Las Tortillas API',
-      version: '1.0.0'
-    });
+    try {
+      const health = await getHealthStatus();
+      
+      const statusCode = health.status === 'healthy' ? 200 : 
+                        health.status === 'degraded' ? 503 : 503;
+      
+      res.status(statusCode).json(health);
+    } catch (error) {
+      console.error('Health check error:', error);
+      res.status(500).json({
+        status: 'error',
+        timestamp: new Date().toISOString(),
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  } else {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
-
-  return res.status(405).json({ message: 'Method not allowed' });
 }

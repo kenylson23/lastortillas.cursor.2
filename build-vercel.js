@@ -1,71 +1,62 @@
-#!/usr/bin/env node
-
-import { execSync } from 'child_process';
+import { build } from 'vite';
+import { build as esbuild } from 'esbuild';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-console.log('🚀 Building Las Tortilhas for Vercel deployment...');
-
-try {
-  // Ensure clean slate
-  console.log('🧹 Cleaning previous builds...');
-  if (fs.existsSync('dist')) {
-    fs.rmSync('dist', { recursive: true, force: true });
-  }
-
-  // Create directory structure early to avoid issues
-  fs.mkdirSync('dist/public', { recursive: true });
-  console.log('📁 Created output directory: dist/public');
-
-  // Run optimized build with increased resources
-  console.log('⚡ Starting build process...');
-  console.log('ℹ️  This may take 2-3 minutes due to dependencies...');
+async function buildForVercel() {
+  console.log('🏗️ Building Las Tortillas for Vercel...');
   
-  execSync('vite build', {
-    stdio: 'pipe', // Reduce output noise
-    env: {
-      ...process.env,
-      NODE_ENV: 'production',
-      NODE_OPTIONS: '--max-old-space-size=8192',
-      CI: 'true', // Optimize for CI environment
-      VITE_LEGACY: 'false'
+  try {
+    // 1. Build do frontend com Vite
+    console.log('📦 Building frontend with Vite...');
+    await build({
+      root: 'client',
+      build: {
+        outDir: '../dist',
+        emptyOutDir: true
+      }
+    });
+
+    // 2. Build individual das funções serverless
+    console.log('⚡ Building serverless functions...');
+    const apiFunctions = ['auth', 'menu', 'restaurant', 'tables', 'health', 'index'];
+    
+    for (const func of apiFunctions) {
+      await esbuild({
+        entryPoints: [`api/${func}.ts`],
+        bundle: true,
+        platform: 'node',
+        target: 'node18',
+        format: 'esm',
+        outfile: `api/${func}.js`,
+        external: ['@prisma/client', 'bcryptjs', 'jsonwebtoken'],
+        banner: {
+          js: 'import { createRequire } from "module"; const require = createRequire(import.meta.url);'
+        }
+      });
     }
-  });
 
-  // Verify the build output
-  const outputPath = path.join(__dirname, 'dist', 'public');
-  const indexFile = path.join(outputPath, 'index.html');
+    // 3. Copiar arquivos estáticos
+    console.log('📁 Copying static files...');
+    if (fs.existsSync('client/public')) {
+      fs.cpSync('client/public', 'dist', { recursive: true });
+    }
+    if (fs.existsSync('public')) {
+      fs.cpSync('public', 'dist', { recursive: true });
+    }
 
-  if (fs.existsSync(indexFile)) {
-    const files = fs.readdirSync(outputPath);
-    const staticFiles = files.filter(f => 
-      f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css')
-    );
-    
+    // 4. Gerar Prisma Client
+    console.log('🔗 Generating Prisma Client...');
+    const { execSync } = await import('child_process');
+    execSync('npx prisma generate', { stdio: 'inherit' });
+
     console.log('✅ Build completed successfully!');
-    console.log(`📦 Output: ${staticFiles.length} static files in dist/public/`);
-    console.log(`🎯 Files: ${staticFiles.slice(0, 5).join(', ')}${staticFiles.length > 5 ? '...' : ''}`);
+    console.log('🚀 Ready for Vercel deployment');
     
-    // Ensure proper structure for Vercel
-    const stats = fs.statSync(indexFile);
-    console.log(`📄 index.html: ${Math.round(stats.size / 1024)}KB`);
-    
-  } else {
-    throw new Error('Build completed but index.html not found in expected location');
+  } catch (error) {
+    console.error('❌ Build failed:', error);
+    process.exit(1);
   }
-
-} catch (error) {
-  console.error('❌ Build failed:', error.message);
-  
-  // Provide helpful error context
-  if (error.code === 'ETIMEDOUT') {
-    console.error('💡 Build timed out. This is usually due to complex dependencies.');
-  } else if (error.status === 137) {
-    console.error('💡 Out of memory. Try increasing NODE_OPTIONS memory.');
-  }
-  
-  process.exit(1);
 }
+
+buildForVercel().catch(console.error);

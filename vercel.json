@@ -1,24 +1,24 @@
 {
-  "buildCommand": "npx prisma generate",
-  "outputDirectory": "public",
+  "buildCommand": "node build-vercel.js",
+  "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
-    "api/auth.ts": {
+    "api/auth.js": {
       "maxDuration": 30
     },
-    "api/menu.ts": {
+    "api/menu.js": {
       "maxDuration": 30
     },
-    "api/restaurant.ts": {
+    "api/restaurant.js": {
       "maxDuration": 30
     },
-    "api/tables.ts": {
+    "api/tables.js": {
       "maxDuration": 30
     },
-    "api/health.ts": {
+    "api/health.js": {
       "maxDuration": 10
     },
-    "api/index.ts": {
+    "api/index.js": {
       "maxDuration": 10
     }
   },

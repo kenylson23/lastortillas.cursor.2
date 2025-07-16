@@ -1,9 +1,9 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { validateCredentials, generateToken, verifyToken } from "../server/auth";
+import { jwtLoginHandler, jwtLogoutHandler, requireJWTAuth, JWTRequest } from "../server/jwtAuth";
 import { prisma } from "../server/db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const { method, body } = req;
+  const { method, url } = req;
   
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,40 +15,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    if (method === 'POST' && req.url?.includes('/login')) {
-      const { username, password } = body;
-      
-      if (!username || !password) {
-        return res.status(400).json({ error: "Username and password are required" });
-      }
-
-      const user = await validateCredentials(username, password);
-      if (!user) {
-        return res.status(401).json({ error: "Invalid credentials" });
-      }
-
-      const token = generateToken(user);
-      return res.status(200).json({ token, user });
+    // Login endpoint
+    if (method === 'POST' && url?.includes('/login')) {
+      return await jwtLoginHandler(req as any, res as any);
     }
 
-    if (method === 'POST' && req.url?.includes('/logout')) {
-      return res.status(200).json({ message: "Logged out successfully" });
+    // Logout endpoint
+    if (method === 'POST' && url?.includes('/logout')) {
+      return jwtLogoutHandler(req as any, res as any);
     }
 
-    if (method === 'GET' && req.url?.includes('/verify')) {
-      const authHeader = req.headers.authorization;
-      if (!authHeader?.startsWith('Bearer ')) {
-        return res.status(401).json({ error: "No token provided" });
-      }
-
-      const token = authHeader.substring(7);
-      const user = verifyToken(token);
-      
-      if (!user) {
-        return res.status(401).json({ error: "Invalid token" });
-      }
-
-      return res.status(200).json({ user });
+    // Verify endpoint
+    if (method === 'GET' && url?.includes('/verify')) {
+      return requireJWTAuth(req as JWTRequest, res as any, () => {
+        res.status(200).json({ user: (req as JWTRequest).user });
+      });
     }
 
     return res.status(405).json({ error: "Method not allowed" });

@@ -34,12 +34,12 @@ export function getSupabaseConfig(): SupabaseConfig {
     anonKey,
     serviceRoleKey,
     databaseUrl,
-    isProduction,
+    isProduction: isProduction || process.env.VERCEL,
     connectionConfig: {
-      maxConnections: isProduction ? 20 : 10,
-      idleTimeout: isProduction ? 30 : 20, // segundos
-      connectTimeout: isProduction ? 30 : 10, // segundos
-      ssl: isProduction ? 'require' : false
+      maxConnections: process.env.VERCEL ? 3 : (isProduction ? 20 : 10),
+      idleTimeout: process.env.VERCEL ? 20 : (isProduction ? 30 : 20), // segundos
+      connectTimeout: process.env.VERCEL ? 30 : (isProduction ? 30 : 10), // segundos
+      ssl: isProduction || process.env.VERCEL ? 'require' : false
     }
   };
 }
