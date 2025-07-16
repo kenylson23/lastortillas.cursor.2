@@ -14,8 +14,8 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files from attached_assets
 app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
 
-// Serve static files from public directory
-app.use(express.static(path.join(process.cwd(), 'public')));
+// Serve static files from public directory (only for uploads and images)
+app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')));
 
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
