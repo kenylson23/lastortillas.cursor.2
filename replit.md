@@ -310,22 +310,15 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
-- July 14, 2025: Migrated from Drizzle ORM to Prisma ORM
-  - Completely removed Drizzle ORM dependencies (drizzle-orm, drizzle-kit, drizzle-zod)
-  - Added Prisma and @prisma/client dependencies
-  - Created comprehensive Prisma schema with all database models
-  - Migrated all database operations from Drizzle to Prisma syntax
-  - Updated storage layer to use Prisma Client for type-safe database operations
-  - Generated Prisma Client and migrated database schema successfully
-  - All APIs now functioning with Prisma ORM (menu, orders, reservations, tables, contacts)
-  - Improved type safety and developer experience with Prisma's auto-generated types
-  - Database operations now use Prisma's intuitive and modern API
-  - Updated shared types to use Prisma-generated types instead of Drizzle schemas
-  - Configured hybrid database system with local PostgreSQL and Supabase integration ready
-  - Created migration utilities for future Supabase connection when direct access is available
-  - Successfully connected to Supabase using Connection Pooling
-  - Database schema migrated and sample data inserted into Supabase
-  - All APIs now running on Supabase database with full functionality
+- July 16, 2025: Confirmed Drizzle ORM as primary database solution
+  - Maintained Drizzle ORM as the preferred database toolkit per user preference
+  - Drizzle ORM fully configured with PostgreSQL and Supabase integration
+  - All database operations using Drizzle's type-safe client and schema definitions
+  - Comprehensive Drizzle schema with all restaurant models (users, menu items, orders, reservations, tables, contacts)
+  - Storage layer optimized for Drizzle ORM with proper type safety
+  - Database migrations handled through Drizzle Kit configuration
+  - Supabase connection established using Drizzle's postgres-js adapter
+  - All APIs functioning with Drizzle ORM for reliable data operations
 - July 14, 2025: Prepared complete Vercel full-stack deployment
   - Created comprehensive API structure using Vercel Serverless Functions
   - Implemented TypeScript API endpoints for all restaurant operations
