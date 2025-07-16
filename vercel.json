@@ -1,7 +1,4 @@
 {
-  "buildCommand": "node build-vercel-simple.js",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
   "functions": {
     "api/auth.ts": {
       "maxDuration": 30
