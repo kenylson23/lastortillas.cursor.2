@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npx vite build && find dist/public -type f -exec mv {} dist/ \\; && rmdir dist/public 2>/dev/null || true && mkdir -p dist/uploads && find public/uploads -type f -exec cp {} dist/uploads/ \\; 2>/dev/null || true && cp dist/index.html dist/404.html 2>/dev/null || true",
+  "buildCommand": "./build.sh",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
