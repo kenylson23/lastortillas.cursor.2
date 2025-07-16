@@ -2,21 +2,15 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 
-// Configuração otimizada para build de produção
+// Configuração otimizada para build Vercel
 export default defineConfig({
   plugins: [react()],
   root: 'client',
   build: {
     outDir: '../dist',
     emptyOutDir: true,
-    minify: 'terser',
     rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-select'],
-        },
-      },
+      input: resolve(__dirname, 'client/index.html'),
     },
   },
   resolve: {

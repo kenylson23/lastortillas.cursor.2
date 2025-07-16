@@ -7,7 +7,7 @@ console.log('🚀 Vercel deployment build...');
 try {
   // Build apenas o frontend diretamente
   console.log('📦 Building frontend only...');
-  execSync('npx vite build --config vite.config.build.ts', { 
+  execSync('npx vite build', { 
     stdio: 'inherit',
     env: { ...process.env, NODE_ENV: 'production' }
   });
