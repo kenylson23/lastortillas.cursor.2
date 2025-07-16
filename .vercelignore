@@ -16,5 +16,7 @@ build-vercel.js
 build-vercel-fullstack.js
 build-for-vercel.js
 vercel-build.js
+build.sh
 scripts/
 attached_assets/
+dist/

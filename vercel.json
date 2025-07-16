@@ -1,6 +1,6 @@
 {
   "buildCommand": "npx prisma generate",
-  "outputDirectory": "dist/public",
+  "outputDirectory": "public",
   "installCommand": "npm install",
   "rewrites": [
     {
