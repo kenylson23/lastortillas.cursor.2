@@ -348,3 +348,13 @@ Preferred communication style: Simple, everyday language.
   - Fixed data validation issues preventing menu item creation
   - Updated Zod schemas to handle string/number type conversion
   - Resolved Supabase connectivity issues and confirmed database functionality
+- July 16, 2025: Fixed Vercel deployment runtime issues
+  - Corrected Node.js runtime version configuration (nodejs18.x)
+  - Updated vercel.json with proper function configuration
+  - Added .nvmrc file to specify Node.js version
+  - Created comprehensive tsconfig.json for TypeScript compilation
+  - Added .vercelignore to exclude development files
+  - Fixed Prisma client generation in build process
+  - Cleaned up deprecated Drizzle ORM references
+  - Added test endpoint for runtime validation
+  - Resolved "função deve ter uma versão válida" error for Vercel deployment
