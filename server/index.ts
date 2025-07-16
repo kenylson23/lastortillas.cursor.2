@@ -1,6 +1,10 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { setupHealthEndpoints } from "./health-endpoint";
 import { setupVite, serveStatic, log } from "./vite";
+import { testDatabaseConnection, checkDatabaseHealth } from "./db";
+import { validateSupabaseConfig } from "./supabase-config";
+import { databaseMonitor } from "./database-health";
 import path from "path";
 
 const app = express();
@@ -47,7 +51,39 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Validar configuração do Supabase
+  console.log('🔍 Validando configuração do Supabase...');
+  const configValidation = validateSupabaseConfig();
+  if (!configValidation.valid) {
+    console.error('❌ Configuração inválida:', configValidation.errors);
+  } else {
+    console.log('✅ Configuração do Supabase válida');
+  }
+
+  // Testar conexão com banco de dados
+  console.log('🔗 Testando conexão com banco de dados...');
+  const dbConnected = await testDatabaseConnection();
+  if (!dbConnected) {
+    console.error('💥 Falha crítica na conexão com banco de dados');
+    process.exit(1);
+  }
+
+  // Verificar saúde inicial do banco
+  const healthCheck = await checkDatabaseHealth();
+  console.log('📊 Status inicial do banco:', {
+    connected: healthCheck.connected,
+    version: healthCheck.version?.substring(0, 50) + '...' || 'N/A'
+  });
+
+  // Iniciar monitoramento de saúde em desenvolvimento
+  if (process.env.NODE_ENV === 'development') {
+    databaseMonitor.startMonitoring(60000); // A cada 1 minuto
+  }
+
   const server = await registerRoutes(app);
+
+  // Configurar endpoints de saúde
+  setupHealthEndpoints(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
