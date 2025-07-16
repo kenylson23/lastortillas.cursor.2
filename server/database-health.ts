@@ -3,7 +3,8 @@
  * Implementa verificações automáticas e diagnósticos
  */
 
-import { prisma, checkDatabaseHealth } from './db';
+import { db, checkDatabaseHealth } from './db.js';
+import { sql } from 'drizzle-orm';
 
 interface HealthMetrics {
   timestamp: Date;
@@ -28,18 +29,18 @@ class DatabaseHealthMonitor {
       const responseTime = Date.now() - startTime;
       
       // Verificar conexões ativas
-      const connectionsResult = await prisma.$queryRaw<[{ count: bigint }]>`
+      const connectionsResult = await db.execute(sql`
         SELECT COUNT(*) as count FROM pg_stat_activity 
         WHERE state = 'active' AND pid != pg_backend_pid()
-      `;
+      `);
       
       // Verificar queries lentas (mais de 5 segundos)
-      const slowQueriesResult = await prisma.$queryRaw<[{ count: bigint }]>`
+      const slowQueriesResult = await db.execute(sql`
         SELECT COUNT(*) as count FROM pg_stat_activity 
         WHERE state = 'active' 
         AND query_start < current_timestamp - INTERVAL '5 seconds'
         AND pid != pg_backend_pid()
-      `;
+      `);
       
       const metrics: HealthMetrics = {
         timestamp: new Date(),
