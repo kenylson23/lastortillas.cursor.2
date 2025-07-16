@@ -1,5 +1,5 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { storage } from "../server/storage";
+import { storage } from "../server/storage.js";
 import { z } from "zod";
 
 const menuItemSchema = z.object({
