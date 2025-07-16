@@ -349,12 +349,13 @@ Preferred communication style: Simple, everyday language.
   - Updated Zod schemas to handle string/number type conversion
   - Resolved Supabase connectivity issues and confirmed database functionality
 - July 16, 2025: Fixed Vercel deployment runtime issues
-  - Corrected Node.js runtime version configuration (nodejs18.x)
-  - Updated vercel.json with proper function configuration
-  - Added .nvmrc file to specify Node.js version
+  - Resolved "função deve ter uma versão válida" error by removing specific runtime configuration
+  - Simplified vercel.json to use automatic TypeScript detection (recommended by Vercel)
+  - Updated Node.js version to 20 in .nvmrc for better compatibility
+  - Removed explicit runtime specification allowing Vercel to auto-detect
   - Created comprehensive tsconfig.json for TypeScript compilation
   - Added .vercelignore to exclude development files
   - Fixed Prisma client generation in build process
   - Cleaned up deprecated Drizzle ORM references
-  - Added test endpoint for runtime validation
-  - Resolved "função deve ter uma versão válida" error for Vercel deployment
+  - Added API index endpoint for better deployment diagnostics
+  - Followed Vercel's recommendation for simpler configuration with automatic detection

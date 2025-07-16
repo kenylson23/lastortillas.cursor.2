@@ -1,13 +1,7 @@
 {
-  "version": 2,
   "buildCommand": "vite build && npx prisma generate",
   "outputDirectory": "dist",
   "installCommand": "npm install",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",
