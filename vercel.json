@@ -1,4 +1,6 @@
 {
+  "buildCommand": "node build-vercel.js",
+  "outputDirectory": "dist",
   "functions": {
     "api/auth.ts": {
       "maxDuration": 30
