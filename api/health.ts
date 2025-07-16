@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getHealthStatus } from '../server/monitoring.js';
+import { getHealthStatus } from '../server/monitoring';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers

@@ -1,5 +1,7 @@
 {
-  "framework": "vite",
+  "buildCommand": "node build-vercel.js",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
   "functions": {
     "api/auth.ts": {
       "maxDuration": 30
