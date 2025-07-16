@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node build-frontend-only.js",
+  "buildCommand": "vite build",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
