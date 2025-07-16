@@ -438,3 +438,11 @@ Preferred communication style: Simple, everyday language.
   - Server restarted successfully, all APIs functioning normally
   - Eliminated confusion between .ts source files and .js import declarations
   - Improved developer experience with consistent module resolution patterns
+- July 16, 2025: Implemented Solução 1 para conflitos Replit/Vercel
+  - Identificou dependências problemáticas: @replit/vite-plugin-cartographer, @replit/vite-plugin-runtime-error-modal
+  - Criou vite.config.vercel.ts específico para deployment sem plugins Replit
+  - Implementou build-clean.js script para remoção temporária de dependências conflitantes
+  - Adicionou verificações de ambiente (REPL_ID vs VERCEL) no build process
+  - Configurou .vercelignore para excluir arquivos específicos do Replit
+  - Otimizou build-vercel.js para usar configuração Vercel-específica
+  - Sistema agora compatível com ambos ambientes (Replit dev + Vercel prod)

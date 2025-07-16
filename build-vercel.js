@@ -1,15 +1,24 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
+import { cleanBuild, restorePackageJson } from './scripts/build-clean.js';
 
 console.log('🚀 Building Las Tortillas for Vercel...');
 
 try {
-  // Build frontend com Vite
+  // Step 1: Verifica configuração Vercel (não remove dependências em produção)
+  console.log('🔧 Using Vercel-specific configuration...');
+  
+  // Step 2: Build frontend com Vite (usando config específica para Vercel)
   console.log('📦 Building frontend...');
-  execSync('npx vite build', { 
+  execSync('npx vite build --config vite.config.vercel.ts', { 
     stdio: 'inherit',
-    env: { ...process.env, NODE_ENV: 'production' }
+    env: { 
+      ...process.env, 
+      NODE_ENV: 'production',
+      VERCEL: '1',
+      REPL_ID: undefined  // Força desabilitação de plugins Replit
+    }
   });
   
   // Verifica se build foi bem-sucedido
@@ -42,5 +51,21 @@ try {
   
 } catch (error) {
   console.error('❌ Build failed:', error.message);
+  
+  // Restaura package.json original se houve erro
+  try {
+    restorePackageJson();
+  } catch (restoreError) {
+    console.error('⚠️  Could not restore package.json:', restoreError.message);
+  }
+  
   process.exit(1);
+} finally {
+  // Sempre restaura package.json no final (sucesso ou erro)
+  try {
+    restorePackageJson();
+    console.log('🔄 Package.json restored to original state');
+  } catch (restoreError) {
+    console.warn('⚠️  Could not restore package.json:', restoreError.message);
+  }
 }

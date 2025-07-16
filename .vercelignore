@@ -14,3 +14,10 @@ __tests__
 *.spec.*
 attached_assets/
 replit.md
+# Backup files from build cleaning
+package.json.backup
+# Replit-specific files
+.replit.nix
+replit.nix
+# Scripts directory (não necessário para produção)
+scripts/
