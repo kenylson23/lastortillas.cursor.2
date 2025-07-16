@@ -1,6 +1,5 @@
 {
-  "buildCommand": "./build.sh",
-  "outputDirectory": "dist",
+  "framework": "vite",
   "functions": {
     "api/auth.ts": {
       "maxDuration": 30
