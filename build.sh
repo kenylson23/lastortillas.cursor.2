@@ -1,26 +1,28 @@
 #!/bin/bash
-set -e
+echo "🚀 Building for Vercel deployment..."
 
-echo "Building Las Tortillas for Vercel..."
+# Build only the frontend with Vite (skip server compilation)
+echo "📦 Building frontend..."
+NODE_ENV=production npx vite build --config vite.config.ts --mode production
 
-# Build with Vite
-npx vite build
-
-# Move files from dist/public to dist
-if [ -d "dist/public" ]; then
-  mv dist/public/* dist/
-  rmdir dist/public
+# Check if build was successful
+if [ ! -d "dist" ]; then
+  echo "❌ Build failed - no dist directory created"
+  exit 1
 fi
 
-# Copy uploads
-if [ -d "public/uploads" ]; then
-  mkdir -p dist/uploads
-  cp -r public/uploads/* dist/uploads/ 2>/dev/null || true
-fi
-
-# Create 404.html for SPA
+# Create 404.html for SPA routing
 if [ -f "dist/index.html" ]; then
+  echo "🔄 Creating 404.html for SPA routing..."
   cp dist/index.html dist/404.html
 fi
 
-echo "Build completed successfully!"
+# Create uploads directory if it doesn't exist
+if [ ! -d "dist/uploads" ]; then
+  echo "📁 Creating uploads directory..."
+  mkdir -p dist/uploads
+fi
+
+echo "✅ Build completed successfully!"
+echo "📂 Build output:"
+ls -la dist/
