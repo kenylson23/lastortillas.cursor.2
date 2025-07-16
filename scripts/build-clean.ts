@@ -8,19 +8,27 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
+interface PackageJson {
+  name?: string;
+  version?: string;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  [key: string]: any;
+}
+
 console.log('🧹 Cleaning Replit dependencies for Vercel build...');
 
-function removeReplitDeps() {
+function removeReplitDeps(): void {
   const packagePath = path.resolve(process.cwd(), 'package.json');
   if (!fs.existsSync(packagePath)) {
     console.log('❌ package.json not found at:', packagePath);
     return;
   }
 
-  const packageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
+  const packageJson: PackageJson = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
   
   // Dependencies problemáticas do Replit
-  const replitDeps = [
+  const replitDeps: string[] = [
     '@replit/vite-plugin-cartographer',
     '@replit/vite-plugin-runtime-error-modal'
   ];
@@ -30,8 +38,8 @@ function removeReplitDeps() {
   // Remove das devDependencies
   if (packageJson.devDependencies) {
     replitDeps.forEach(dep => {
-      if (packageJson.devDependencies[dep]) {
-        delete packageJson.devDependencies[dep];
+      if (packageJson.devDependencies![dep]) {
+        delete packageJson.devDependencies![dep];
         console.log(`🗑️  Removed ${dep} from devDependencies`);
         modified = true;
       }
@@ -41,8 +49,8 @@ function removeReplitDeps() {
   // Remove das dependencies principais se existir
   if (packageJson.dependencies) {
     replitDeps.forEach(dep => {
-      if (packageJson.dependencies[dep]) {
-        delete packageJson.dependencies[dep];
+      if (packageJson.dependencies![dep]) {
+        delete packageJson.dependencies![dep];
         console.log(`🗑️  Removed ${dep} from dependencies`);
         modified = true;
       }
@@ -63,7 +71,7 @@ function removeReplitDeps() {
   }
 }
 
-function restorePackageJson() {
+function restorePackageJson(): void {
   const backupPath = path.resolve(process.cwd(), 'package.json.backup');
   const packagePath = path.resolve(process.cwd(), 'package.json');
   
@@ -74,7 +82,7 @@ function restorePackageJson() {
 }
 
 // Função principal
-function cleanBuild() {
+function cleanBuild(): void {
   try {
     // Limpa dependências Replit
     removeReplitDeps();
@@ -86,7 +94,7 @@ function cleanBuild() {
     console.log('✅ Clean build environment ready');
     
   } catch (error) {
-    console.error('❌ Error during clean build:', error.message);
+    console.error('❌ Error during clean build:', (error as Error).message);
     restorePackageJson();
     process.exit(1);
   }

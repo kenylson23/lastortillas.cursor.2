@@ -1,7 +1,12 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { cleanBuild, restorePackageJson } from './scripts/build-clean.js';
+import { cleanBuild, restorePackageJson } from './scripts/build-clean';
+
+interface BuildOptions {
+  env: Record<string, string | undefined>;
+  stdio: 'inherit';
+}
 
 console.log('🚀 Building Las Tortillas for Vercel...');
 
@@ -11,7 +16,8 @@ try {
   
   // Step 2: Build frontend com Vite (usando config específica para Vercel)
   console.log('📦 Building frontend...');
-  execSync('npx vite build --config vite.config.vercel.ts', { 
+  
+  const buildOptions: BuildOptions = {
     stdio: 'inherit',
     env: { 
       ...process.env, 
@@ -19,7 +25,9 @@ try {
       VERCEL: '1',
       REPL_ID: undefined  // Força desabilitação de plugins Replit
     }
-  });
+  };
+  
+  execSync('npx vite build --config vite.config.vercel.ts', buildOptions);
   
   // Verifica se build foi bem-sucedido
   if (!fs.existsSync('dist')) {
@@ -47,16 +55,22 @@ try {
   }
   
   console.log('✅ Build completed successfully!');
-  console.log('📊 Build size:', execSync('du -sh dist', { encoding: 'utf8' }).trim());
+  
+  try {
+    const buildSize = execSync('du -sh dist', { encoding: 'utf8' }).trim();
+    console.log('📊 Build size:', buildSize);
+  } catch (sizeError) {
+    console.log('📊 Build size calculation failed, but build succeeded');
+  }
   
 } catch (error) {
-  console.error('❌ Build failed:', error.message);
+  console.error('❌ Build failed:', (error as Error).message);
   
   // Restaura package.json original se houve erro
   try {
     restorePackageJson();
   } catch (restoreError) {
-    console.error('⚠️  Could not restore package.json:', restoreError.message);
+    console.error('⚠️  Could not restore package.json:', (restoreError as Error).message);
   }
   
   process.exit(1);
@@ -66,6 +80,6 @@ try {
     restorePackageJson();
     console.log('🔄 Package.json restored to original state');
   } catch (restoreError) {
-    console.warn('⚠️  Could not restore package.json:', restoreError.message);
+    console.warn('⚠️  Could not restore package.json:', (restoreError as Error).message);
   }
 }
