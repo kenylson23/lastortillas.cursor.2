@@ -3,7 +3,7 @@ import {
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type Table, type InsertTable
-} from "@shared/prisma-types";
+} from "../shared/prisma-types";
 import { prisma } from "./db";
 
 export interface IStorage {

@@ -12,20 +12,25 @@ const orderSchema = z.object({
   items: z.array(z.object({
     menuItemId: z.number(),
     quantity: z.number().min(1),
-    customizations: z.array(z.string()).default([])
+    customizations: z.array(z.string()).default([]),
+    unitPrice: z.number().min(0)
   })).min(1),
   notes: z.string().optional(),
   totalAmount: z.number().min(0),
-  deliveryAddress: z.string().optional()
+  deliveryAddress: z.string().optional(),
+  status: z.string().default('pending'),
+  paymentMethod: z.string().default('cash'),
+  paymentStatus: z.string().default('pending'),
+  estimatedDeliveryTime: z.number().default(30)
 });
 
 const reservationSchema = z.object({
-  customerName: z.string().min(1),
-  customerPhone: z.string().min(1),
-  customerEmail: z.string().email().optional(),
-  reservationDate: z.string(),
-  reservationTime: z.string(),
-  partySize: z.number().min(1),
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  email: z.string().email().optional(),
+  date: z.string(),
+  time: z.string(),
+  guests: z.number().min(1),
   notes: z.string().optional()
 });
 
@@ -68,7 +73,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (method === 'POST') {
         const validatedData = orderSchema.parse(body);
         const { items, ...orderData } = validatedData;
-        const newOrder = await storage.createOrder(orderData, items);
+        const newOrder = await storage.createOrder(orderData as any, items as any);
         return res.status(201).json(newOrder);
       }
 
@@ -95,7 +100,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (method === 'POST') {
         const validatedData = reservationSchema.parse(body);
-        const newReservation = await storage.createReservation(validatedData);
+        const newReservation = await storage.createReservation(validatedData as any);
         return res.status(201).json(newReservation);
       }
     }
@@ -104,7 +109,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.url?.includes('/contacts')) {
       if (method === 'POST') {
         const validatedData = contactSchema.parse(body);
-        const newContact = await storage.createContact(validatedData);
+        const newContact = await storage.createContact(validatedData as any);
         return res.status(201).json(newContact);
       }
     }

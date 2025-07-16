@@ -3,8 +3,8 @@ import { storage } from "../server/storage";
 import { z } from "zod";
 
 const tableSchema = z.object({
-  number: z.number().min(1),
-  capacity: z.number().min(1),
+  tableNumber: z.number().min(1),
+  seats: z.number().min(1),
   locationId: z.string().min(1),
   status: z.enum(['available', 'occupied', 'reserved']).default('available')
 });
@@ -41,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // POST /api/tables - Create new table
     if (method === 'POST') {
       const validatedData = tableSchema.parse(body);
-      const newTable = await storage.createTable(validatedData);
+      const newTable = await storage.createTable(validatedData as any);
       return res.status(201).json(newTable);
     }
 

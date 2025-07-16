@@ -45,7 +45,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // POST /api/menu - Create new menu item
     if (method === 'POST') {
       const validatedData = menuItemSchema.parse(body);
-      const newMenuItem = await storage.createMenuItem(validatedData);
+      const newMenuItem = await storage.createMenuItem(validatedData as any);
       return res.status(201).json(newMenuItem);
     }
 
@@ -53,7 +53,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (method === 'PUT' && query.id) {
       const id = parseInt(query.id as string);
       const validatedData = menuItemSchema.partial().parse(body);
-      const updatedMenuItem = await storage.updateMenuItem(id, validatedData);
+      const updatedMenuItem = await storage.updateMenuItem(id, validatedData as any);
       return res.status(200).json(updatedMenuItem);
     }
 
