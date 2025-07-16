@@ -12,9 +12,7 @@ build
 .idea
 .DS_Store
 thumbs.db
-server/index.ts
-server/vite.ts
-vite.config.ts
+server/
 client/
 scripts/
 *.md
@@ -24,7 +22,6 @@ tests/
 __tests__
 *.test.*
 *.spec.*
-tsconfig.json
 .gitignore
 package-lock.json
 yarn.lock
@@ -34,3 +31,7 @@ pnpm-lock.yaml
 postcss.config.js
 tailwind.config.ts
 components.json
+vite.config.ts
+tsconfig.json
+replit.md
+attached_assets/

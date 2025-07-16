@@ -1,24 +1,24 @@
 {
-  "buildCommand": "node build-vercel.js",
+  "buildCommand": "node build-vercel-simple.js",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
-    "api/auth.js": {
+    "api/auth.ts": {
       "maxDuration": 30
     },
-    "api/menu.js": {
+    "api/menu.ts": {
       "maxDuration": 30
     },
-    "api/restaurant.js": {
+    "api/restaurant.ts": {
       "maxDuration": 30
     },
-    "api/tables.js": {
+    "api/tables.ts": {
       "maxDuration": 30
     },
-    "api/health.js": {
+    "api/health.ts": {
       "maxDuration": 10
     },
-    "api/index.js": {
+    "api/index.ts": {
       "maxDuration": 10
     }
   },
