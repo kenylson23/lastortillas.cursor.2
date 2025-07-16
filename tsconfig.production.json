@@ -1,0 +1,35 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "declaration": false,
+    "outDir": "./dist-production",
+    "rootDir": "./",
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["shared/*"]
+    }
+  },
+  "include": [
+    "api/**/*",
+    "server/**/*",
+    "shared/**/*"
+  ],
+  "exclude": [
+    "client/**/*",
+    "node_modules",
+    "dist",
+    "dist-production",
+    "server/adaptiveAuth.ts",
+    "server/database-health.ts", 
+    "server/storage_old.ts",
+    "server/routes.ts",
+    "server/supabase-migration.ts"
+  ]
+}

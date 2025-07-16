@@ -91,7 +91,7 @@ export class ProductionLogger {
   logDatabaseQuery(query: string, duration: number, success: boolean, metadata?: Record<string, any>) {
     const level = success ? 'info' : 'error';
     this[level](`Database query ${success ? 'completed' : 'failed'} (${duration}ms)`, 'database', {
-      queryText: query.substring(0, 100) + (query.length > 100 ? '...' : ''),
+      query: query.substring(0, 100) + (query.length > 100 ? '...' : ''),
       duration,
       success,
       ...metadata
