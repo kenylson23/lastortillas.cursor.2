@@ -27,6 +27,14 @@ try {
   
   console.log('✅ Frontend construído com sucesso!');
   
+  // Mover arquivos de dist/public para dist (Vercel espera em dist/)
+  if (existsSync('dist/public')) {
+    console.log('📁 Movendo arquivos para estrutura do Vercel...');
+    execSync('mv dist/public/* dist/', { stdio: 'inherit' });
+    execSync('rmdir dist/public', { stdio: 'inherit' });
+    console.log('✅ Estrutura corrigida para Vercel');
+  }
+  
   // Verificar se o build foi criado
   if (existsSync('dist')) {
     console.log('✅ Diretório dist/ criado');

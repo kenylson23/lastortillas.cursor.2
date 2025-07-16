@@ -1,6 +1,7 @@
 {
-  "buildCommand": "node build-vercel.js",
+  "buildCommand": "cd client && npx vite build --outDir ../dist --emptyOutDir && cp -r ../public/uploads ../dist/ 2>/dev/null || true && cp ../dist/index.html ../dist/404.html",
   "outputDirectory": "dist",
+  "installCommand": "npm install",
   "functions": {
     "api/auth.ts": {
       "maxDuration": 30
