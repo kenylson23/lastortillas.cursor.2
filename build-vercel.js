@@ -1,13 +1,13 @@
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
 
 console.log('🚀 Starting Vercel build process...');
 
 try {
-  // 1. Build frontend with Vite
+  // 1. Build frontend with Vite using production config
   console.log('📦 Building frontend with Vite...');
-  execSync('npx vite build', { stdio: 'inherit' });
+  execSync('npx vite build --config vite.config.prod.ts --logLevel warn', { stdio: 'inherit' });
   
   // 2. Move files from dist/public to dist (if they exist)
   const distPublicPath = path.join(process.cwd(), 'dist', 'public');

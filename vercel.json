@@ -1,5 +1,5 @@
 {
-  "buildCommand": "node build-vercel.js",
+  "buildCommand": "node build-no-timeout.js",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {
