@@ -2,16 +2,15 @@ import { pgTable, serial, text, timestamp, integer, boolean } from 'drizzle-orm/
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 
-// Users table
+// Users table  
 export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  username: text('username').notNull().unique(),
-  email: text('email').notNull().unique(),
-  password: text('password').notNull(),
-  firstName: text('first_name').notNull(),
-  lastName: text('last_name').notNull(),
-  role: text('role').notNull().default('user'),
+  id: text('id').primaryKey(),
+  email: text('email').unique(),
+  firstName: text('first_name'),
+  lastName: text('last_name'),
+  profileImageUrl: text('profile_image_url'),
   createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
 });
 
 // Menu Items table
@@ -87,7 +86,7 @@ export const contacts = pgTable('contacts', {
 export const tables = pgTable('tables', {
   id: serial('id').primaryKey(),
   tableNumber: integer('table_number').notNull(),
-  capacity: integer('capacity').notNull(),
+  seats: integer('seats').notNull(),
   status: text('status').notNull().default('available'),
   locationId: text('location_id').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
