@@ -1,6 +1,6 @@
 {
-  "buildCommand": "vite build && npx prisma generate",
-  "outputDirectory": "dist",
+  "buildCommand": "npx prisma generate",
+  "outputDirectory": "dist/public",
   "installCommand": "npm install",
   "rewrites": [
     {
