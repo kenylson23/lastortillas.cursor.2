@@ -1,7 +1,7 @@
-import { db } from './db.js';
+import { db } from './db';
 import { eq, and, desc } from 'drizzle-orm';
-import { users, menuItems, orders, orderItems, reservations, contacts, tables } from '../shared/schema.js';
-import type { User, MenuItem, Order, OrderItem, Reservation, Contact, Table, InsertUser, InsertMenuItem, InsertOrder, InsertOrderItem, InsertReservation, InsertContact, InsertTable } from '../shared/schema.js';
+import { users, menuItems, orders, orderItems, reservations, contacts, tables } from '../shared/schema';
+import type { User, MenuItem, Order, OrderItem, Reservation, Contact, Table, InsertUser, InsertMenuItem, InsertOrder, InsertOrderItem, InsertReservation, InsertContact, InsertTable } from '../shared/schema';
 
 export interface IStorage {
   // Reservation operations

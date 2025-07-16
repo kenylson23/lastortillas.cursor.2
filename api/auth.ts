@@ -1,6 +1,6 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { jwtLoginHandler, jwtLogoutHandler, requireJWTAuth, JWTRequest } from "../server/jwtAuth.js";
-import { db } from "../server/db.js";
+import { jwtLoginHandler, jwtLogoutHandler, requireJWTAuth, JWTRequest } from "../server/jwtAuth";
+import { db } from "../server/db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, url } = req;

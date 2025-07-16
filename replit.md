@@ -430,3 +430,11 @@ Preferred communication style: Simple, everyday language.
   - Created streamlined build-vercel.js script (23 characters buildCommand)
   - Comprehensive deployment documentation with environment variables and final instructions
   - All module resolution issues resolved, project 100% ready for production Vercel deployment
+- July 16, 2025: Resolved TypeScript/JavaScript import declaration conflicts (Solução A)
+  - Removed all .js extensions from TypeScript imports for consistency
+  - Updated all server/ imports to use clean TypeScript module resolution
+  - Updated all api/ imports to eliminate TS/JS extension conflicts
+  - Applied TypeScript pure pattern: import from './module' instead of './module.js'
+  - Server restarted successfully, all APIs functioning normally
+  - Eliminated confusion between .ts source files and .js import declarations
+  - Improved developer experience with consistent module resolution patterns

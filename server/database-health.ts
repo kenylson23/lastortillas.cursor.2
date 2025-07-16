@@ -3,7 +3,7 @@
  * Implementa verificações automáticas e diagnósticos
  */
 
-import { db, checkDatabaseHealth } from './db.js';
+import { db, checkDatabaseHealth } from './db';
 import { sql } from 'drizzle-orm';
 
 interface HealthMetrics {
