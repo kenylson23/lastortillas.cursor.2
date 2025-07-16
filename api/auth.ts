@@ -1,5 +1,5 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { validateCredentials, generateToken } from "../server/auth";
+import { validateCredentials, generateToken, verifyToken } from "../server/auth";
 import { prisma } from "../server/db";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -42,7 +42,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const token = authHeader.substring(7);
-      const { verifyToken } = await import('../server/auth');
       const user = verifyToken(token);
       
       if (!user) {
