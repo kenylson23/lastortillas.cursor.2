@@ -367,3 +367,12 @@ Preferred communication style: Simple, everyday language.
   - Fixed "public directory not found" error by creating proper public/ structure
   - Configured outputDirectory to "public" with index.html and 404.html files
   - Updated .vercelignore to exclude development files and dist/ directory
+- July 16, 2025: Resolved Vercel serverless function limit (12 functions maximum)
+  - Consolidated 15 individual API endpoints into 6 optimized serverless functions
+  - Created consolidated auth.ts handling login, logout, and verify endpoints
+  - Combined menu-items endpoints into single menu.ts with query parameter routing
+  - Merged orders, reservations, contacts, and availability into restaurant.ts
+  - Consolidated table management into tables.ts with status update support
+  - Maintained all existing functionality while reducing deployment complexity
+  - Added proper URL rewrites in vercel.json for backward compatibility
+  - Configured maxDuration settings for optimal performance per function type

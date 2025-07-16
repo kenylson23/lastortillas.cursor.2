@@ -2,10 +2,54 @@
   "buildCommand": "npx prisma generate",
   "outputDirectory": "public",
   "installCommand": "npm install",
+  "functions": {
+    "api/auth.ts": {
+      "maxDuration": 30
+    },
+    "api/menu.ts": {
+      "maxDuration": 30
+    },
+    "api/restaurant.ts": {
+      "maxDuration": 30
+    },
+    "api/tables.ts": {
+      "maxDuration": 30
+    },
+    "api/health.ts": {
+      "maxDuration": 10
+    },
+    "api/index.ts": {
+      "maxDuration": 10
+    }
+  },
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "source": "/api/auth/(.*)",
+      "destination": "/api/auth"
+    },
+    {
+      "source": "/api/menu-items(.*)",
+      "destination": "/api/menu$1"
+    },
+    {
+      "source": "/api/orders(.*)",
+      "destination": "/api/restaurant$1"
+    },
+    {
+      "source": "/api/reservations(.*)",
+      "destination": "/api/restaurant$1"
+    },
+    {
+      "source": "/api/contacts(.*)",
+      "destination": "/api/restaurant$1"
+    },
+    {
+      "source": "/api/availability(.*)",
+      "destination": "/api/restaurant$1"
+    },
+    {
+      "source": "/api/tables(.*)",
+      "destination": "/api/tables$1"
     },
     {
       "source": "/uploads/(.*)",
