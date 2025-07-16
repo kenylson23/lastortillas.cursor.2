@@ -1,5 +1,5 @@
 {
-  "buildCommand": "./build.sh",
+  "buildCommand": "node build-vercel.js",
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "functions": {

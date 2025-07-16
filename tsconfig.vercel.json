@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "declaration": false,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["client/src/*"],
+      "@shared/*": ["shared/*"]
+    }
+  },
+  "include": [
+    "api/**/*",
+    "server/storage.ts",
+    "server/db.ts",
+    "server/jwtAuth.ts",
+    "server/monitoring.ts",
+    "shared/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "client/**/*",
+    "server/routes.ts",
+    "server/vite.ts",
+    "server/adaptiveAuth.ts",
+    "server/storage_old.ts",
+    "server/supabase-*.ts",
+    "vite.config.ts"
+  ]
+}
