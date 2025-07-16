@@ -11,8 +11,19 @@ interface BuildOptions {
 console.log('🚀 Building Las Tortillas for Vercel...');
 
 try {
-  // Step 1: Verifica configuração Vercel (não remove dependências em produção)
-  console.log('🔧 Using Vercel-specific configuration...');
+  // Step 1: Compile TypeScript for serverless functions
+  console.log('🔧 Compiling TypeScript for serverless functions...');
+  
+  const tscOptions: BuildOptions = {
+    stdio: 'inherit',
+    env: { 
+      ...process.env, 
+      NODE_ENV: 'production',
+      VERCEL: '1'
+    }
+  };
+  
+  execSync('npx tsc --project tsconfig.vercel.json', tscOptions);
   
   // Step 2: Build frontend com Vite (usando config específica para Vercel)
   console.log('📦 Building frontend...');
