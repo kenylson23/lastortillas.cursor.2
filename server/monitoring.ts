@@ -156,7 +156,7 @@ export async function getHealthStatus(): Promise<HealthStatus> {
   
   try {
     // Testar conexão com banco
-    const { prisma } = await import('./db');
+    const { prisma } = await import('./db.js');
     await prisma.$queryRaw`SELECT 1`;
     dbConnected = true;
   } catch (error) {

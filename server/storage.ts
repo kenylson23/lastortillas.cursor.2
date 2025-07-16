@@ -3,8 +3,8 @@ import {
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type Table, type InsertTable
-} from "../shared/prisma-types";
-import { prisma } from "./db";
+} from "../shared/prisma-types.js";
+import { prisma } from "./db.js";
 
 export interface IStorage {
   // Reservation operations
