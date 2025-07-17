@@ -54,17 +54,17 @@ const sampleMenuItems = [
 
 const sampleTables = [
   // Centro (Talatona)
-  { number: 1, capacity: 2, locationId: "centro", status: "available" },
-  { number: 2, capacity: 4, locationId: "centro", status: "available" },
-  { number: 3, capacity: 6, locationId: "centro", status: "available" },
-  { number: 4, capacity: 2, locationId: "centro", status: "available" },
-  { number: 5, capacity: 4, locationId: "centro", status: "available" },
+  { tableNumber: 1, seats: 2, locationId: "centro", status: "available" },
+  { tableNumber: 2, seats: 4, locationId: "centro", status: "available" },
+  { tableNumber: 3, seats: 6, locationId: "centro", status: "available" },
+  { tableNumber: 4, seats: 2, locationId: "centro", status: "available" },
+  { tableNumber: 5, seats: 4, locationId: "centro", status: "available" },
   
   // Benfica
-  { number: 1, capacity: 2, locationId: "benfica", status: "available" },
-  { number: 2, capacity: 4, locationId: "benfica", status: "available" },
-  { number: 3, capacity: 6, locationId: "benfica", status: "available" },
-  { number: 4, capacity: 8, locationId: "benfica", status: "available" },
+  { tableNumber: 1, seats: 2, locationId: "benfica", status: "available" },
+  { tableNumber: 2, seats: 4, locationId: "benfica", status: "available" },
+  { tableNumber: 3, seats: 6, locationId: "benfica", status: "available" },
+  { tableNumber: 4, seats: 8, locationId: "benfica", status: "available" },
 ];
 
 export async function ensureSampleData() {

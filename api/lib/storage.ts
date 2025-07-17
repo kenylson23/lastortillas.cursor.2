@@ -156,7 +156,7 @@ export class ServerlessStorage {
 
   // Tables
   async getAllTables(): Promise<Table[]> {
-    return await db.select().from(tables).orderBy(tables.number);
+    return await db.select().from(tables).orderBy(tables.tableNumber);
   }
 
   async getTablesByLocation(locationId: string): Promise<Table[]> {
@@ -164,7 +164,7 @@ export class ServerlessStorage {
       .select()
       .from(tables)
       .where(eq(tables.locationId, locationId))
-      .orderBy(tables.number);
+      .orderBy(tables.tableNumber);
   }
 
   async getTable(id: number): Promise<Table | undefined> {

@@ -7,10 +7,15 @@ import path from 'path';
 console.log('🚀 Building Las Tortillas for Vercel...');
 
 try {
-  // Limpar dist anterior
+  // Limpar builds anteriores
   if (fs.existsSync('dist')) {
-    console.log('🧹 Limpando build anterior...');
+    console.log('🧹 Limpando build anterior do frontend...');
     fs.rmSync('dist', { recursive: true, force: true });
+  }
+  
+  if (fs.existsSync('api-build')) {
+    console.log('🧹 Limpando build anterior das APIs...');
+    fs.rmSync('api-build', { recursive: true, force: true });
   }
 
   // Configurar variáveis de ambiente para Vercel
@@ -21,7 +26,37 @@ try {
     REPL_ID: undefined // Desabilitar plugins Replit
   };
 
-  // Build do frontend com Vite (Vercel compila APIs TypeScript automaticamente)
+  // 1. Compilar APIs TypeScript
+  console.log('🔧 Compilando APIs TypeScript...');
+  execSync('npx tsc --project tsconfig.api.json', {
+    stdio: 'inherit',
+    env: buildEnv,
+    timeout: 60000
+  });
+
+  // 2. Verificar se APIs foram compiladas corretamente
+  if (!fs.existsSync('api-build/api')) {
+    throw new Error('Falha na compilação das APIs - diretório api-build/api não encontrado');
+  }
+
+  // 3. Copiar arquivos compilados para estrutura correta do Vercel
+  console.log('📂 Organizando estrutura das APIs para Vercel...');
+  
+  // Verificar se api/ já existe e fazer backup se necessário
+  if (fs.existsSync('api-compiled')) {
+    fs.rmSync('api-compiled', { recursive: true, force: true });
+  }
+  
+  // Copiar APIs compiladas
+  fs.mkdirSync('api-compiled', { recursive: true });
+  execSync('cp -r api-build/api/* api-compiled/', { stdio: 'inherit' });
+  
+  // Copiar shared compilado se existir
+  if (fs.existsSync('api-build/shared')) {
+    execSync('cp -r api-build/shared api-compiled/', { stdio: 'inherit' });
+  }
+
+  // 4. Build do frontend com Vite
   console.log('📦 Construindo frontend...');
   execSync('npx vite build', { 
     stdio: 'inherit',
@@ -69,27 +104,49 @@ try {
     }
   }
 
-  // Verificação final
+  // 5. Verificar estrutura final
+  console.log('🔍 Verificando estrutura do build...');
+  
+  // Verificar frontend
   const distFiles = fs.readdirSync('dist');
-  console.log('📁 Arquivos criados no build:');
+  console.log('📁 Frontend (dist/):');
   distFiles.forEach(file => console.log(`   - ${file}`));
+  
+  // Verificar APIs compiladas
+  if (fs.existsSync('api-compiled')) {
+    const apiFiles = fs.readdirSync('api-compiled');
+    console.log('📁 APIs compiladas (api-compiled/):');
+    apiFiles.forEach(file => console.log(`   - ${file}`));
+  }
 
+  // 6. Criar estrutura final otimizada para Vercel
+  console.log('🔄 Criando estrutura final para Vercel...');
+  
+  // Manter api/ original para TypeScript e api-compiled/ para JavaScript fallback
+  console.log('📋 Estrutura mantida:');
+  console.log('  - api/ (TypeScript original - Vercel usa esta)');
+  console.log('  - api-compiled/ (JavaScript compilado - backup)'); 
+  console.log('  - shared/ (Schema TypeScript)');
+  console.log('  - dist/ (Frontend estático)');
 
+  // 7. Limpar build temporário
+  if (fs.existsSync('api-build')) {
+    fs.rmSync('api-build', { recursive: true, force: true });
+  }
 
   console.log('✅ Build concluído com sucesso!');
 
-  // Verificar estrutura final
-  console.log('📁 Estrutura final do build:');
-  console.log('  Frontend: dist/');
-  console.log('  APIs: api/ (TypeScript - Vercel compila automaticamente)');
-  console.log('  Schema: shared/');
-
-  // Calcular tamanho do build
+  // 8. Calcular tamanhos
   try {
-    const buildSize = execSync('du -sh dist', { encoding: 'utf8' }).trim();
-    console.log('📊 Tamanho do frontend:', buildSize);
+    const frontendSize = execSync('du -sh dist', { encoding: 'utf8' }).trim();
+    console.log(`📊 Tamanho do frontend: ${frontendSize}`);
+    
+    if (fs.existsSync('api-compiled')) {
+      const apiSize = execSync('du -sh api-compiled', { encoding: 'utf8' }).trim();
+      console.log(`📊 Tamanho das APIs: ${apiSize}`);
+    }
   } catch (error) {
-    console.log('📊 Não foi possível calcular o tamanho do build');
+    console.log('📊 Não foi possível calcular tamanhos do build');
   }
 
 } catch (error) {
