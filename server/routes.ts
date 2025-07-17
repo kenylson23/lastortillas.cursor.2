@@ -6,6 +6,8 @@ import { z } from "zod";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { auth, adminAuth } from "../shared/auth";
+import { storage as supabaseStorage, adminStorage } from "../shared/storage";
 // Cache otimizado para verificação de disponibilidade
 const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
 const CACHE_DURATION = 5000; // 5 segundos para dados mais atualizados
@@ -527,6 +529,183 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       await storage.deleteTable(id);
       res.json({ message: "Mesa removida com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // =================== SUPABASE AUTHENTICATION ENDPOINTS ===================
+
+  // Register user
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, name } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email e senha são obrigatórios" });
+      }
+      
+      const { data, error } = await auth.signUp(email, password, { name });
+      
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+      
+      res.status(201).json({ user: data.user, message: "Usuário criado com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Login user
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email e senha são obrigatórios" });
+      }
+      
+      const { data, error } = await auth.signIn(email, password);
+      
+      if (error) {
+        return res.status(401).json({ error: error.message });
+      }
+      
+      res.json({ user: data.user, session: data.session });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get current user
+  app.get("/api/auth/user", async (req, res) => {
+    try {
+      const { user, error } = await auth.getCurrentUser();
+      
+      if (error) {
+        return res.status(401).json({ error: error.message });
+      }
+      
+      res.json({ user });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // =================== SUPABASE STORAGE ENDPOINTS ===================
+
+  // Upload file
+  app.post("/api/storage/upload", upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Nenhum arquivo enviado" });
+      }
+      
+      const { bucket = 'uploads' } = req.body;
+      const fileName = `${Date.now()}-${req.file.originalname}`;
+      
+      // Convert buffer to File object for Supabase
+      const file = new File([req.file.buffer], fileName, { type: req.file.mimetype });
+      
+      const { data, error } = await supabaseStorage.upload(bucket, fileName, file);
+      
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+      
+      const publicUrl = supabaseStorage.getPublicUrl(bucket, fileName);
+      
+      res.json({ 
+        data, 
+        publicUrl,
+        message: "Arquivo enviado com sucesso" 
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get file URL
+  app.get("/api/storage/url/:bucket/:path", async (req, res) => {
+    try {
+      const { bucket, path } = req.params;
+      const publicUrl = supabaseStorage.getPublicUrl(bucket, path);
+      
+      res.json({ publicUrl });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // List files
+  app.get("/api/storage/files/:bucket", async (req, res) => {
+    try {
+      const { bucket } = req.params;
+      const { path } = req.query;
+      
+      const { data, error } = await supabaseStorage.list(bucket, path as string);
+      
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+      
+      res.json({ files: data });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // =================== ADMIN ENDPOINTS ===================
+
+  // Admin: List users
+  app.get("/api/admin/users", async (req, res) => {
+    try {
+      const { data, error } = await adminAuth.listUsers();
+      
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+      
+      res.json({ users: data.users });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin: Create user
+  app.post("/api/admin/users", async (req, res) => {
+    try {
+      const { email, password, metadata } = req.body;
+      
+      if (!email || !password) {
+        return res.status(400).json({ error: "Email e senha são obrigatórios" });
+      }
+      
+      const { data, error } = await adminAuth.createUser(email, password, metadata);
+      
+      if (error) {
+        return res.status(400).json({ error: error.message });
+      }
+      
+      res.status(201).json({ user: data.user, message: "Usuário criado com sucesso" });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Admin: Delete user
+  app.delete("/api/admin/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      const { data, error } = await adminAuth.deleteUser(id);
+      
+      if (error) {
+        return res.status(500).json({ error: error.message });
+      }
+      
+      res.json({ message: "Usuário removido com sucesso" });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
