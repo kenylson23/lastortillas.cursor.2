@@ -100,17 +100,17 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 - **Database**: In-memory storage for rapid development
 - **Integration**: Vite proxy configuration for API requests
 
-### Production Build (Vercel)
-- **Type**: Static Single Page Application (SPA)
-- **Build Command**: `vite build`
-- **Output Directory**: `dist`
-- **Framework**: Vite (auto-detected)
-- **Reservations**: WhatsApp integration (no backend required)
+### Production Build (Replit)
+- **Type**: Full-stack application with Express backend and React frontend
+- **Build Command**: `npm run dev`
+- **Database**: PostgreSQL with Drizzle ORM
+- **Backend**: Express.js with TypeScript
+- **Frontend**: React with Vite build system
 
 ### Environment Configuration
-- **Vercel Configuration**: `vercel.json` with SPA routing
+- **Database**: PostgreSQL connection via DATABASE_URL
+- **API**: RESTful endpoints for reservations, contacts, and menu items
 - **WhatsApp Integration**: Direct linking to +244 949639932
-- **Static Assets**: Optimized for CDN delivery
 
 ## User Preferences
 
@@ -120,17 +120,12 @@ Preferred communication style: Simple, everyday language.
 
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
-- June 29, 2025: Prepared for Vercel deployment as static SPA
-  - Removed backend dependencies from Contact form
-  - Added vercel.json configuration
-  - Updated build process for static deployment
-  - Created deployment documentation
-- June 29, 2025: Fixed Vercel 404 deployment errors
-  - Resolved Rollup import resolution failures by converting @/ aliases to relative paths
-  - Replaced complex UI components (Button, Card, Input, etc.) with standard HTML elements
-  - Simplified Contact form with native form elements while preserving WhatsApp functionality
-  - Build process now completes successfully without import errors
-  - Maintained all animations, styling, and core functionality
+- January 17, 2025: Removed all Vercel deployment configuration
+  - Deleted vercel.json, API folder, and all build scripts
+  - Updated documentation to reflect full-stack Replit deployment
+  - Cleaned up project structure for simplified development
+  - Updated build process for simplified Replit deployment
+  - Removed all Vercel-specific configuration files and scripts
 - July 8, 2025: Fixed concurrent reservation booking issues
   - Implemented mutex pattern to prevent race conditions in reservation creation
   - Added real-time availability checking with debounced API calls
