@@ -1,23 +1,38 @@
-node_modules
-.replit
-.env
-.env.local
-*.log
-.DS_Store
+# Development files
 server/
-*.md
-!README.md
-test/
-tests/
-__tests__
-*.test.*
-*.spec.*
-attached_assets/
+client/src/
 replit.md
-# Backup files from build cleaning
-package.json.backup
-# Replit-specific files
-.replit.nix
-replit.nix
-# Scripts directory (não necessário para produção)
+*.md
+README.md
+
+# Build artifacts
+dist-production/
+node_modules/.cache/
+
+# Configuration files not needed for deployment
+.replit
+tsconfig.json
+tailwind.config.ts
+postcss.config.js
+components.json
+drizzle.config.ts
+
+# Assets only needed in development
+attached_assets/
 scripts/
+
+# Logs and temp files
+*.log
+temp_*
+.env.local
+.env.development
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
