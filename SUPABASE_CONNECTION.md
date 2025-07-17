@@ -1,11 +1,10 @@
 # Conexão com Supabase
 
 ## Status Atual
-- ✅ Projeto migrado com sucesso do Drizzle ORM para Prisma ORM
+- ✅ Projeto migrado com sucesso do Prisma ORM para Drizzle ORM
 - ✅ Banco PostgreSQL local funcionando perfeitamente
-- ✅ Supabase REST API funcionando
-- ✅ Supabase Connection Pooling funcionando perfeitamente
-- ✅ Sistema totalmente conectado ao Supabase via pooler
+- ✅ Drizzle ORM funcionando perfeitamente
+- ✅ Sistema totalmente conectado ao PostgreSQL via Drizzle
 
 ## Problema Identificado
 A conexão direta com o banco PostgreSQL do Supabase está falhando:
@@ -53,7 +52,7 @@ const databaseUrl = process.env.DATABASE_URL; // Supabase connection string
 
 ### Passo 2: Migrar Schema
 ```bash
-npx prisma db push
+npm run db:push
 ```
 
 ### Passo 3: Migrar Dados
