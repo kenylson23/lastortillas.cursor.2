@@ -126,6 +126,13 @@ Preferred communication style: Simple, everyday language.
   - Verified all API endpoints are functional (menu-items, reservations, contacts, orders, tables)
   - Confirmed both development and production builds work correctly
   - Application running successfully on port 5000 with full database connectivity
+- July 17, 2025: Migrated database from Replit PostgreSQL to Supabase
+  - Updated database connection to use Supabase pooler connection string
+  - Successfully connected to Supabase database with existing schema
+  - Verified data persistence and retrieval working correctly
+  - All API endpoints functioning properly with Supabase backend
+  - Application performance maintained with cloud database connection
+  - Enhanced scalability and reliability with Supabase infrastructure
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
 - January 17, 2025: Removed all Vercel deployment configuration
