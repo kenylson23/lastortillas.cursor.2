@@ -1,6 +1,5 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { jwtLoginHandler, jwtLogoutHandler, requireJWTAuth, JWTRequest } from "../server/jwtAuth";
-import { db } from "../server/db";
+import { loginHandler, logoutHandler, requireAuth, verifyToken, type AuthenticatedRequest } from "./lib/auth";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, url } = req;
@@ -17,19 +16,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     // Login endpoint
     if (method === 'POST' && url?.includes('/login')) {
-      return await jwtLoginHandler(req as any, res as any);
+      return await loginHandler(req, res);
     }
 
     // Logout endpoint
     if (method === 'POST' && url?.includes('/logout')) {
-      return jwtLogoutHandler(req as any, res as any);
+      return logoutHandler(req, res);
     }
 
     // Verify endpoint
     if (method === 'GET' && url?.includes('/verify')) {
-      return requireJWTAuth(req as JWTRequest, res as any, () => {
-        res.status(200).json({ user: (req as JWTRequest).user });
+      return requireAuth(req as AuthenticatedRequest, res, () => {
+        res.status(200).json({ user: (req as AuthenticatedRequest).user });
       });
+    }
+
+    // Default auth check endpoint
+    if (method === 'POST') {
+      return await loginHandler(req, res);
     }
 
     return res.status(405).json({ error: "Method not allowed" });

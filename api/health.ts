@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getHealthStatus } from '../server/monitoring';
+import { getDatabase } from './lib/database';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // CORS headers
@@ -13,18 +13,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'GET') {
     try {
-      const health = await getHealthStatus();
+      // Test database connection
+      const db = getDatabase();
+      const result = await db.execute('SELECT 1 as test');
+      const isDbConnected = result && result.length > 0;
       
-      const statusCode = health.status === 'healthy' ? 200 : 
-                        health.status === 'degraded' ? 503 : 503;
-      
-      res.status(statusCode).json(health);
-    } catch (error) {
-      console.error('Health check error:', error);
-      res.status(500).json({
-        status: 'error',
+      return res.json({
+        status: 'healthy',
         timestamp: new Date().toISOString(),
-        error: error instanceof Error ? error.message : 'Unknown error'
+        version: '1.0.0',
+        database: {
+          connected: isDbConnected,
+          driver: 'postgres-js',
+          orm: 'drizzle'
+        },
+        environment: process.env.NODE_ENV || 'production',
+        serverless: true
+      });
+    } catch (error) {
+      console.error('Health check failed:', error);
+      return res.status(503).json({
+        status: 'unhealthy',
+        timestamp: new Date().toISOString(),
+        database: {
+          connected: false,
+          error: error instanceof Error ? error.message : 'Unknown error'
+        },
+        environment: process.env.NODE_ENV || 'production',
+        serverless: true
       });
     }
   } else {

@@ -1,5 +1,7 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { storage } from "../server/storage";
+import { storage } from "./lib/storage";
+import { requireAuth, type AuthenticatedRequest } from "./lib/auth";
+import { autoInitialize } from "./lib/sample-data";
 import { z } from "zod";
 
 const tableSchema = z.object({
@@ -22,6 +24,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Initialize sample data if needed
+    await autoInitialize();
+
     // GET /api/tables - Get all tables
     if (method === 'GET' && !query.id) {
       const tables = await storage.getAllTables();

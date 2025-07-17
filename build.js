@@ -21,7 +21,7 @@ try {
     REPL_ID: undefined // Desabilitar plugins Replit
   };
 
-  // Build do frontend com Vite
+  // Build do frontend com Vite (Vercel compila APIs TypeScript automaticamente)
   console.log('📦 Construindo frontend...');
   execSync('npx vite build', { 
     stdio: 'inherit',
@@ -74,12 +74,20 @@ try {
   console.log('📁 Arquivos criados no build:');
   distFiles.forEach(file => console.log(`   - ${file}`));
 
+
+
   console.log('✅ Build concluído com sucesso!');
+
+  // Verificar estrutura final
+  console.log('📁 Estrutura final do build:');
+  console.log('  Frontend: dist/');
+  console.log('  APIs: api/ (TypeScript - Vercel compila automaticamente)');
+  console.log('  Schema: shared/');
 
   // Calcular tamanho do build
   try {
     const buildSize = execSync('du -sh dist', { encoding: 'utf8' }).trim();
-    console.log('📊 Tamanho do build:', buildSize);
+    console.log('📊 Tamanho do frontend:', buildSize);
   } catch (error) {
     console.log('📊 Não foi possível calcular o tamanho do build');
   }

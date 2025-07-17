@@ -11,7 +11,6 @@ node_modules/.cache/
 
 # Configuration files not needed for deployment
 .replit
-tsconfig.json
 tailwind.config.ts
 postcss.config.js
 components.json
@@ -36,3 +35,9 @@ temp_*
 # OS files
 .DS_Store
 Thumbs.db
+
+# Keep these files for Vercel:
+# - api/ (serverless functions)
+# - shared/ (database schema)
+# - package.json & package-lock.json (dependencies)
+# - tsconfig.json (TypeScript compilation)

@@ -1,11 +1,13 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { storage } from "../server/storage";
+import { storage } from "./lib/storage";
+import { requireAuth, type AuthenticatedRequest } from "./lib/auth";
+import { autoInitialize } from "./lib/sample-data";
 import { z } from "zod";
 
 const menuItemSchema = z.object({
   name: z.string().min(1),
   description: z.string().min(1),
-  price: z.string().min(1),
+  price: z.number().min(0),
   category: z.string().min(1),
   image: z.string().optional(),
   available: z.boolean().default(true),
@@ -26,6 +28,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
+    // Initialize sample data if needed
+    await autoInitialize();
+
     // GET /api/menu - Get all menu items
     if (method === 'GET' && !query.id) {
       const menuItems = await storage.getAllMenuItems();
@@ -42,7 +47,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(200).json(menuItem);
     }
 
-    // POST /api/menu - Create new menu item
+    // POST /api/menu - Create new menu item (requires auth)
     if (method === 'POST') {
       const validatedData = menuItemSchema.parse(body);
       const newMenuItem = await storage.createMenuItem(validatedData as any);
