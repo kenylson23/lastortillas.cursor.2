@@ -1,33 +1,35 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { storage } from '../server/storage';
-import { insertOrderSchema, insertOrderItemSchema } from '../shared/schema';
-import { z } from 'zod';
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { db } from '../server/db';
+import { orders, insertOrderSchema } from '../shared/schema';
 
-const createOrderSchema = z.object({
-  order: insertOrderSchema,
-  items: z.array(insertOrderItemSchema)
-});
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Enable CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-export default async function (request: VercelRequest, response: VercelResponse) {
-  if (request.method === 'POST') {
-    try {
-      const { order, items } = createOrderSchema.parse(request.body);
-      const createdOrder = await storage.createOrder(order, items);
-      
-      response.status(201).json(createdOrder);
-    } catch (error) {
-      console.error('Error creating order:', error);
-      response.status(400).json({ error: 'Invalid order data' });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  try {
+    if (req.method === 'GET') {
+      const allOrders = await db.select().from(orders);
+      return res.status(200).json(allOrders);
     }
-  } else if (request.method === 'GET') {
-    try {
-      const orders = await storage.getAllOrders();
-      response.status(200).json(orders);
-    } catch (error) {
-      console.error('Error fetching orders:', error);
-      response.status(500).json({ error: 'Internal server error' });
+
+    if (req.method === 'POST') {
+      const validatedData = insertOrderSchema.parse(req.body);
+      const newOrder = await db.insert(orders).values([validatedData]).returning();
+      return res.status(201).json(newOrder[0]);
     }
-  } else {
-    response.status(405).json({ message: 'Method Not Allowed' });
+
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (error: any) {
+    console.error('Error in orders API:', error);
+    if (error.name === 'ZodError') {
+      return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+    }
+    return res.status(500).json({ error: error.message });
   }
 }

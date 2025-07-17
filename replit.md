@@ -118,6 +118,15 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
+- July 17, 2025: Migrated from Express.js to Vercel serverless architecture
+  - Created comprehensive Vercel API functions for all endpoints
+  - Implemented serverless functions for menu-items, reservations, contacts, orders, and authentication
+  - Added availability checking API for reservation system
+  - Created table management API for restaurant seating
+  - Fixed database connection issues in Vercel environment
+  - Updated all API endpoints to use @vercel/node types
+  - Maintained Supabase integration for all database operations
+  - Created test infrastructure for Vercel deployment validation
 - July 17, 2025: Resolved database connection issues and completed deployment testing
   - Fixed DATABASE_URL environment variable configuration
   - Successfully recreated PostgreSQL database with proper schema

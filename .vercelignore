@@ -1,5 +1,11 @@
+node_modules
 .env
-node_modules/
-*.test.ts
-*.spec.ts
-.DS_Store
+.env.local
+.git
+README.md
+server/
+client/src/
+vite.config.ts
+tsconfig.json
+tailwind.config.js
+postcss.config.js

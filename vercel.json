@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "dist/public/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/public/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/dist/public/index.html"
+    }
+  ]
+}
