@@ -1,10 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupHealthEndpoints } from "./health-endpoint";
 import { setupVite, serveStatic, log } from "./vite";
-import { testDatabaseConnection, checkDatabaseHealth } from "./db";
-import { validateSupabaseConfig } from "./supabase-config";
-import { databaseMonitor } from "./database-health";
 import path from "path";
 
 const app = express();
@@ -14,8 +10,8 @@ app.use(express.urlencoded({ extended: false }));
 // Serve static files from attached_assets
 app.use('/attached_assets', express.static(path.join(process.cwd(), 'attached_assets')));
 
-// Serve static files from public directory (only for uploads and images)
-app.use('/images', express.static(path.join(process.cwd(), 'public', 'images')));
+// Serve static files from public directory
+app.use(express.static(path.join(process.cwd(), 'public')));
 
 // Serve uploaded images
 app.use('/uploads', express.static(path.join(process.cwd(), 'public', 'uploads')));
@@ -51,39 +47,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Validar configuração do Supabase
-  console.log('🔍 Validando configuração do Supabase...');
-  const configValidation = validateSupabaseConfig();
-  if (!configValidation.valid) {
-    console.error('❌ Configuração inválida:', configValidation.errors);
-  } else {
-    console.log('✅ Configuração do Supabase válida');
-  }
-
-  // Testar conexão com banco de dados
-  console.log('🔗 Testando conexão com banco de dados...');
-  const dbConnected = await testDatabaseConnection();
-  if (!dbConnected) {
-    console.error('💥 Falha crítica na conexão com banco de dados');
-    process.exit(1);
-  }
-
-  // Verificar saúde inicial do banco
-  const healthCheck = await checkDatabaseHealth();
-  console.log('📊 Status inicial do banco:', {
-    connected: healthCheck.connected,
-    version: healthCheck.version?.substring(0, 50) + '...' || 'N/A'
-  });
-
-  // Iniciar monitoramento de saúde em desenvolvimento
-  if (process.env.NODE_ENV === 'development') {
-    databaseMonitor.startMonitoring(60000); // A cada 1 minuto
-  }
-
   const server = await registerRoutes(app);
-
-  // Configurar endpoints de saúde
-  setupHealthEndpoints(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

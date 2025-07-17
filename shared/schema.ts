@@ -1,125 +1,148 @@
-import { pgTable, serial, text, timestamp, integer, boolean } from 'drizzle-orm/pg-core';
-import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { z } from 'zod';
+import { pgTable, text, varchar, serial, integer, boolean, timestamp, numeric, jsonb, index } from "drizzle-orm/pg-core";
+import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 
-// Users table  
-export const users = pgTable('users', {
-  id: text('id').primaryKey(),
-  email: text('email').unique(),
-  firstName: text('first_name'),
-  lastName: text('last_name'),
-  profileImageUrl: text('profile_image_url'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+// Session storage table for Replit Auth
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// User storage table for Replit Auth
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().notNull(),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  profileImageUrl: varchar("profile_image_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Menu Items table
-export const menuItems = pgTable('menu_items', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  description: text('description'),
-  price: integer('price').notNull(), // in cents
-  category: text('category').notNull(),
-  available: boolean('available').notNull().default(true),
-  image: text('image'),
-  preparationTime: integer('preparation_time'), // in minutes
-  customizations: text('customizations').array(),
-  createdAt: timestamp('created_at').defaultNow(),
+export const reservations = pgTable("reservations", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  phone: text("phone").notNull(),
+  email: text("email"),
+  date: text("date").notNull(),
+  time: text("time").notNull(),
+  guests: integer("guests").notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Orders table
-export const orders = pgTable('orders', {
-  id: serial('id').primaryKey(),
-  customerName: text('customer_name').notNull(),
-  customerPhone: text('customer_phone').notNull(),
-  customerEmail: text('customer_email'),
-  deliveryAddress: text('delivery_address'),
-  orderType: text('order_type').notNull(), // 'delivery' or 'pickup'
-  locationId: text('location_id').notNull(),
-  tableId: integer('table_id'),
-  totalAmount: integer('total_amount').notNull(),
-  status: text('status').notNull().default('pending'),
-  preparationTime: integer('preparation_time'), // in minutes
-  notes: text('notes'),
-  createdAt: timestamp('created_at').defaultNow(),
+export const contacts = pgTable("contacts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Order Items table
-export const orderItems = pgTable('order_items', {
-  id: serial('id').primaryKey(),
-  orderId: integer('order_id').notNull(),
-  menuItemId: integer('menu_item_id').notNull(),
-  quantity: integer('quantity').notNull(),
-  unitPrice: integer('unit_price').notNull(),
-  customizations: text('customizations').array(),
-  createdAt: timestamp('created_at').defaultNow(),
+export const menuItems = pgTable("menu_items", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description").notNull(),
+  price: numeric("price", { precision: 10, scale: 2 }).notNull(),
+  category: text("category").notNull(),
+  image: text("image"),
+  available: boolean("available").default(true),
+  preparationTime: integer("preparation_time").default(15), // minutes
+  customizations: text("customizations").array(), // ["sem cebola", "extra queijo"]
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Reservations table
-export const reservations = pgTable('reservations', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  phone: text('phone').notNull(),
-  email: text('email'),
-  date: text('date').notNull(),
-  time: text('time').notNull(),
-  guests: integer('guests').notNull(),
-  locationId: text('location_id').notNull(),
-  tableId: integer('table_id'),
-  status: text('status').notNull().default('pending'),
-  notes: text('notes'),
-  createdAt: timestamp('created_at').defaultNow(),
+export const orders = pgTable("orders", {
+  id: serial("id").primaryKey(),
+  customerName: text("customer_name").notNull(),
+  customerPhone: text("customer_phone").notNull(),
+  customerEmail: text("customer_email"),
+  deliveryAddress: text("delivery_address"),
+  orderType: text("order_type").notNull(), // "delivery", "takeaway", "dine-in"
+  locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
+  tableId: integer("table_id").references(() => tables.id), // mesa para pedidos dine-in
+  status: text("status").notNull().default("received"), // "received", "preparing", "ready", "delivered", "cancelled"
+  totalAmount: numeric("total_amount", { precision: 10, scale: 2 }).notNull(),
+  paymentMethod: text("payment_method").notNull(), // "cash", "card", "transfer"
+  paymentStatus: text("payment_status").notNull().default("pending"), // "pending", "paid", "failed"
+  notes: text("notes"),
+  estimatedDeliveryTime: text("estimated_delivery_time"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Contacts table
-export const contacts = pgTable('contacts', {
-  id: serial('id').primaryKey(),
-  name: text('name').notNull(),
-  email: text('email').notNull(),
-  phone: text('phone'),
-  message: text('message').notNull(),
-  status: text('status').notNull().default('pending'),
-  createdAt: timestamp('created_at').defaultNow(),
+export const orderItems = pgTable("order_items", {
+  id: serial("id").primaryKey(),
+  orderId: integer("order_id").references(() => orders.id).notNull(),
+  menuItemId: integer("menu_item_id").references(() => menuItems.id).notNull(),
+  quantity: integer("quantity").notNull(),
+  unitPrice: numeric("unit_price", { precision: 10, scale: 2 }).notNull(),
+  customizations: text("customizations").array(), // customizations for this specific item
+  subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
 });
 
-// Tables table
-export const tables = pgTable('tables', {
-  id: serial('id').primaryKey(),
-  tableNumber: integer('table_number').notNull(),
-  seats: integer('seats').notNull(),
-  status: text('status').notNull().default('available'),
-  locationId: text('location_id').notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
+export const tables = pgTable("tables", {
+  id: serial("id").primaryKey(),
+  number: integer("number").notNull(),
+  locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
+  capacity: integer("capacity").notNull(), // número de pessoas
+  status: text("status").notNull().default("available"), // "available", "occupied", "reserved", "maintenance"
+  position: text("position"), // "janela", "centro", "varanda", etc.
+  features: text("features").array(), // ["ar_condicionado", "vista_mar", "kids_area"]
+  notes: text("notes"), // observações especiais
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Zod schemas for validation
-export const insertUserSchema = createInsertSchema(users);
-export const selectUserSchema = createSelectSchema(users);
-export const insertMenuItemSchema = createInsertSchema(menuItems);
-export const selectMenuItemSchema = createSelectSchema(menuItems);
-export const insertOrderSchema = createInsertSchema(orders);
-export const selectOrderSchema = createSelectSchema(orders);
-export const insertOrderItemSchema = createInsertSchema(orderItems);
-export const selectOrderItemSchema = createSelectSchema(orderItems);
-export const insertReservationSchema = createInsertSchema(reservations);
-export const selectReservationSchema = createSelectSchema(reservations);
-export const insertContactSchema = createInsertSchema(contacts);
-export const selectContactSchema = createSelectSchema(contacts);
-export const insertTableSchema = createInsertSchema(tables);
-export const selectTableSchema = createSelectSchema(tables);
+export const insertReservationSchema = createInsertSchema(reservations).omit({
+  id: true,
+  createdAt: true,
+});
 
-// TypeScript types
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-export type MenuItem = typeof menuItems.$inferSelect;
-export type InsertMenuItem = typeof menuItems.$inferInsert;
-export type Order = typeof orders.$inferSelect;
-export type InsertOrder = typeof orders.$inferInsert;
-export type OrderItem = typeof orderItems.$inferSelect;
-export type InsertOrderItem = typeof orderItems.$inferInsert;
+export const insertContactSchema = createInsertSchema(contacts).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertOrderSchema = createInsertSchema(orders).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+}).extend({
+  estimatedDeliveryTime: z.string().optional(),
+});
+
+export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
+  id: true,
+  orderId: true,
+});
+
+export const insertTableSchema = createInsertSchema(tables).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type InsertReservation = z.infer<typeof insertReservationSchema>;
 export type Reservation = typeof reservations.$inferSelect;
-export type InsertReservation = typeof reservations.$inferInsert;
+export type InsertContact = z.infer<typeof insertContactSchema>;
 export type Contact = typeof contacts.$inferSelect;
-export type InsertContact = typeof contacts.$inferInsert;
+export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+export type MenuItem = typeof menuItems.$inferSelect;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type Order = typeof orders.$inferSelect;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+export type OrderItem = typeof orderItems.$inferSelect;
+export type InsertTable = z.infer<typeof insertTableSchema>;
 export type Table = typeof tables.$inferSelect;
-export type InsertTable = typeof tables.$inferInsert;

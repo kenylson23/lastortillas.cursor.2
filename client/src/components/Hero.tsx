@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-const heroImage = "/assets/hero-image.jpg";
+import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
 import LoadingSpinner from "./LoadingSpinner";
 
 export default function Hero() {

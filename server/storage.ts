@@ -1,7 +1,12 @@
-import { db } from './db';
-import { eq, and, desc } from 'drizzle-orm';
-import { users, menuItems, orders, orderItems, reservations, contacts, tables } from '../shared/schema';
-import type { User, MenuItem, Order, OrderItem, Reservation, Contact, Table, InsertUser, InsertMenuItem, InsertOrder, InsertOrderItem, InsertReservation, InsertContact, InsertTable } from '../shared/schema';
+import { 
+  reservations, contacts, menuItems, orders, orderItems, tables,
+  type Reservation, type InsertReservation, 
+  type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
+  type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
+  type Table, type InsertTable
+} from "@shared/schema";
+import { db } from "./db";
+import { eq, and, ne } from "drizzle-orm";
 
 export interface IStorage {
   // Reservation operations
@@ -57,6 +62,9 @@ export class DatabaseStorage implements IStorage {
 
   private async initializeSampleMenuItems(): Promise<void> {
     try {
+      // Test database connection first
+      await db.select().from(menuItems).limit(1);
+      
       // Check if menu items already exist
       const existingItems = await db.select().from(menuItems);
       if (existingItems.length === 0) {
@@ -65,54 +73,56 @@ export class DatabaseStorage implements IStorage {
           {
             name: 'Tacos al Pastor',
             description: 'Tacos tradicionais com carne de porco marinada, abacaxi e coentro',
-            price: 2500,
+            price: '2500',
             category: 'Tacos',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           },
           {
             name: 'Burrito Supremo',
             description: 'Burrito gigante com carne, feijão, arroz, queijo e molho especial',
-            price: 3200,
+            price: '3200',
             category: 'Burritos',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           },
           {
             name: 'Quesadilla de Queijo',
             description: 'Tortilla crocante recheada com queijo derretido e temperos',
-            price: 2000,
+            price: '2000',
             category: 'Quesadillas',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           },
           {
             name: 'Nachos Especiais',
             description: 'Chips de tortilla com queijo derretido, guacamole e molho picante',
-            price: 2800,
+            price: '2800',
             category: 'Aperitivos',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           },
           {
             name: 'Enchiladas Verdes',
             description: 'Tortillas recheadas com frango e cobertas com molho verde',
-            price: 3000,
+            price: '3000',
             category: 'Enchiladas',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           },
           {
             name: 'Fajitas de Frango',
             description: 'Frango grelhado com pimentos e cebolas, servido com tortillas',
-            price: 3500,
+            price: '3500',
             category: 'Fajitas',
             image: '/api/placeholder/400/300',
-            available: true,
+            available: true
           }
         ];
 
-        await db.insert(menuItems).values(sampleItems);
+        for (const item of sampleItems) {
+          await db.insert(menuItems).values(item);
+        }
         console.log('Sample menu items initialized successfully');
       }
     } catch (error) {
@@ -123,14 +133,20 @@ export class DatabaseStorage implements IStorage {
   // Reservation operations
   async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
     await this.ensureInitialized();
-    const result = await db.insert(reservations).values(insertReservation).returning();
-    return result[0];
+    const [reservation] = await db
+      .insert(reservations)
+      .values(insertReservation)
+      .returning();
+    return reservation;
   }
 
   async createContact(insertContact: InsertContact): Promise<Contact> {
     await this.ensureInitialized();
-    const result = await db.insert(contacts).values(insertContact).returning();
-    return result[0];
+    const [contact] = await db
+      .insert(contacts)
+      .values(insertContact)
+      .returning();
+    return contact;
   }
 
   async getAllReservations(): Promise<Reservation[]> {
@@ -140,15 +156,19 @@ export class DatabaseStorage implements IStorage {
 
   async checkAvailability(date: string, time: string): Promise<boolean> {
     await this.ensureInitialized();
-    const existing = await db.select().from(reservations).where(
-      and(eq(reservations.date, date), eq(reservations.time, time))
-    );
+    const existing = await db
+      .select()
+      .from(reservations)
+      .where(and(eq(reservations.date, date), eq(reservations.time, time)));
     return existing.length === 0;
   }
 
   async getReservationsByDate(date: string): Promise<Reservation[]> {
     await this.ensureInitialized();
-    return await db.select().from(reservations).where(eq(reservations.date, date));
+    return await db
+      .select()
+      .from(reservations)
+      .where(eq(reservations.date, date));
   }
 
   // Menu Items
@@ -159,19 +179,28 @@ export class DatabaseStorage implements IStorage {
 
   async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
     await this.ensureInitialized();
-    return await db.select().from(menuItems).where(eq(menuItems.category, category));
+    return await db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.category, category));
   }
 
   async getMenuItem(id: number): Promise<MenuItem | undefined> {
     await this.ensureInitialized();
-    const result = await db.select().from(menuItems).where(eq(menuItems.id, id));
-    return result[0] || undefined;
+    const [item] = await db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.id, id));
+    return item;
   }
 
   async createMenuItem(insertItem: InsertMenuItem): Promise<MenuItem> {
     await this.ensureInitialized();
-    const result = await db.insert(menuItems).values(insertItem).returning();
-    return result[0];
+    const [item] = await db
+      .insert(menuItems)
+      .values(insertItem)
+      .returning();
+    return item;
   }
 
   async updateMenuItem(id: number, updates: Partial<MenuItem>): Promise<MenuItem> {
@@ -179,39 +208,40 @@ export class DatabaseStorage implements IStorage {
     // Remove campos que não devem ser atualizados manualmente
     const { id: itemId, createdAt, ...validUpdates } = updates;
     
-    const result = await db.update(menuItems)
+    const [item] = await db
+      .update(menuItems)
       .set(validUpdates)
       .where(eq(menuItems.id, id))
       .returning();
-    return result[0];
+    return item;
   }
 
   async deleteMenuItem(id: number): Promise<void> {
     await this.ensureInitialized();
-    await db.delete(menuItems).where(eq(menuItems.id, id));
+    await db
+      .delete(menuItems)
+      .where(eq(menuItems.id, id));
   }
 
   // Orders
   async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
     await this.ensureInitialized();
+    const [order] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
     
-    // Create order first
-    const orderResult = await db.insert(orders).values(insertOrder).returning();
-    const order = orderResult[0];
-    
-    // Create order items with the order ID
-    const orderItemsWithOrderId = items.map(item => ({
-      ...item,
-      orderId: order.id
-    }));
-    
-    await db.insert(orderItems).values(orderItemsWithOrderId);
+    // Create order items
+    await db.insert(orderItems).values(
+      items.map(item => ({ ...item, orderId: order.id }))
+    );
     
     // If it's a dine-in order with a table, mark the table as occupied
     if (order.orderType === 'dine-in' && order.tableId) {
       console.log(`Marking table ${order.tableId} as occupied for order ${order.id}`);
-      await db.update(tables)
-        .set({ status: 'occupied' })
+      await db
+        .update(tables)
+        .set({ status: 'occupied', updatedAt: new Date() })
         .where(eq(tables.id, order.tableId));
       console.log(`Table ${order.tableId} marked as occupied`);
     } else {
@@ -223,38 +253,45 @@ export class DatabaseStorage implements IStorage {
 
   async getOrder(id: number): Promise<Order | undefined> {
     await this.ensureInitialized();
-    const result = await db.select().from(orders).where(eq(orders.id, id));
-    return result[0] || undefined;
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+    return order;
   }
 
   async getAllOrders(): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+    return await db.select().from(orders);
   }
 
   async getOrdersByStatus(status: string): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db.select().from(orders)
-      .where(eq(orders.status, status))
-      .orderBy(desc(orders.createdAt));
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.status, status));
   }
 
   async getOrdersByLocation(locationId: string): Promise<Order[]> {
     await this.ensureInitialized();
-    return await db.select().from(orders)
-      .where(eq(orders.locationId, locationId))
-      .orderBy(desc(orders.createdAt));
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.locationId, locationId));
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order> {
     await this.ensureInitialized();
-    
     // Get the current order first to check if it has a table
-    const currentOrderResult = await db.select().from(orders).where(eq(orders.id, id));
-    const currentOrder = currentOrderResult[0];
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
 
-    const orderResult = await db.update(orders)
-      .set({ status })
+    const [order] = await db
+      .update(orders)
+      .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id))
       .returning();
 
@@ -264,38 +301,50 @@ export class DatabaseStorage implements IStorage {
         currentOrder.orderType === 'dine-in' && 
         currentOrder.tableId && 
         (status === 'delivered' || status === 'cancelled')) {
-      await db.update(tables)
-        .set({ status: 'available' })
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
         .where(eq(tables.id, currentOrder.tableId));
     }
 
-    return orderResult[0];
+    return order;
   }
 
   async deleteOrder(id: number): Promise<void> {
     await this.ensureInitialized();
-    
     // Get the order first to check if it has a table
-    const currentOrderResult = await db.select().from(orders).where(eq(orders.id, id));
-    const currentOrder = currentOrderResult[0];
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
 
-    // Delete order items first, then the order
-    await db.delete(orderItems).where(eq(orderItems.orderId, id));
-    await db.delete(orders).where(eq(orders.id, id));
+    // First delete order items
+    await db
+      .delete(orderItems)
+      .where(eq(orderItems.orderId, id));
+    
+    // Then delete the order
+    await db
+      .delete(orders)
+      .where(eq(orders.id, id));
 
     // If it was a dine-in order with a table, mark the table as available again
     if (currentOrder && 
         currentOrder.orderType === 'dine-in' && 
         currentOrder.tableId) {
-      await db.update(tables)
-        .set({ status: 'available' })
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
         .where(eq(tables.id, currentOrder.tableId));
     }
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
     await this.ensureInitialized();
-    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+    return await db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, orderId));
   }
 
   // Tables operations
@@ -306,85 +355,100 @@ export class DatabaseStorage implements IStorage {
 
   async getTablesByLocation(locationId: string): Promise<Table[]> {
     await this.ensureInitialized();
-    return await db.select().from(tables).where(eq(tables.locationId, locationId));
+    return await db
+      .select()
+      .from(tables)
+      .where(eq(tables.locationId, locationId));
   }
 
   async getTable(id: number): Promise<Table | undefined> {
     await this.ensureInitialized();
-    const result = await db.select().from(tables).where(eq(tables.id, id));
-    return result[0] || undefined;
+    const [table] = await db
+      .select()
+      .from(tables)
+      .where(eq(tables.id, id));
+    return table;
   }
 
   async createTable(insertTable: InsertTable): Promise<Table> {
     await this.ensureInitialized();
     
-    console.log(`🔍 Verificando duplicação para mesa ${insertTable.tableNumber} no local ${insertTable.locationId}`);
+    console.log(`🔍 Verificando duplicação para mesa ${insertTable.number} no local ${insertTable.locationId}`);
     
     // Verificar se já existe uma mesa com o mesmo número no mesmo local
-    const existingTable = await db.select().from(tables).where(
-      and(
+    const existingTable = await db
+      .select()
+      .from(tables)
+      .where(and(
         eq(tables.locationId, insertTable.locationId),
-        eq(tables.tableNumber, insertTable.tableNumber)
-      )
-    );
+        eq(tables.number, insertTable.number)
+      ));
     
-    console.log(`🔍 Mesa existente encontrada:`, existingTable[0]);
+    console.log(`🔍 Encontradas ${existingTable.length} mesas existentes:`, existingTable);
     
     if (existingTable.length > 0) {
-      throw new Error(`Já existe uma mesa número ${insertTable.tableNumber} no local ${insertTable.locationId}`);
+      throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
     }
     
-    const result = await db.insert(tables).values(insertTable).returning();
-    return result[0];
+    const [table] = await db
+      .insert(tables)
+      .values(insertTable)
+      .returning();
+    return table;
   }
 
   async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
     await this.ensureInitialized();
     
     // Se está atualizando o número ou localização, verificar duplicação
-    if (updates.tableNumber !== undefined || updates.locationId !== undefined) {
+    if (updates.number !== undefined || updates.locationId !== undefined) {
       // Buscar a mesa atual para obter os dados completos
       const currentTable = await this.getTable(id);
       if (!currentTable) {
         throw new Error('Mesa não encontrada');
       }
       
-      const newNumber = updates.tableNumber !== undefined ? updates.tableNumber : currentTable.tableNumber;
+      const newNumber = updates.number !== undefined ? updates.number : currentTable.number;
       const newLocationId = updates.locationId !== undefined ? updates.locationId : currentTable.locationId;
       
       // Verificar se existe outra mesa com o mesmo número no mesmo local
-      const existingTable = await db.select().from(tables).where(
-        and(
+      const existingTable = await db
+        .select()
+        .from(tables)
+        .where(and(
           eq(tables.locationId, newLocationId),
-          eq(tables.tableNumber, newNumber),
-          eq(tables.id, id) // Excluir a mesa atual da verificação
-        )
-      );
+          eq(tables.number, newNumber),
+          ne(tables.id, id) // Excluir a mesa atual da verificação
+        ));
       
-      if (existingTable.length > 0 && existingTable[0].id !== id) {
+      if (existingTable.length > 0) {
         throw new Error(`Já existe uma mesa número ${newNumber} no local ${newLocationId}`);
       }
     }
     
-    const result = await db.update(tables)
-      .set(updates)
+    const [table] = await db
+      .update(tables)
+      .set({ ...updates, updatedAt: new Date() })
       .where(eq(tables.id, id))
       .returning();
-    return result[0];
+    return table;
   }
 
   async deleteTable(id: number): Promise<void> {
     await this.ensureInitialized();
-    await db.delete(tables).where(eq(tables.id, id));
+    await db
+      .delete(tables)
+      .where(eq(tables.id, id));
   }
 
   async updateTableStatus(id: number, status: string): Promise<Table> {
     await this.ensureInitialized();
-    const result = await db.update(tables)
-      .set({ status })
+    const [table] = await db
+      .update(tables)
+      .set({ status, updatedAt: new Date() })
       .where(eq(tables.id, id))
       .returning();
-    return result[0];
+    return table;
   }
 }
 
