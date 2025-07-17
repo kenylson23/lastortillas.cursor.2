@@ -1,5 +1,5 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { storage } from "./lib/storage";
+import { storage } from "./lib/storage-serverless";
 import { requireAuth, type AuthenticatedRequest } from "./lib/auth";
 import { autoInitialize } from "./lib/sample-data";
 import { z } from "zod";

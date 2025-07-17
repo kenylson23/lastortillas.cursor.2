@@ -1,7 +1,8 @@
 import { type VercelRequest, type VercelResponse } from "@vercel/node";
-import { storage } from "./lib/storage";
+import { ServerlessStorage } from "./lib/storage-serverless";
 import { requireAuth, type AuthenticatedRequest } from "./lib/auth";
 import { autoInitialize } from "./lib/sample-data";
+import { serverlessResponse, handleServerlessError, validateRequestSize } from "./lib/serverless-utils";
 import { z } from "zod";
 
 const menuItemSchema = z.object({
@@ -17,15 +18,19 @@ const menuItemSchema = z.object({
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const { method, body, query } = req;
-  
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  const response = serverlessResponse(res);
+
+  // Validate request size for serverless
+  if (!validateRequestSize(req)) {
+    return response.badRequest('Request too large for serverless function');
+  }
   
   if (method === 'OPTIONS') {
     return res.status(200).end();
   }
+
+  // Create serverless storage instance
+  const storage = new ServerlessStorage();
 
   try {
     // Initialize sample data if needed
@@ -34,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // GET /api/menu - Get all menu items
     if (method === 'GET' && !query.id) {
       const menuItems = await storage.getAllMenuItems();
-      return res.status(200).json(menuItems);
+      return response.success(menuItems);
     }
 
     // GET /api/menu?id=123 - Get specific menu item
@@ -42,16 +47,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const id = parseInt(query.id as string);
       const menuItem = await storage.getMenuItem(id);
       if (!menuItem) {
-        return res.status(404).json({ error: "Menu item not found" });
+        return response.notFound("Menu item not found");
       }
-      return res.status(200).json(menuItem);
+      return response.success(menuItem);
     }
 
     // POST /api/menu - Create new menu item (requires auth)
     if (method === 'POST') {
       const validatedData = menuItemSchema.parse(body);
       const newMenuItem = await storage.createMenuItem(validatedData as any);
-      return res.status(201).json(newMenuItem);
+      return response.success(newMenuItem, 201);
     }
 
     // PUT /api/menu?id=123 - Update menu item
@@ -71,7 +76,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     return res.status(405).json({ error: "Method not allowed" });
   } catch (error) {
-    console.error('Menu error:', error);
-    return res.status(500).json({ error: "Internal server error" });
+    const { message, status } = handleServerlessError(error);
+    return response.error(message, status);
+  } finally {
+    // Cleanup database connection for serverless
+    await storage.cleanup();
   }
 }

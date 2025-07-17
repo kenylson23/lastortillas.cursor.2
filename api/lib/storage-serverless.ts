@@ -1,28 +1,47 @@
 import { eq, and, desc } from 'drizzle-orm';
 import { users, menuItems, orders, orderItems, reservations, contacts, tables } from '../../shared/schema';
 import type { User, MenuItem, Order, OrderItem, Reservation, Contact, Table, InsertUser, InsertMenuItem, InsertOrder, InsertOrderItem, InsertReservation, InsertContact, InsertTable } from '../../shared/schema';
-import { getDatabase } from './database';
+import { getDatabase, closeConnection } from './database';
+import { serverlessLog } from './serverless-utils';
 
-const db = getDatabase();
-
+/**
+ * SERVERLESS STORAGE CLASS
+ * Optimized for Vercel serverless functions with unique connections per request
+ */
 export class ServerlessStorage {
-  // Reservation operations
+  private db: ReturnType<typeof getDatabase>;
+
+  constructor() {
+    this.db = getDatabase();
+    serverlessLog('🔌 ServerlessStorage instance created');
+  }
+
+  async cleanup() {
+    try {
+      await closeConnection(this.db);
+      serverlessLog('🔌 Database connection closed');
+    } catch (error) {
+      serverlessLog('⚠️ Error closing connection:', error);
+    }
+  }
+
+  // Reservations
   async createReservation(reservation: InsertReservation): Promise<Reservation> {
-    const [result] = await db.insert(reservations).values(reservation).returning();
+    const [result] = await this.db.insert(reservations).values(reservation).returning();
     return result;
   }
 
   async createContact(contact: InsertContact): Promise<Contact> {
-    const [result] = await db.insert(contacts).values(contact).returning();
+    const [result] = await this.db.insert(contacts).values(contact).returning();
     return result;
   }
 
   async getAllReservations(): Promise<Reservation[]> {
-    return await db.select().from(reservations).orderBy(desc(reservations.createdAt));
+    return await this.db.select().from(reservations).orderBy(desc(reservations.createdAt));
   }
 
   async checkAvailability(date: string, time: string): Promise<boolean> {
-    const existingReservations = await db
+    const existingReservations = await this.db
       .select()
       .from(reservations)
       .where(and(
@@ -34,7 +53,7 @@ export class ServerlessStorage {
   }
 
   async getReservationsByDate(date: string): Promise<Reservation[]> {
-    return await db
+    return await this.db
       .select()
       .from(reservations)
       .where(eq(reservations.date, date))
@@ -43,11 +62,11 @@ export class ServerlessStorage {
 
   // Menu Items
   async getAllMenuItems(): Promise<MenuItem[]> {
-    return await db.select().from(menuItems).orderBy(menuItems.name);
+    return await this.db.select().from(menuItems).orderBy(menuItems.name);
   }
 
   async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
-    return await db
+    return await this.db
       .select()
       .from(menuItems)
       .where(eq(menuItems.category, category))
@@ -55,7 +74,7 @@ export class ServerlessStorage {
   }
 
   async getMenuItem(id: number): Promise<MenuItem | undefined> {
-    const result = await db
+    const result = await this.db
       .select()
       .from(menuItems)
       .where(eq(menuItems.id, id))
@@ -65,12 +84,12 @@ export class ServerlessStorage {
   }
 
   async createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
-    const [result] = await db.insert(menuItems).values(item).returning();
+    const [result] = await this.db.insert(menuItems).values(item).returning();
     return result;
   }
 
   async updateMenuItem(id: number, item: Partial<MenuItem>): Promise<MenuItem> {
-    const [result] = await db
+    const [result] = await this.db
       .update(menuItems)
       .set(item)
       .where(eq(menuItems.id, id))
@@ -80,12 +99,12 @@ export class ServerlessStorage {
   }
 
   async deleteMenuItem(id: number): Promise<void> {
-    await db.delete(menuItems).where(eq(menuItems.id, id));
+    await this.db.delete(menuItems).where(eq(menuItems.id, id));
   }
 
   // Orders
   async createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
-    return await db.transaction(async (tx) => {
+    return await this.db.transaction(async (tx) => {
       const [createdOrder] = await tx.insert(orders).values(order).returning();
       
       const orderItemsWithOrderId = items.map(item => ({
@@ -100,7 +119,7 @@ export class ServerlessStorage {
   }
 
   async getOrder(id: number): Promise<Order | undefined> {
-    const result = await db
+    const result = await this.db
       .select()
       .from(orders)
       .where(eq(orders.id, id))
@@ -110,11 +129,11 @@ export class ServerlessStorage {
   }
 
   async getAllOrders(): Promise<Order[]> {
-    return await db.select().from(orders).orderBy(desc(orders.createdAt));
+    return await this.db.select().from(orders).orderBy(desc(orders.createdAt));
   }
 
   async getOrdersByStatus(status: string): Promise<Order[]> {
-    return await db
+    return await this.db
       .select()
       .from(orders)
       .where(eq(orders.status, status))
@@ -122,7 +141,7 @@ export class ServerlessStorage {
   }
 
   async getOrdersByLocation(locationId: string): Promise<Order[]> {
-    return await db
+    return await this.db
       .select()
       .from(orders)
       .where(eq(orders.locationId, locationId))
@@ -130,7 +149,7 @@ export class ServerlessStorage {
   }
 
   async updateOrderStatus(id: number, status: string): Promise<Order> {
-    const [result] = await db
+    const [result] = await this.db
       .update(orders)
       .set({ status })
       .where(eq(orders.id, id))
@@ -140,7 +159,7 @@ export class ServerlessStorage {
   }
 
   async deleteOrder(id: number): Promise<void> {
-    await db.transaction(async (tx) => {
+    await this.db.transaction(async (tx) => {
       await tx.delete(orderItems).where(eq(orderItems.orderId, id));
       await tx.delete(orders).where(eq(orders.id, id));
     });
@@ -148,7 +167,7 @@ export class ServerlessStorage {
 
   // Order Items
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
-    return await db
+    return await this.db
       .select()
       .from(orderItems)
       .where(eq(orderItems.orderId, orderId));
@@ -156,11 +175,11 @@ export class ServerlessStorage {
 
   // Tables
   async getAllTables(): Promise<Table[]> {
-    return await db.select().from(tables).orderBy(tables.tableNumber);
+    return await this.db.select().from(tables).orderBy(tables.tableNumber);
   }
 
   async getTablesByLocation(locationId: string): Promise<Table[]> {
-    return await db
+    return await this.db
       .select()
       .from(tables)
       .where(eq(tables.locationId, locationId))
@@ -168,7 +187,7 @@ export class ServerlessStorage {
   }
 
   async getTable(id: number): Promise<Table | undefined> {
-    const result = await db
+    const result = await this.db
       .select()
       .from(tables)
       .where(eq(tables.id, id))
@@ -178,12 +197,12 @@ export class ServerlessStorage {
   }
 
   async createTable(table: InsertTable): Promise<Table> {
-    const [result] = await db.insert(tables).values(table).returning();
+    const [result] = await this.db.insert(tables).values(table).returning();
     return result;
   }
 
   async updateTable(id: number, table: Partial<Table>): Promise<Table> {
-    const [result] = await db
+    const [result] = await this.db
       .update(tables)
       .set(table)
       .where(eq(tables.id, id))
@@ -193,11 +212,11 @@ export class ServerlessStorage {
   }
 
   async deleteTable(id: number): Promise<void> {
-    await db.delete(tables).where(eq(tables.id, id));
+    await this.db.delete(tables).where(eq(tables.id, id));
   }
 
   async updateTableStatus(id: number, status: string): Promise<Table> {
-    const [result] = await db
+    const [result] = await this.db
       .update(tables)
       .set({ status })
       .where(eq(tables.id, id))
@@ -207,5 +226,10 @@ export class ServerlessStorage {
   }
 }
 
-// Export singleton instance
+// Export instance factory function for serverless
+export function createStorage(): ServerlessStorage {
+  return new ServerlessStorage();
+}
+
+// Export as storage.ts replacement
 export const storage = new ServerlessStorage();
