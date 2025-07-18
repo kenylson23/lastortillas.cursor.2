@@ -1,10 +1,18 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MenuItem } from '@shared/schema';
+import { LOCATIONS, formatPrice } from '../lib/constants';
 
-interface CartItem extends MenuItem {
-  quantity: number;
+interface CartItem {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  image: string;
+  available: boolean;
+  preparationTime: number;
   customizations: string[];
+  quantity: number;
 }
 
 interface EnhancedCartProps {
@@ -45,18 +53,19 @@ export default function EnhancedCart({
   const [estimatedTime, setEstimatedTime] = useState(45);
 
   useEffect(() => {
-    // Calcular taxa de entrega baseada no tipo de pedido
+    // Calcular taxa de entrega baseada no tipo de pedido e localização
     if (customerInfo.orderType === 'delivery') {
-      setDeliveryFee(500); // 500 AOA para delivery
+      const location = LOCATIONS.find(loc => loc.id === locationId);
+      setDeliveryFee(location?.deliveryFee || 500);
       setEstimatedTime(45);
     } else {
       setDeliveryFee(0);
       setEstimatedTime(customerInfo.orderType === 'takeaway' ? 15 : 20);
     }
-  }, [customerInfo.orderType]);
+  }, [customerInfo.orderType, locationId]);
 
   const getSubtotal = () => {
-    return cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
+    return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const getTotalPrice = () => {
@@ -71,35 +80,8 @@ export default function EnhancedCart({
   const handleSubmitOrder = () => {
     if (cart.length === 0) return;
 
-    const orderItems = cart.map(item => ({
-      menuItemId: item.id,
-      quantity: item.quantity,
-      unitPrice: item.price,
-      customizations: item.customizations,
-      subtotal: (parseFloat(item.price) * item.quantity).toString()
-    }));
-
-    const orderData = {
-      order: {
-        customerName: customerInfo.name,
-        customerPhone: customerInfo.phone,
-        customerEmail: customerInfo.email || undefined,
-        deliveryAddress: customerInfo.orderType === 'delivery' ? customerInfo.address : undefined,
-        orderType: customerInfo.orderType,
-        locationId,
-        tableId: customerInfo.orderType === 'dine-in' ? customerInfo.tableId : undefined,
-        totalAmount: getTotalPrice().toString(),
-        paymentMethod: customerInfo.paymentMethod,
-        paymentStatus: 'pending',
-        notes: customerInfo.notes || undefined,
-        estimatedDeliveryTime: new Date(Date.now() + getPreparationTime() * 60 * 1000).toISOString()
-      },
-      items: orderItems
-    };
-
-    console.log('EnhancedCart submitting order:', orderData);
-
-    onSubmitOrder(orderData);
+    console.log('EnhancedCart submitting order via WhatsApp');
+    onSubmitOrder();
   };
 
   const isFormValid = () => {
@@ -206,7 +188,7 @@ export default function EnhancedCart({
                             </p>
                           )}
                           <div className="flex items-center justify-between mt-1 sm:mt-2">
-                            <p className="text-red-500 font-bold text-sm sm:text-base">{item.price} AOA</p>
+                            <p className="text-red-500 font-bold text-sm sm:text-base">{formatPrice(item.price)}</p>
                             <div className="flex items-center gap-1 sm:gap-2">
                               <button
                                 onClick={() => onUpdateQuantity(item.id, item.customizations, item.quantity - 1)}
@@ -234,17 +216,17 @@ export default function EnhancedCart({
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span>Subtotal:</span>
-                        <span>{getSubtotal().toFixed(2)} AOA</span>
+                        <span>{formatPrice(getSubtotal())}</span>
                       </div>
                       {deliveryFee > 0 && (
                         <div className="flex justify-between">
                           <span>Taxa de entrega:</span>
-                          <span>{deliveryFee.toFixed(2)} AOA</span>
+                          <span>{formatPrice(deliveryFee)}</span>
                         </div>
                       )}
                       <div className="border-t pt-2 flex justify-between font-bold text-lg">
                         <span>Total:</span>
-                        <span className="text-red-500">{getTotalPrice().toFixed(2)} AOA</span>
+                        <span className="text-red-500">{formatPrice(getTotalPrice())}</span>
                       </div>
                     </div>
                     <div className="mt-3 text-sm text-gray-600">
@@ -284,7 +266,7 @@ export default function EnhancedCart({
                         onChange={(e) => setCustomerInfo(prev => ({ ...prev, orderType: e.target.value as any }))}
                         className="border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
                       >
-                        <option value="delivery">🚚 Delivery (+500 AOA)</option>
+                        <option value="delivery">🚚 Delivery ({LOCATIONS.find(loc => loc.id === locationId)?.deliveryFee ? `+${formatPrice(LOCATIONS.find(loc => loc.id === locationId)!.deliveryFee)}` : 'Grátis'})</option>
                         <option value="takeaway">🏃 Takeaway</option>
                         <option value="dine-in">🍽️ Comer no local</option>
                       </select>
@@ -367,7 +349,7 @@ export default function EnhancedCart({
                         Processando...
                       </div>
                     ) : (
-                      `Fazer Pedido • ${getTotalPrice().toFixed(2)} AOA`
+                      `Fazer Pedido • ${formatPrice(getTotalPrice())}`
                     )}
                   </button>
                 </>
