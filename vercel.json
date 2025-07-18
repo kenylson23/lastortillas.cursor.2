@@ -1,6 +1,6 @@
 {
   "framework": "vite",
-  "buildCommand": "node build-vercel.js",
+  "buildCommand": "node build-vercel-simple.js",
   "outputDirectory": "dist",
   "installCommand": "npm install",
 

@@ -1,13 +1,17 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default defineConfig({
   plugins: [react()],
-  root: 'client',
+  root: path.resolve(__dirname, 'client'),
   base: '/',
   build: {
-    outDir: '../dist',
+    outDir: path.resolve(__dirname, 'dist/public'),
     emptyOutDir: true,
     assetsDir: 'assets',
     sourcemap: false,
@@ -15,11 +19,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          animations: ['framer-motion'],
-          utils: ['date-fns', 'zod']
-        }
+        manualChunks: undefined // Simplificar para evitar problemas no Vercel
       }
     }
   },

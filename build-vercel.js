@@ -17,7 +17,7 @@ try {
 
   // Build the application
   console.log('Building static application...');
-  execSync('vite build', {
+  execSync('vite build --config vite.config.static.ts', {
     stdio: 'inherit',
     env: {
       ...process.env,
