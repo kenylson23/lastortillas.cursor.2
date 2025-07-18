@@ -3,6 +3,7 @@
   "buildCommand": "node build-vercel.js",
   "outputDirectory": "dist/public",
   "installCommand": "npm install",
+  "nodeVersion": "20.x",
   "rewrites": [
     {
       "source": "/(.*)",
