@@ -39,8 +39,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': './client/src',
-      '@shared': './shared',
-      '@assets': './attached_assets'
+      '@shared': './shared'
     }
   },
   define: {
@@ -61,29 +60,14 @@ export default defineConfig({
     }
   });
 
-  // Only copy essential public assets (no duplicates)
-  const publicPath = './public';
-  const distPath = './dist';
-  
-  if (fs.existsSync(publicPath)) {
-    // Copy only specific folders we need
-    const essentialFolders = ['uploads']; // Only images uploaded by users
-    
-    essentialFolders.forEach(folder => {
-      const srcPath = path.join(publicPath, folder);
-      const destPath = path.join(distPath, folder);
-      
-      if (fs.existsSync(srcPath)) {
-        fs.cpSync(srcPath, destPath, { recursive: true });
-        console.log(`Copied ${folder}/ to dist/`);
-      }
-    });
-  }
+  // Skip copying public assets since app uses external URLs
+  // The app uses Unsplash URLs for menu items, no local assets needed
 
   // Clean up temp config
   fs.unlinkSync('vite.config.clean.js');
 
   // Verify build
+  const distPath = './dist';
   const indexFile = path.join(distPath, 'index.html');
   if (fs.existsSync(indexFile)) {
     const files = fs.readdirSync(distPath, { recursive: true }).filter(f => 
