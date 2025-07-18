@@ -322,3 +322,6 @@ Preferred communication style: Simple, everyday language.
   - Frontend remains React SPA with TanStack Query for API communication
   - Database schema preserved using Drizzle ORM with PostgreSQL
   - Ready for production deployment with automatic scaling and persistent data storage
+  - Created single unified build script (build-vercel.mjs) to eliminate conflicts
+  - Build generates complete dist/ folder with all necessary files for Vercel deployment
+  - Includes fallback HTML for development and comprehensive deployment instructions
