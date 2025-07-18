@@ -19,11 +19,20 @@ Este projeto está configurado para deploy automático no Vercel com uma configu
 - **Cache Headers**: Otimizados para performance
 
 #### .vercelignore
-Exclui do deploy:
-- `server/` - Backend não é necessário para deploy estático
-- `node_modules` - Gerenciado pelo Vercel
-- Arquivos de desenvolvimento
-- Cache e logs
+Exclui APENAS arquivos desnecessários:
+- `node_modules` - Vercel instala automaticamente
+- Logs e cache temporário
+- Arquivos do sistema (.DS_Store, Thumbs.db)
+- Configurações específicas do Replit
+- Build temporário (`client/dist/`)
+
+**MANTÉM todos os arquivos essenciais:**
+- `client/` - Código fonte React
+- `shared/` - Schemas e tipos compartilhados
+- `attached_assets/` - Assets do projeto
+- `public/` - Arquivos públicos
+- Configurações (vite.config.ts, tailwind.config.ts, etc.)
+- Build script (build-vercel.js)
 
 ### Estrutura Final do Deploy
 

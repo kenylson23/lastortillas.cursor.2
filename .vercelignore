@@ -1,45 +1,32 @@
-# Dependencies
+# Dependencies (Vercel instala automaticamente)
 node_modules
 .npm
 
-# Development files
-server/
-.env
-.env.local
-.env.production
-.env.development
-
-# Build tools and configs
+# Logs e cache
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# Development and testing
-.replit
-.upm
-.breakpoints
 .cache
-.vscode
-.eslintcache
 
-# Database and temporary files
-*.sqlite
-*.sqlite3
+# Arquivos do sistema
 .DS_Store
 Thumbs.db
 
-# Git
+# Git (Vercel usa o próprio sistema)
 .git
 .gitignore
 
-# Replit specific
+# Replit específico (não necessário no Vercel)
+.replit
+.upm
+.breakpoints
 replit.nix
 .replit.nix
 
-# Documentation
-README.md
-docs/
+# IDEs
+.vscode
+.eslintcache
 
-# Build artifacts (only keep final dist)
+# Build temporário (mantém apenas o dist final)
 client/dist/
