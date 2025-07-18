@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
     { href: "#inicio", label: "Início" },
@@ -51,7 +53,30 @@ export default function Navigation() {
               >
                 Pedir Online
               </a>
-
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-4">
+                  <span className="text-gray-700">Olá, {user?.firstName}</span>
+                  <a
+                    href="/admin"
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
+                  >
+                    Admin
+                  </a>
+                  <button
+                    onClick={logout}
+                    className="text-gray-600 hover:text-red-600 transition-colors duration-200 font-medium text-sm"
+                  >
+                    Logout
+                  </button>
+                </div>
+              ) : (
+                <a
+                  href="/login"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
+                >
+                  Login
+                </a>
+              )}
             </div>
           </div>
           
@@ -136,7 +161,36 @@ export default function Navigation() {
                     🛒 Pedir Online
                   </a>
                   
-
+                  {/* Botões de login/admin */}
+                  {isAuthenticated ? (
+                    <div className="space-y-3 mt-4">
+                      <div className="text-center text-gray-700 text-lg font-medium">Olá, {user?.firstName}!</div>
+                      <a
+                        href="/admin"
+                        className="block bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        👨‍💼 Painel Admin
+                      </a>
+                      <button
+                        onClick={() => {
+                          logout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full bg-gray-600 text-white px-6 py-4 rounded-xl hover:bg-gray-700 transition-colors duration-200 text-lg font-bold shadow-lg"
+                      >
+                        🚪 Logout
+                      </button>
+                    </div>
+                  ) : (
+                    <a
+                      href="/login"
+                      className="block bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg mt-4"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      🔐 Entrar
+                    </a>
+                  )}
                 </div>
 
                 {/* Footer do menu */}

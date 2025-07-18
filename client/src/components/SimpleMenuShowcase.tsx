@@ -1,18 +1,11 @@
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
-import { staticMenuItems, MenuItem } from "../data/staticMenu";
+import { useQuery } from "@tanstack/react-query";
+import { MenuItem } from "../../shared/schema";
 
 export default function SimpleMenuShowcase() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Simular carregamento para manter a UX
-    setTimeout(() => {
-      setMenuItems(staticMenuItems);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+  const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
+    queryKey: ['/api/menu-items'],
+  });
 
   // Show only featured items (first 6 available items)
   const featuredItems = menuItems.filter(item => item.available).slice(0, 6);
