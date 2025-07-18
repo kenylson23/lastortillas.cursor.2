@@ -309,3 +309,16 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
+- July 18, 2025: Major conversion to Vercel full-stack deployment architecture
+  - Migrated from Replit Express backend to Vercel Serverless Functions
+  - Created comprehensive API endpoints: /api/menu-items, /api/orders, /api/reservations, /api/tables
+  - Implemented PostgreSQL database integration using Supabase for production
+  - Structured project for Vercel deployment: src/ (frontend), api/ (serverless functions), lib/ (utilities)
+  - Added @vercel/node dependency for serverless function runtime
+  - Created lib/db.ts for database connections using Drizzle ORM with Neon/Supabase
+  - Built api/ directory with TypeScript serverless functions for all CRUD operations
+  - Updated vercel.json configuration for proper routing between frontend and API
+  - Maintained all existing functionality while adding scalable backend infrastructure
+  - Frontend remains React SPA with TanStack Query for API communication
+  - Database schema preserved using Drizzle ORM with PostgreSQL
+  - Ready for production deployment with automatic scaling and persistent data storage

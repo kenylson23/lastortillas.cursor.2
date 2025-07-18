@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { MenuItem } from "../../shared/schema";
+import { staticMenuItems, MenuItem } from "../data/staticMenu";
 
 export default function SimpleMenuShowcase() {
-  const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
+  // Try to fetch from API, fallback to static data
+  const { data: apiMenuItems, isLoading } = useQuery<MenuItem[]>({
     queryKey: ['/api/menu-items'],
+    retry: false, // Don't retry on failure during development
   });
+
+  // Use API data if available, otherwise use static data
+  const menuItems = apiMenuItems && apiMenuItems.length > 0 ? apiMenuItems : staticMenuItems;
 
   // Show only featured items (first 6 available items)
   const featuredItems = menuItems.filter(item => item.available).slice(0, 6);
