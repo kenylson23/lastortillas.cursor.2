@@ -39,15 +39,26 @@ vercel
 
 ### 3. Configurar Variáveis de Ambiente
 
-No dashboard do Vercel ou via CLI:
+⚠️ **IMPORTANTE**: Este é o passo mais crítico!
 
+**Opção A - Dashboard do Vercel:**
+1. Acesse vercel.com → Settings → Environment Variables
+2. Adicione `DATABASE_URL` com valor do seu banco PostgreSQL
+3. Adicione `NODE_ENV` com valor `production`
+
+**Opção B - Via CLI:**
 ```bash
 # Configurar DATABASE_URL
-vercel env add DATABASE_URL
-# Cole a URL do seu banco PostgreSQL
+vercel env add DATABASE_URL production
+# Cole a URL: postgresql://user:password@host:port/database
 
-# Outras variáveis (se necessário)
+# Configurar NODE_ENV
 vercel env add NODE_ENV production
+```
+
+**Opção C - Script Automático:**
+```bash
+./scripts/setup-vercel-secrets.sh
 ```
 
 ### 4. Deploy
@@ -183,6 +194,12 @@ drizzle-kit generate
 - Executar `npm run db:push` localmente com DATABASE_URL do Vercel
 - Usar script de configuração: `node scripts/setup-vercel-db.js`
 - Verificar se as migrações foram aplicadas: `drizzle-kit generate`
+
+### Erro: "DATABASE_URL is not defined" ou "Database secret not found"
+- **Causa**: Variável de ambiente não configurada no Vercel
+- **Solução**: Configurar segredos com `./scripts/setup-vercel-secrets.sh`
+- **Alternativa**: Usar dashboard do Vercel → Settings → Environment Variables
+- **Verificar**: `vercel env ls` para ver todas as variáveis configuradas
 
 ### Erro 404 nas APIs
 - Verificar se arquivos estão em `/api/`
