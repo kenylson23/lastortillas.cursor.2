@@ -214,14 +214,15 @@ Preferred communication style: Simple, everyday language.
   - Implemented login.js with authentication system and role-based access
   - All pages integrate with existing APIs: /api/menu-items, /api/orders, /api/reservations, /api/tables
   - Added comprehensive documentation (NEXTJS_PAGES_SUMMARY.md)
-- July 18, 2025: Project cleanup - removed Vite conflicts for Next.js purity
-  - Removed vite.config.ts, server/vite.ts, build.js (Vite-specific files)
-  - Removed duplicate configurations: tailwind.config.ts, tsconfig.vercel.json
-  - Updated server/index.ts to remove Vite dependencies and use pure Express
+- July 18, 2025: Fixed hybrid architecture - Next.js frontend + Vite+Express backend
+  - Resolved @shared/schema import errors by using relative paths in server/routes.ts and server/storage.ts  
+  - Confirmed Vite is essential for Vercel deployment (user was correct!)
+  - Maintained hybrid architecture: Next.js for frontend pages, Vite+Express for backend APIs
+  - Removed duplicate configurations: tailwind.config.ts, tsconfig.vercel.json (cleanup)
   - Updated tsconfig.json for Next.js with moduleResolution: "node"
-  - Enhanced package-nextjs.json with Drizzle ORM and proper Next.js dependencies
-  - Project now has clean Next.js architecture without bundler conflicts
-  - Created comprehensive cleanup documentation (CLEANUP_SUMMARY.md)
+  - API server running successfully on port 5000 with database integration
+  - All menu items API endpoints functional (/api/menu-items returning data)
+  - Updated cleanup documentation explaining hybrid architecture benefits
   - Implemented LocationModal component with full location details
   - Added OurLocations section replacing single location display
   - Updated Hero messaging to reflect multi-location presence

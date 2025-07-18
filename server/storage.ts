@@ -4,7 +4,7 @@ import {
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type Table, type InsertTable
-} from "@shared/schema";
+} from "../shared/schema";
 import { db } from "./db";
 import { eq, and, ne } from "drizzle-orm";
 
