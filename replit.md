@@ -182,6 +182,15 @@ Preferred communication style: Simple, everyday language.
   - Updated vercel.json configuration for full-stack deployment
   - Created comprehensive deployment guide (VERCEL_DEPLOY_GUIDE.md)
   - Verified local and production build processes work correctly
+- July 18, 2025: Reorganized project structure following Next.js best practices
+  - Created Next.js-style folder structure with src/, public/, and data/ directories
+  - Organized components in src/components/ with UI components in subfolder
+  - Moved pages to src/pages/ including API routes in src/pages/api/
+  - Reorganized styles in src/styles/ and utilities in src/utils/
+  - Created data/ folder with mock data for development (menu items, locations, user roles)
+  - Added centralized export files (index.ts) for cleaner imports
+  - Created comprehensive PROJECT_STRUCTURE.md documentation
+  - Maintained all existing functionality while improving code organization
   - Implemented LocationModal component with full location details
   - Added OurLocations section replacing single location display
   - Updated Hero messaging to reflect multi-location presence
