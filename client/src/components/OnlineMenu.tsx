@@ -1,27 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MENU_ITEMS, MENU_CATEGORIES, LOCATIONS, generateOrderId, createWhatsAppOrderMessage, formatPrice } from '../lib/constants';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiRequest } from '../lib/queryClient';
+import { MenuItem, Order, OrderItem } from '@shared/schema';
 import EnhancedCart from './EnhancedCart';
 import OrderSuccessModal from './OrderSuccessModal';
 import OrderTracking from './OrderTracking';
 import { useAuth } from '../hooks/useAuth';
 
-interface CartItem {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  available: boolean;
-  preparationTime: number;
-  customizations: string[];
+interface CartItem extends MenuItem {
   quantity: number;
+  customizations: string[];
 }
 
 interface OnlineMenuProps {
   locationId: string;
-  onOrderCreated?: (order: any) => void;
+  onOrderCreated?: (order: Order) => void;
   onLocationChange?: (locationId: string) => void;
   onBackToSite?: () => void;
 }
@@ -44,7 +38,7 @@ export default function OnlineMenu({
   
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [lastCreatedOrder, setLastCreatedOrder] = useState<any | null>(null);
+  const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null);
   const [showTracking, setShowTracking] = useState(false);
   const [trackingOrderId, setTrackingOrderId] = useState('');
   
@@ -67,12 +61,8 @@ export default function OnlineMenu({
     };
   });
 
+  const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth(); // Detectar se admin está logado
-
-  // Dados estáticos do menu
-  const menuItems = MENU_ITEMS.filter(item => item.available);
-  const categories = MENU_CATEGORIES;
-  const currentLocation = LOCATIONS.find(loc => loc.id === locationId) || LOCATIONS[0];
 
   // Salvar carrinho no localStorage automaticamente
   useEffect(() => {
@@ -125,91 +115,105 @@ export default function OnlineMenu({
     }
   }, [locationId]);
 
-  // Mesas disponíveis simuladas (para dine-in)
-  const availableTables = [
-    { id: 1, number: 1, capacity: 4, status: 'available' },
-    { id: 2, number: 2, capacity: 2, status: 'available' },
-    { id: 3, number: 3, capacity: 6, status: 'available' },
-    { id: 4, number: 4, capacity: 4, status: 'available' },
-    { id: 5, number: 5, capacity: 8, status: 'available' }
-  ];
-
-  // Função para criar pedido via WhatsApp
-  const createOrder = async (orderData: any) => {
-    const orderId = generateOrderId();
-    const total = calculateTotal();
-    
-    // Simular criação de pedido local
-    const order = {
-      id: orderId,
-      customerName: customerInfo.name,
-      customerPhone: customerInfo.phone,
-      customerEmail: customerInfo.email,
-      deliveryAddress: customerInfo.address,
-      orderType: customerInfo.orderType,
-      locationId: locationId,
-      tableId: customerInfo.tableId,
-      totalAmount: total,
-      paymentMethod: customerInfo.paymentMethod,
-      notes: customerInfo.notes,
-      status: 'received',
-      createdAt: new Date().toISOString(),
-      items: cart.map(item => ({
-        id: item.id,
-        name: item.name,
-        price: item.price,
-        quantity: item.quantity,
-        customizations: item.customizations
-      }))
-    };
-
-    // Criar mensagem WhatsApp
-    const whatsappMessage = createWhatsAppOrderMessage({
-      customerInfo,
-      cart,
-      orderId,
-      location: currentLocation,
-      total
-    });
-
-    // Abrir WhatsApp
-    const whatsappUrl = `https://wa.me/244949639932?text=${whatsappMessage}`;
-    window.open(whatsappUrl, '_blank');
-
-    // Limpar carrinho e dados após envio
-    setCart([]);
-    setCustomerInfo({
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      orderType: 'delivery',
-      paymentMethod: 'cash',
-      notes: '',
-      tableId: null
-    });
-    setIsCartOpen(false);
-    
-    // Limpar localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem(`cart_${locationId}`);
-      localStorage.removeItem(`customerInfo_${locationId}`);
+  const { data: menuItems = [], isLoading, error } = useQuery({
+    queryKey: ['/api/menu-items'],
+    queryFn: async () => {
+      console.log('Fetching menu items...');
+      const response = await apiRequest('GET', '/api/menu-items');
+      console.log('Response status:', response.status);
+      const data = await response.json();
+      console.log('Menu items data:', data);
+      return data;
     }
-    
-    // Mostrar modal de sucesso
-    setLastCreatedOrder(order);
-    setIsSuccessModalOpen(true);
-    
-    onOrderCreated?.(order);
+  });
 
-    return order;
-  };
+  const { data: availableTables = [], isLoading: tablesLoading, refetch: refetchTables } = useQuery({
+    queryKey: ['/api/tables', locationId],
+    queryFn: async () => {
+      console.log('🔍 Fetching tables for location:', locationId);
+      const response = await fetch(`/api/tables?location=${locationId}`);
+      console.log('📡 Tables response status:', response.status);
+      if (!response.ok) {
+        throw new Error('Failed to fetch tables');
+      }
+      const data = await response.json();
+      console.log('📊 Tables data received:', data);
+      console.log('📊 Tables data length:', data.length);
+      console.log('📊 Available tables:', data.filter(t => t.status === 'available'));
+      return data;
+    },
+    staleTime: 5 * 1000, // 5 segundos para debug
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
+  });
+
+  const createOrderMutation = useMutation({
+    mutationFn: async (orderData: any) => {
+      console.log('Creating order with data:', orderData);
+      const response = await apiRequest('POST', '/api/orders', orderData);
+      const result = await response.json();
+      console.log('Order creation result:', result);
+      return result;
+    },
+    onSuccess: (order) => {
+      // Limpar carrinho e dados do cliente após pedido bem-sucedido
+      setCart([]);
+      setCustomerInfo({
+        name: '',
+        phone: '',
+        email: '',
+        address: '',
+        orderType: 'delivery',
+        paymentMethod: 'cash',
+        notes: '',
+        tableId: null
+      });
+      setIsCartOpen(false);
+      
+      // Limpar localStorage também
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem(`cart_${locationId}`);
+        localStorage.removeItem(`customerInfo_${locationId}`);
+      }
+      
+      // Show enhanced success modal
+      setLastCreatedOrder(order);
+      setIsSuccessModalOpen(true);
+      
+      onOrderCreated?.(order);
+      queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+      // Invalidar todas as queries relacionadas a mesas para sincronizar status
+      queryClient.invalidateQueries({ predicate: (query) => 
+        query.queryKey[0] === '/api/tables' 
+      });
+      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
+      // Forçar re-fetch das mesas
+      queryClient.refetchQueries({ queryKey: ['/api/tables', locationId] });
+      // Remover também do cache se necessário
+      queryClient.removeQueries({ queryKey: ['/api/tables', locationId] });
+    },
+    onError: (error) => {
+      console.error('Order creation failed:', error);
+      alert(`Erro ao criar pedido: ${error.message}`);
+    }
+  });
+
+  const categories = ['Todos', ...Array.from(new Set(menuItems.map((item: MenuItem) => item.category)))];
 
   const filteredItems = selectedCategory === 'Todos' 
     ? menuItems
-    : menuItems.filter(item => item.category === selectedCategory);
+    : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
 
-  const addToCart = (item: any, customizations: string[] = []) => {
+  // Debug logs (temporarily enabled for troubleshooting)
+  console.log('OnlineMenu - menuItems:', menuItems);
+  console.log('OnlineMenu - filteredItems:', filteredItems);
+  console.log('OnlineMenu - categories:', categories);
+  console.log('OnlineMenu - selectedCategory:', selectedCategory);
+  console.log('OnlineMenu - locationId:', locationId);
+  console.log('OnlineMenu - availableTables:', availableTables);
+  console.log('OnlineMenu - tablesLoading:', tablesLoading);
+
+  const addToCart = (item: MenuItem, customizations: string[] = []) => {
     setCart(prev => {
       const existingItem = prev.find(cartItem => 
         cartItem.id === item.id && 
@@ -243,14 +247,8 @@ export default function OnlineMenu({
     }
   };
 
-  const calculateTotal = () => {
-    const itemsTotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-    const deliveryFee = customerInfo.orderType === 'delivery' ? currentLocation.deliveryFee : 0;
-    return itemsTotal + deliveryFee;
-  };
-
   const getTotalPrice = () => {
-    return calculateTotal();
+    return cart.reduce((total, item) => total + (parseFloat(item.price) * item.quantity), 0);
   };
 
   // Função para limpar completamente o carrinho e dados (útil para admin)
@@ -279,16 +277,42 @@ export default function OnlineMenu({
   const handleSubmitOrder = () => {
     if (cart.length === 0) return;
 
+    const orderItems = cart.map(item => ({
+      menuItemId: item.id,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      customizations: item.customizations || [],
+      subtotal: (parseFloat(item.price) * item.quantity).toString()
+    }));
+
     const orderData = {
-      customerInfo,
-      cart,
-      locationId,
-      total: calculateTotal()
+      order: {
+        customerName: customerInfo.name,
+        customerPhone: customerInfo.phone,
+        customerEmail: customerInfo.email || undefined,
+        deliveryAddress: customerInfo.orderType === 'delivery' ? customerInfo.address : undefined,
+        orderType: customerInfo.orderType,
+        locationId,
+        totalAmount: getTotalPrice().toString(),
+        paymentMethod: customerInfo.paymentMethod,
+        paymentStatus: 'pending',
+        notes: customerInfo.notes || undefined,
+        estimatedDeliveryTime: new Date(Date.now() + 45 * 60 * 1000)
+      },
+      items: orderItems
     };
 
-    console.log('Submitting order via WhatsApp:', orderData);
-    createOrder(orderData);
+    console.log('Submitting order data:', orderData);
+    createOrderMutation.mutate(orderData);
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600"></div>
+      </div>
+    );
+  }
 
   const getLocationName = (id: string) => {
     switch (id) {
@@ -579,7 +603,7 @@ export default function OnlineMenu({
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredItems.map((item: any, index) => (
+                {filteredItems.map((item: MenuItem, index) => (
                   <MenuItemCard
                     key={item.id}
                     item={item}
@@ -599,9 +623,12 @@ export default function OnlineMenu({
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onUpdateQuantity={updateQuantity}
-        onSubmitOrder={handleSubmitOrder}
+        onSubmitOrder={(orderData) => {
+          console.log('OnlineMenu received order data from EnhancedCart:', orderData);
+          createOrderMutation.mutate(orderData);
+        }}
         locationId={locationId}
-        isSubmitting={false}
+        isSubmitting={createOrderMutation.isPending}
         availableTables={availableTables}
       />
 
@@ -626,8 +653,8 @@ function MenuItemCard({
   onAddToCart, 
   delay = 0 
 }: { 
-  item: any; 
-  onAddToCart: (item: any, customizations: string[]) => void;
+  item: MenuItem; 
+  onAddToCart: (item: MenuItem, customizations: string[]) => void;
   delay?: number;
 }) {
   const [selectedCustomizations, setSelectedCustomizations] = useState<string[]>([]);
@@ -660,7 +687,7 @@ function MenuItemCard({
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10"></div>
         <img
-          src={item.image}
+          src={item.image || '/api/placeholder/400/300'}
           alt={item.name}
           className="w-full h-48 sm:h-56 object-cover transition-all duration-700 group-hover:scale-110"
         />
@@ -694,7 +721,7 @@ function MenuItemCard({
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3 }}
           >
-{formatPrice(item.price)}
+            {item.price} <span className="text-lg text-red-200">AOA</span>
           </motion.div>
         </div>
       </div>

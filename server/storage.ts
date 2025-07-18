@@ -1,300 +1,455 @@
-import type {
-  Reservation,
-  InsertReservation,
-  Contact,
-  InsertContact,
-  MenuItem,
-  InsertMenuItem,
-  Order,
-  InsertOrder,
-  OrderItem,
-  InsertOrderItem,
-  Table,
-  InsertTable,
+import { 
+  reservations, contacts, menuItems, orders, orderItems, tables,
+  type Reservation, type InsertReservation, 
+  type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
+  type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
+  type Table, type InsertTable
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, ne } from "drizzle-orm";
 
 export interface IStorage {
-  // Reservations
-  getReservations(): Promise<Reservation[]>;
-  createReservation(data: InsertReservation): Promise<Reservation>;
-
-  // Contacts
-  getContacts(): Promise<Contact[]>;
-  createContact(data: InsertContact): Promise<Contact>;
-
+  // Reservation operations
+  createReservation(reservation: InsertReservation): Promise<Reservation>;
+  createContact(contact: InsertContact): Promise<Contact>;
+  getAllReservations(): Promise<Reservation[]>;
+  checkAvailability(date: string, time: string): Promise<boolean>;
+  getReservationsByDate(date: string): Promise<Reservation[]>;
+  
   // Menu Items
-  getMenuItems(): Promise<MenuItem[]>;
-  createMenuItem(data: InsertMenuItem): Promise<MenuItem>;
-  updateMenuItem(id: number, data: Partial<MenuItem>): Promise<MenuItem>;
+  getAllMenuItems(): Promise<MenuItem[]>;
+  getMenuItemsByCategory(category: string): Promise<MenuItem[]>;
+  getMenuItem(id: number): Promise<MenuItem | undefined>;
+  createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
+  updateMenuItem(id: number, item: Partial<MenuItem>): Promise<MenuItem>;
   deleteMenuItem(id: number): Promise<void>;
-
+  
   // Orders
-  getOrders(): Promise<Order[]>;
-  createOrder(orderData: InsertOrder, orderItems: InsertOrderItem[]): Promise<Order>;
-  updateOrder(id: number, data: Partial<Order>): Promise<Order>;
+  createOrder(order: InsertOrder, items: InsertOrderItem[]): Promise<Order>;
+  getOrder(id: number): Promise<Order | undefined>;
+  getAllOrders(): Promise<Order[]>;
+  getOrdersByStatus(status: string): Promise<Order[]>;
+  getOrdersByLocation(locationId: string): Promise<Order[]>;
+  updateOrderStatus(id: number, status: string): Promise<Order>;
   deleteOrder(id: number): Promise<void>;
+  
+  // Order Items
   getOrderItems(orderId: number): Promise<OrderItem[]>;
-
+  
   // Tables
-  getTables(): Promise<Table[]>;
-  createTable(data: InsertTable): Promise<Table>;
-  updateTable(id: number, data: Partial<Table>): Promise<Table>;
-  getAvailableTables(locationId: string): Promise<Table[]>;
+  getAllTables(): Promise<Table[]>;
+  getTablesByLocation(locationId: string): Promise<Table[]>;
+  getTable(id: number): Promise<Table | undefined>;
+  createTable(table: InsertTable): Promise<Table>;
+  updateTable(id: number, table: Partial<Table>): Promise<Table>;
+  deleteTable(id: number): Promise<void>;
+  updateTableStatus(id: number, status: string): Promise<Table>;
 }
 
-class MemStorage implements IStorage {
-  private reservations: Reservation[] = [];
-  private contacts: Contact[] = [];
-  private menuItems: MenuItem[] = [];
-  private orders: Order[] = [];
-  private orderItems: OrderItem[] = [];
-  private tables: Table[] = [];
-  private nextReservationId = 1;
-  private nextContactId = 1;
-  private nextMenuItemId = 1;
-  private nextOrderId = 1;
-  private nextOrderItemId = 1;
-  private nextTableId = 1;
-
+export class DatabaseStorage implements IStorage {
+  private initializationPromise: Promise<void> | null = null;
+  
   constructor() {
-    // Initialize with sample data
-    this.initializeSampleData();
+    // Don't initialize in constructor to avoid blocking the app startup
   }
 
-  private initializeSampleData() {
-    // Sample menu items
-    const sampleMenuItems: MenuItem[] = [
-      {
-        id: this.nextMenuItemId++,
-        name: "Tacos de Carnitas",
-        description: "Tacos tradicionais mexicanos com carne de porco desfiada, cebola e coentro",
-        price: "1500",
-        category: "Tacos",
-        image: "/images/tacos-carnitas.jpg",
-        available: true,
-        preparationTime: 15,
-        customizations: ["sem cebola", "extra coentro", "picante"],
-        createdAt: new Date(),
-      },
-      {
-        id: this.nextMenuItemId++,
-        name: "Quesadilla de Queijo",
-        description: "Tortilla de farinha recheada com queijo derretido e servida com molho",
-        price: "1200",
-        category: "Quesadillas",
-        image: "/images/quesadilla.jpg",
-        available: true,
-        preparationTime: 10,
-        customizations: ["extra queijo", "com guacamole"],
-        createdAt: new Date(),
-      },
-    ];
-
-    // Sample tables
-    const sampleTables: Table[] = [
-      {
-        id: this.nextTableId++,
-        number: 1,
-        locationId: "ilha",
-        capacity: 4,
-        status: "available",
-        position: "janela",
-        features: ["ar_condicionado", "vista_mar"],
-        notes: "Mesa com vista para o mar",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      {
-        id: this.nextTableId++,
-        number: 2,
-        locationId: "talatona",
-        capacity: 6,
-        status: "available",
-        position: "centro",
-        features: ["ar_condicionado", "kids_area"],
-        notes: "Mesa próxima à área infantil",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    ];
-
-    this.menuItems = sampleMenuItems;
-    this.tables = sampleTables;
+  private async ensureInitialized(): Promise<void> {
+    if (!this.initializationPromise) {
+      this.initializationPromise = this.initializeSampleMenuItems();
+    }
+    await this.initializationPromise;
   }
 
-  // Reservations
-  async getReservations(): Promise<Reservation[]> {
-    return this.reservations;
-  }
+  private async initializeSampleMenuItems(): Promise<void> {
+    try {
+      // Test database connection first
+      await db.select().from(menuItems).limit(1);
+      
+      // Check if menu items already exist
+      const existingItems = await db.select().from(menuItems);
+      if (existingItems.length === 0) {
+        // Add sample menu items
+        const sampleItems = [
+          {
+            name: 'Tacos al Pastor',
+            description: 'Tacos tradicionais com carne de porco marinada, abacaxi e coentro',
+            price: '2500',
+            category: 'Tacos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Burrito Supremo',
+            description: 'Burrito gigante com carne, feijão, arroz, queijo e molho especial',
+            price: '3200',
+            category: 'Burritos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Quesadilla de Queijo',
+            description: 'Tortilla crocante recheada com queijo derretido e temperos',
+            price: '2000',
+            category: 'Quesadillas',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Nachos Especiais',
+            description: 'Chips de tortilla com queijo derretido, guacamole e molho picante',
+            price: '2800',
+            category: 'Aperitivos',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Enchiladas Verdes',
+            description: 'Tortillas recheadas com frango e cobertas com molho verde',
+            price: '3000',
+            category: 'Enchiladas',
+            image: '/api/placeholder/400/300',
+            available: true
+          },
+          {
+            name: 'Fajitas de Frango',
+            description: 'Frango grelhado com pimentos e cebolas, servido com tortillas',
+            price: '3500',
+            category: 'Fajitas',
+            image: '/api/placeholder/400/300',
+            available: true
+          }
+        ];
 
-  async createReservation(data: InsertReservation): Promise<Reservation> {
-    const reservation: Reservation = {
-      id: this.nextReservationId++,
-      ...data,
-      createdAt: new Date(),
-    };
-    this.reservations.push(reservation);
+        for (const item of sampleItems) {
+          await db.insert(menuItems).values(item);
+        }
+        console.log('Sample menu items initialized successfully');
+      }
+    } catch (error) {
+      console.error('Error initializing sample menu items:', error);
+      // Don't throw here, let the app continue without sample data
+    }
+  }
+  // Reservation operations
+  async createReservation(insertReservation: InsertReservation): Promise<Reservation> {
+    await this.ensureInitialized();
+    const [reservation] = await db
+      .insert(reservations)
+      .values(insertReservation)
+      .returning();
     return reservation;
   }
 
-  // Contacts
-  async getContacts(): Promise<Contact[]> {
-    return this.contacts;
-  }
-
-  async createContact(data: InsertContact): Promise<Contact> {
-    const contact: Contact = {
-      id: this.nextContactId++,
-      ...data,
-      createdAt: new Date(),
-    };
-    this.contacts.push(contact);
+  async createContact(insertContact: InsertContact): Promise<Contact> {
+    await this.ensureInitialized();
+    const [contact] = await db
+      .insert(contacts)
+      .values(insertContact)
+      .returning();
     return contact;
   }
 
+  async getAllReservations(): Promise<Reservation[]> {
+    await this.ensureInitialized();
+    return await db.select().from(reservations);
+  }
+
+  async checkAvailability(date: string, time: string): Promise<boolean> {
+    await this.ensureInitialized();
+    const existing = await db
+      .select()
+      .from(reservations)
+      .where(and(eq(reservations.date, date), eq(reservations.time, time)));
+    return existing.length === 0;
+  }
+
+  async getReservationsByDate(date: string): Promise<Reservation[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(reservations)
+      .where(eq(reservations.date, date));
+  }
+
   // Menu Items
-  async getMenuItems(): Promise<MenuItem[]> {
-    return this.menuItems;
+  async getAllMenuItems(): Promise<MenuItem[]> {
+    await this.ensureInitialized();
+    return await db.select().from(menuItems);
   }
 
-  async createMenuItem(data: InsertMenuItem): Promise<MenuItem> {
-    const menuItem: MenuItem = {
-      id: this.nextMenuItemId++,
-      ...data,
-      createdAt: new Date(),
-    };
-    this.menuItems.push(menuItem);
-    return menuItem;
+  async getMenuItemsByCategory(category: string): Promise<MenuItem[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.category, category));
   }
 
-  async updateMenuItem(id: number, data: Partial<MenuItem>): Promise<MenuItem> {
-    const index = this.menuItems.findIndex(item => item.id === id);
-    if (index === -1) {
-      throw new Error("Menu item not found");
-    }
-    this.menuItems[index] = { ...this.menuItems[index], ...data };
-    return this.menuItems[index];
+  async getMenuItem(id: number): Promise<MenuItem | undefined> {
+    await this.ensureInitialized();
+    const [item] = await db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.id, id));
+    return item;
+  }
+
+  async createMenuItem(insertItem: InsertMenuItem): Promise<MenuItem> {
+    await this.ensureInitialized();
+    const [item] = await db
+      .insert(menuItems)
+      .values(insertItem)
+      .returning();
+    return item;
+  }
+
+  async updateMenuItem(id: number, updates: Partial<MenuItem>): Promise<MenuItem> {
+    await this.ensureInitialized();
+    // Remove campos que não devem ser atualizados manualmente
+    const { id: itemId, createdAt, ...validUpdates } = updates;
+    
+    const [item] = await db
+      .update(menuItems)
+      .set(validUpdates)
+      .where(eq(menuItems.id, id))
+      .returning();
+    return item;
   }
 
   async deleteMenuItem(id: number): Promise<void> {
-    const index = this.menuItems.findIndex(item => item.id === id);
-    if (index === -1) {
-      throw new Error("Menu item not found");
-    }
-    this.menuItems.splice(index, 1);
+    await this.ensureInitialized();
+    await db
+      .delete(menuItems)
+      .where(eq(menuItems.id, id));
   }
 
   // Orders
-  async getOrders(): Promise<Order[]> {
-    return this.orders;
+  async createOrder(insertOrder: InsertOrder, items: InsertOrderItem[]): Promise<Order> {
+    await this.ensureInitialized();
+    const [order] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
+    
+    // Create order items
+    await db.insert(orderItems).values(
+      items.map(item => ({ ...item, orderId: order.id }))
+    );
+    
+    // If it's a dine-in order with a table, mark the table as occupied
+    if (order.orderType === 'dine-in' && order.tableId) {
+      console.log(`Marking table ${order.tableId} as occupied for order ${order.id}`);
+      await db
+        .update(tables)
+        .set({ status: 'occupied', updatedAt: new Date() })
+        .where(eq(tables.id, order.tableId));
+      console.log(`Table ${order.tableId} marked as occupied`);
+    } else {
+      console.log(`Order ${order.id} - orderType: ${order.orderType}, tableId: ${order.tableId}`);
+    }
+    
+    return order;
   }
 
-  async createOrder(orderData: InsertOrder, orderItemsData: InsertOrderItem[]): Promise<Order> {
-    const order: Order = {
-      id: this.nextOrderId++,
-      ...orderData,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.orders.push(order);
+  async getOrder(id: number): Promise<Order | undefined> {
+    await this.ensureInitialized();
+    const [order] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+    return order;
+  }
 
-    // Create order items
-    for (const itemData of orderItemsData) {
-      const orderItem: OrderItem = {
-        id: this.nextOrderItemId++,
-        orderId: order.id,
-        ...itemData,
-      };
-      this.orderItems.push(orderItem);
-    }
+  async getAllOrders(): Promise<Order[]> {
+    await this.ensureInitialized();
+    return await db.select().from(orders);
+  }
 
-    // Update table status if dine-in order
-    if (order.tableId && order.orderType === "dine-in") {
-      await this.updateTable(order.tableId, { status: "occupied" });
+  async getOrdersByStatus(status: string): Promise<Order[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.status, status));
+  }
+
+  async getOrdersByLocation(locationId: string): Promise<Order[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.locationId, locationId));
+  }
+
+  async updateOrderStatus(id: number, status: string): Promise<Order> {
+    await this.ensureInitialized();
+    // Get the current order first to check if it has a table
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    const [order] = await db
+      .update(orders)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(orders.id, id))
+      .returning();
+
+    // If the order is completed or cancelled, and it was a dine-in order with a table,
+    // mark the table as available again
+    if (currentOrder && 
+        currentOrder.orderType === 'dine-in' && 
+        currentOrder.tableId && 
+        (status === 'delivered' || status === 'cancelled')) {
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
+        .where(eq(tables.id, currentOrder.tableId));
     }
 
     return order;
   }
 
-  async updateOrder(id: number, data: Partial<Order>): Promise<Order> {
-    const index = this.orders.findIndex(order => order.id === id);
-    if (index === -1) {
-      throw new Error("Order not found");
-    }
-
-    const currentOrder = this.orders[index];
-    this.orders[index] = { 
-      ...currentOrder, 
-      ...data, 
-      updatedAt: new Date() 
-    };
-
-    // Handle table status updates
-    if (data.status === "delivered" || data.status === "cancelled") {
-      if (currentOrder.tableId && currentOrder.orderType === "dine-in") {
-        await this.updateTable(currentOrder.tableId, { status: "available" });
-      }
-    }
-
-    return this.orders[index];
-  }
-
   async deleteOrder(id: number): Promise<void> {
-    const orderIndex = this.orders.findIndex(order => order.id === id);
-    if (orderIndex === -1) {
-      throw new Error("Order not found");
+    await this.ensureInitialized();
+    // Get the order first to check if it has a table
+    const [currentOrder] = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, id));
+
+    // First delete order items
+    await db
+      .delete(orderItems)
+      .where(eq(orderItems.orderId, id));
+    
+    // Then delete the order
+    await db
+      .delete(orders)
+      .where(eq(orders.id, id));
+
+    // If it was a dine-in order with a table, mark the table as available again
+    if (currentOrder && 
+        currentOrder.orderType === 'dine-in' && 
+        currentOrder.tableId) {
+      await db
+        .update(tables)
+        .set({ status: 'available', updatedAt: new Date() })
+        .where(eq(tables.id, currentOrder.tableId));
     }
-
-    const order = this.orders[orderIndex];
-
-    // Free up table if it was a dine-in order
-    if (order.tableId && order.orderType === "dine-in") {
-      await this.updateTable(order.tableId, { status: "available" });
-    }
-
-    // Remove order and its items
-    this.orders.splice(orderIndex, 1);
-    this.orderItems = this.orderItems.filter(item => item.orderId !== id);
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
-    return this.orderItems.filter(item => item.orderId === orderId);
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(orderItems)
+      .where(eq(orderItems.orderId, orderId));
   }
 
-  // Tables
-  async getTables(): Promise<Table[]> {
-    return this.tables;
+  // Tables operations
+  async getAllTables(): Promise<Table[]> {
+    await this.ensureInitialized();
+    return await db.select().from(tables);
   }
 
-  async createTable(data: InsertTable): Promise<Table> {
-    const table: Table = {
-      id: this.nextTableId++,
-      ...data,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    this.tables.push(table);
+  async getTablesByLocation(locationId: string): Promise<Table[]> {
+    await this.ensureInitialized();
+    return await db
+      .select()
+      .from(tables)
+      .where(eq(tables.locationId, locationId));
+  }
+
+  async getTable(id: number): Promise<Table | undefined> {
+    await this.ensureInitialized();
+    const [table] = await db
+      .select()
+      .from(tables)
+      .where(eq(tables.id, id));
     return table;
   }
 
-  async updateTable(id: number, data: Partial<Table>): Promise<Table> {
-    const index = this.tables.findIndex(table => table.id === id);
-    if (index === -1) {
-      throw new Error("Table not found");
+  async createTable(insertTable: InsertTable): Promise<Table> {
+    await this.ensureInitialized();
+    
+    console.log(`🔍 Verificando duplicação para mesa ${insertTable.number} no local ${insertTable.locationId}`);
+    
+    // Verificar se já existe uma mesa com o mesmo número no mesmo local
+    const existingTable = await db
+      .select()
+      .from(tables)
+      .where(and(
+        eq(tables.locationId, insertTable.locationId),
+        eq(tables.number, insertTable.number)
+      ));
+    
+    console.log(`🔍 Encontradas ${existingTable.length} mesas existentes:`, existingTable);
+    
+    if (existingTable.length > 0) {
+      throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
     }
-    this.tables[index] = { 
-      ...this.tables[index], 
-      ...data, 
-      updatedAt: new Date() 
-    };
-    return this.tables[index];
+    
+    const [table] = await db
+      .insert(tables)
+      .values(insertTable)
+      .returning();
+    return table;
   }
 
-  async getAvailableTables(locationId: string): Promise<Table[]> {
-    return this.tables.filter(
-      table => table.locationId === locationId && table.status === "available"
-    );
+  async updateTable(id: number, updates: Partial<Table>): Promise<Table> {
+    await this.ensureInitialized();
+    
+    // Se está atualizando o número ou localização, verificar duplicação
+    if (updates.number !== undefined || updates.locationId !== undefined) {
+      // Buscar a mesa atual para obter os dados completos
+      const currentTable = await this.getTable(id);
+      if (!currentTable) {
+        throw new Error('Mesa não encontrada');
+      }
+      
+      const newNumber = updates.number !== undefined ? updates.number : currentTable.number;
+      const newLocationId = updates.locationId !== undefined ? updates.locationId : currentTable.locationId;
+      
+      // Verificar se existe outra mesa com o mesmo número no mesmo local
+      const existingTable = await db
+        .select()
+        .from(tables)
+        .where(and(
+          eq(tables.locationId, newLocationId),
+          eq(tables.number, newNumber),
+          ne(tables.id, id) // Excluir a mesa atual da verificação
+        ));
+      
+      if (existingTable.length > 0) {
+        throw new Error(`Já existe uma mesa número ${newNumber} no local ${newLocationId}`);
+      }
+    }
+    
+    const [table] = await db
+      .update(tables)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(tables.id, id))
+      .returning();
+    return table;
+  }
+
+  async deleteTable(id: number): Promise<void> {
+    await this.ensureInitialized();
+    await db
+      .delete(tables)
+      .where(eq(tables.id, id));
+  }
+
+  async updateTableStatus(id: number, status: string): Promise<Table> {
+    await this.ensureInitialized();
+    const [table] = await db
+      .update(tables)
+      .set({ status, updatedAt: new Date() })
+      .where(eq(tables.id, id))
+      .returning();
+    return table;
   }
 }
 
-export const storage: IStorage = new MemStorage();
+export const storage = new DatabaseStorage();

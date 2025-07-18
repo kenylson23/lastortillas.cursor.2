@@ -2,24 +2,22 @@
 
 Uma landing page moderna para o restaurante mexicano Las Tortillas Mexican Grill, localizado na Ilha de Luanda, Angola.
 
-## 🚀 Deploy
+## 🚀 Deploy no Vercel
 
-Este projeto está otimizado para deploy como uma aplicação full-stack no Replit.
+Este projeto está otimizado para deploy no Vercel como uma aplicação estática (SPA).
 
-### Configurações:
+### Configurações Importantes:
 
-1. **Framework**: React + TypeScript + Express.js
-2. **Database**: PostgreSQL
-3. **Build Command**: `npm run build`
-4. **Development**: `npm run dev`
-5. **Database Schema**: `npm run db:push`
+1. **Framework Preset**: Vite
+2. **Build Command**: `vite build`
+3. **Output Directory**: `dist`
+4. **Install Command**: `npm install`
 
-### Funcionalidades:
+### Passos para Deploy:
 
-- Sistema completo de gestão de restaurante
-- Sistema de pedidos online
-- Gestão de mesas e reservas
-- Painel administrativo completo
+1. Conecte seu repositório ao Vercel
+2. As configurações serão detectadas automaticamente através do `vercel.json`
+3. O site será deployado como uma Single Page Application
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -59,7 +57,6 @@ O site utiliza as cores da bandeira mexicana como tema principal:
 │   ├── pages/         # Páginas da aplicação
 │   ├── lib/           # Utilitários e constantes
 │   └── hooks/         # Custom hooks
-├── server/            # Backend Express.js
-├── shared/            # Schemas e tipos compartilhados
+├── vercel.json        # Configuração do Vercel
 └── README.md         # Este arquivo
 ```

@@ -100,18 +100,17 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 - **Database**: In-memory storage for rapid development
 - **Integration**: Vite proxy configuration for API requests
 
-### Production Build (Replit)
-- **Type**: Full-stack web application
-- **Backend**: Express.js with PostgreSQL
-- **Frontend**: React + TypeScript + Vite
-- **Database**: PostgreSQL with Drizzle ORM
-- **Deployment**: Replit native deployment
+### Production Build (Vercel)
+- **Type**: Static Single Page Application (SPA)
+- **Build Command**: `vite build`
+- **Output Directory**: `dist`
+- **Framework**: Vite (auto-detected)
+- **Reservations**: WhatsApp integration (no backend required)
 
 ### Environment Configuration
-- **Database**: PostgreSQL with automatic provisioning
+- **Vercel Configuration**: `vercel.json` with SPA routing
 - **WhatsApp Integration**: Direct linking to +244 949639932
-- **File Storage**: Server-side uploads with multer
-- **Session Management**: PostgreSQL-based sessions
+- **Static Assets**: Optimized for CDN delivery
 
 ## User Preferences
 
@@ -121,11 +120,17 @@ Preferred communication style: Simple, everyday language.
 
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
-- June 29, 2025: Prepared for full-stack deployment
-  - Implemented complete backend with Express.js
-  - Added PostgreSQL database integration
-  - Created comprehensive API endpoints
-  - Implemented proper error handling
+- June 29, 2025: Prepared for Vercel deployment as static SPA
+  - Removed backend dependencies from Contact form
+  - Added vercel.json configuration
+  - Updated build process for static deployment
+  - Created deployment documentation
+- June 29, 2025: Fixed Vercel 404 deployment errors
+  - Resolved Rollup import resolution failures by converting @/ aliases to relative paths
+  - Replaced complex UI components (Button, Card, Input, etc.) with standard HTML elements
+  - Simplified Contact form with native form elements while preserving WhatsApp functionality
+  - Build process now completes successfully without import errors
+  - Maintained all animations, styling, and core functionality
 - July 8, 2025: Fixed concurrent reservation booking issues
   - Implemented mutex pattern to prevent race conditions in reservation creation
   - Added real-time availability checking with debounced API calls
@@ -174,7 +179,7 @@ Preferred communication style: Simple, everyday language.
   - Fixed About and Features sections animation issues by removing ScrollReveal
   - Removed logo from navigation bar as requested
   - Updated navigation to include "Nossos Locais" section
-  - Fixed image loading issues in About section
+  - Fixed image loading issues in About section for Vercel deployment
   - Updated location names to Portuguese: "Centro" → "Talatona", "Mobile" → "Móvel"
   - Optimized WhatsApp redirects using window.location.href for faster response
 - July 13, 2025: Custom authentication system implementation
@@ -305,37 +310,3 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
-- July 18, 2025: Cleaned up deployment configuration and project structure
-  - Removed all deployment-related build scripts and configurations
-  - Focused on Replit-native full-stack deployment approach
-  - Cleaned up build scripts and deployment documentation
-  - Maintained full-stack architecture with PostgreSQL database
-  - Updated project documentation to reflect current deployment strategy
-- July 18, 2025: Complete removal of Vercel deployment files and references
-  - Removed all Vercel-related files: DEPLOY.md, build-vercel.js, build-vercel-simple.js, build-clean.js, vercel.json, .vercelignore, vite.config.static.ts
-  - Cleaned up all Vercel references from README.md, .gitignore, and project documentation
-  - Removed dist/ directory and Vercel CLI configuration files
-  - Updated README.md to reflect full-stack Replit deployment strategy
-  - Updated replit.md to document focus on PostgreSQL-based full-stack architecture
-  - Project now completely clean and focused on Replit native deployment
-- July 18, 2025: Complete conversion to static SPA with WhatsApp integration
-  - Successfully converted from Express-based backend to 100% static SPA
-  - Replaced all API calls with static data and localStorage persistence
-  - Implemented WhatsApp integration for order processing via wa.me links
-  - Updated menu system to use static MENU_ITEMS from constants.ts with full item details
-  - Added LOCATIONS data with delivery fees and static table management
-  - Created generateOrderId() and createWhatsAppOrderMessage() utilities for order processing
-  - Updated EnhancedCart and OnlineMenu components to work without backend dependencies
-  - Converted all price displays to use formatPrice() utility function
-  - Successfully configured for Replit deployment
-  - Build output: 474KB main bundle with code splitting for optimal performance
-  - All cart data persists in localStorage per location for excellent user experience
-- July 18, 2025: Vercel migration preparation (Option 1 - Static SPA)
-  - Restructured project for Vercel deployment (moved client/src to src/, client/index.html to root)
-  - Removed all backend dependencies: Express, Drizzle ORM, PostgreSQL, multer, passport, session management
-  - Created vercel.json with SPA routing configuration and optimized headers
-  - Created vite.config.vercel.ts with proper path aliases for Vercel build
-  - Added .vercelignore to exclude unnecessary files from deployment
-  - Project now ready for 100% static deployment on Vercel with zero backend dependencies
-  - Maintained all frontend functionality: admin panel, order system, cart persistence
-  - Created comprehensive deployment documentation (DEPLOY.md, README_VERCEL.md)

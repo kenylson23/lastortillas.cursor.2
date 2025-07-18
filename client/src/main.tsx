@@ -2,8 +2,7 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./styles/performance.css";
-// Usar URL externa para evitar inclusão de assets no build
-const heroImage = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&h=1080&q=80";
+import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
 
 // Preload crítico da imagem do hero
 const preloadHeroImage = () => {
