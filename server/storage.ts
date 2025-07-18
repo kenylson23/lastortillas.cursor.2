@@ -4,7 +4,7 @@ import {
   type Contact, type InsertContact, type MenuItem, type InsertMenuItem,
   type Order, type InsertOrder, type OrderItem, type InsertOrderItem,
   type Table, type InsertTable
-} from "../shared/schema";
+} from "@shared/schema";
 import { db } from "./db";
 import { eq, and, ne } from "drizzle-orm";
 
@@ -241,7 +241,7 @@ export class DatabaseStorage implements IStorage {
       console.log(`Marking table ${order.tableId} as occupied for order ${order.id}`);
       await db
         .update(tables)
-        .set({ status: 'occupied' })
+        .set({ status: 'occupied', updatedAt: new Date() })
         .where(eq(tables.id, order.tableId));
       console.log(`Table ${order.tableId} marked as occupied`);
     } else {
@@ -291,7 +291,7 @@ export class DatabaseStorage implements IStorage {
 
     const [order] = await db
       .update(orders)
-      .set({ status })
+      .set({ status, updatedAt: new Date() })
       .where(eq(orders.id, id))
       .returning();
 
@@ -303,7 +303,7 @@ export class DatabaseStorage implements IStorage {
         (status === 'delivered' || status === 'cancelled')) {
       await db
         .update(tables)
-        .set({ status: 'available' })
+        .set({ status: 'available', updatedAt: new Date() })
         .where(eq(tables.id, currentOrder.tableId));
     }
 
@@ -334,7 +334,7 @@ export class DatabaseStorage implements IStorage {
         currentOrder.tableId) {
       await db
         .update(tables)
-        .set({ status: 'available' })
+        .set({ status: 'available', updatedAt: new Date() })
         .where(eq(tables.id, currentOrder.tableId));
     }
   }
@@ -373,7 +373,7 @@ export class DatabaseStorage implements IStorage {
   async createTable(insertTable: InsertTable): Promise<Table> {
     await this.ensureInitialized();
     
-    console.log(`🔍 Verificando duplicação para mesa ${insertTable.tableNumber} no local ${insertTable.locationId}`);
+    console.log(`🔍 Verificando duplicação para mesa ${insertTable.number} no local ${insertTable.locationId}`);
     
     // Verificar se já existe uma mesa com o mesmo número no mesmo local
     const existingTable = await db
@@ -381,13 +381,13 @@ export class DatabaseStorage implements IStorage {
       .from(tables)
       .where(and(
         eq(tables.locationId, insertTable.locationId),
-        eq(tables.tableNumber, insertTable.tableNumber)
+        eq(tables.number, insertTable.number)
       ));
     
     console.log(`🔍 Encontradas ${existingTable.length} mesas existentes:`, existingTable);
     
     if (existingTable.length > 0) {
-      throw new Error(`Já existe uma mesa número ${insertTable.tableNumber} no local ${insertTable.locationId}`);
+      throw new Error(`Já existe uma mesa número ${insertTable.number} no local ${insertTable.locationId}`);
     }
     
     const [table] = await db
@@ -401,14 +401,14 @@ export class DatabaseStorage implements IStorage {
     await this.ensureInitialized();
     
     // Se está atualizando o número ou localização, verificar duplicação
-    if (updates.tableNumber !== undefined || updates.locationId !== undefined) {
+    if (updates.number !== undefined || updates.locationId !== undefined) {
       // Buscar a mesa atual para obter os dados completos
       const currentTable = await this.getTable(id);
       if (!currentTable) {
         throw new Error('Mesa não encontrada');
       }
       
-      const newNumber = updates.tableNumber !== undefined ? updates.tableNumber : currentTable.tableNumber;
+      const newNumber = updates.number !== undefined ? updates.number : currentTable.number;
       const newLocationId = updates.locationId !== undefined ? updates.locationId : currentTable.locationId;
       
       // Verificar se existe outra mesa com o mesmo número no mesmo local
@@ -417,7 +417,7 @@ export class DatabaseStorage implements IStorage {
         .from(tables)
         .where(and(
           eq(tables.locationId, newLocationId),
-          eq(tables.tableNumber, newNumber),
+          eq(tables.number, newNumber),
           ne(tables.id, id) // Excluir a mesa atual da verificação
         ));
       
@@ -428,7 +428,7 @@ export class DatabaseStorage implements IStorage {
     
     const [table] = await db
       .update(tables)
-      .set(updates)
+      .set({ ...updates, updatedAt: new Date() })
       .where(eq(tables.id, id))
       .returning();
     return table;
@@ -445,7 +445,7 @@ export class DatabaseStorage implements IStorage {
     await this.ensureInitialized();
     const [table] = await db
       .update(tables)
-      .set({ status })
+      .set({ status, updatedAt: new Date() })
       .where(eq(tables.id, id))
       .returning();
     return table;

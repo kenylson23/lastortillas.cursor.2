@@ -100,17 +100,17 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 - **Database**: In-memory storage for rapid development
 - **Integration**: Vite proxy configuration for API requests
 
-### Production Build (Replit)
-- **Type**: Full-stack application with Express backend and React frontend
-- **Build Command**: `npm run dev`
-- **Database**: PostgreSQL with Drizzle ORM
-- **Backend**: Express.js with TypeScript
-- **Frontend**: React with Vite build system
+### Production Build (Vercel)
+- **Type**: Static Single Page Application (SPA)
+- **Build Command**: `vite build`
+- **Output Directory**: `dist`
+- **Framework**: Vite (auto-detected)
+- **Reservations**: WhatsApp integration (no backend required)
 
 ### Environment Configuration
-- **Database**: PostgreSQL connection via DATABASE_URL
-- **API**: RESTful endpoints for reservations, contacts, and menu items
+- **Vercel Configuration**: `vercel.json` with SPA routing
 - **WhatsApp Integration**: Direct linking to +244 949639932
+- **Static Assets**: Optimized for CDN delivery
 
 ## User Preferences
 
@@ -118,53 +118,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
-- July 17, 2025: Migrated from Express.js to Vercel serverless architecture
-  - Created comprehensive Vercel API functions for all endpoints
-  - Implemented serverless functions for menu-items, reservations, contacts, orders, and authentication
-  - Added availability checking API for reservation system
-  - Created table management API for restaurant seating
-  - Fixed database connection issues in Vercel environment
-  - Updated all API endpoints to use @vercel/node types
-  - Maintained Supabase integration for all database operations
-  - Created test infrastructure for Vercel deployment validation
-- July 17, 2025: Resolved database connection issues and completed deployment testing
-  - Fixed DATABASE_URL environment variable configuration
-  - Successfully recreated PostgreSQL database with proper schema
-  - Validated all database tables and relationships are working correctly
-  - Completed comprehensive build testing with successful production compilation
-  - Verified all API endpoints are functional (menu-items, reservations, contacts, orders, tables)
-  - Confirmed both development and production builds work correctly
-  - Application running successfully on port 5000 with full database connectivity
-- July 17, 2025: Migrated database from Replit PostgreSQL to Supabase
-  - Updated database connection to use Supabase pooler connection string
-  - Successfully connected to Supabase database with existing schema
-  - Verified data persistence and retrieval working correctly
-  - All API endpoints functioning properly with Supabase backend
-  - Application performance maintained with cloud database connection
-  - Enhanced scalability and reliability with Supabase infrastructure
-- July 17, 2025: Implemented complete Supabase integration with authentication and storage
-  - Added full Supabase client configuration with all API credentials
-  - Created comprehensive authentication system with user management
-  - Implemented Supabase storage integration for file uploads
-  - Added admin endpoints for user management and administrative tasks
-  - Created authentication APIs for register, login, and user management
-  - Integrated Supabase storage APIs for file upload and management
-  - Successfully tested user creation and authentication functionality
-  - All Supabase services now fully integrated and operational
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
-- January 17, 2025: Removed all Vercel deployment configuration
-  - Deleted vercel.json, API folder, and all build scripts
-  - Updated documentation to reflect full-stack Replit deployment
-  - Cleaned up project structure for simplified development
-  - Updated build process for simplified Replit deployment
-  - Removed all Vercel-specific configuration files and scripts
-- January 17, 2025: Completed migration from Prisma to Drizzle ORM
-  - Removed all Prisma dependencies and configuration files
-  - Updated table schema to match Prisma structure exactly
-  - Fixed storage interface to work with new schema field names
-  - Successfully migrated to pure Drizzle ORM implementation
-  - All API endpoints working correctly with new database layer
+- June 29, 2025: Prepared for Vercel deployment as static SPA
+  - Removed backend dependencies from Contact form
+  - Added vercel.json configuration
+  - Updated build process for static deployment
+  - Created deployment documentation
+- June 29, 2025: Fixed Vercel 404 deployment errors
+  - Resolved Rollup import resolution failures by converting @/ aliases to relative paths
+  - Replaced complex UI components (Button, Card, Input, etc.) with standard HTML elements
+  - Simplified Contact form with native form elements while preserving WhatsApp functionality
+  - Build process now completes successfully without import errors
+  - Maintained all animations, styling, and core functionality
 - July 8, 2025: Fixed concurrent reservation booking issues
   - Implemented mutex pattern to prevent race conditions in reservation creation
   - Added real-time availability checking with debounced API calls
