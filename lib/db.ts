@@ -16,9 +16,14 @@ const pool = new Pool({
   max: 10, // Lower connection limit for serverless
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
-  ssl: {
+  ssl: databaseUrl.includes('localhost') ? false : {
     rejectUnauthorized: false
   }
+});
+
+// Add error handling for pool
+pool.on('error', (err) => {
+  console.error('Database pool error:', err);
 });
 
 // Create database connection
