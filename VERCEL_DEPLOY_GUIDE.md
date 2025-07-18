@@ -140,16 +140,49 @@ npm run db:push
 
 ## 🔍 Verificações Pós-Deploy
 
+### 1. Configurar Database no Vercel
+
+```bash
+# Após o deploy, configurar o banco com o script
+node scripts/setup-vercel-db.js
+```
+
+### 2. Verificações
+
 1. **Frontend**: Verificar se a página principal carrega
 2. **APIs**: Testar endpoints em `https://seu-app.vercel.app/api/menu-items`
 3. **Database**: Verificar se dados são inseridos/recuperados
 4. **Images**: Verificar se imagens são servidas corretamente
 
+### 3. Solução para "Push não está refletindo"
+
+Se o schema não estiver sendo aplicado automaticamente:
+
+```bash
+# Opção 1: Executar localmente com DATABASE_URL do Vercel
+export DATABASE_URL="postgresql://user:pass@host:port/db"
+npm run db:push
+
+# Opção 2: Usar o script de configuração
+node scripts/setup-vercel-db.js
+
+# Opção 3: Aplicar migrações geradas
+drizzle-kit generate
+# Depois aplicar no Vercel dashboard ou via API
+```
+
 ## 🐛 Troubleshooting
 
 ### Erro de Database Connection
-- Verificar se DATABASE_URL está configurado
+- Verificar se DATABASE_URL está configurado no Vercel
 - Confirmar que o banco PostgreSQL está acessível
+- Executar `node scripts/setup-vercel-db.js` após deploy
+
+### Push não está refletindo no Vercel
+- Verificar se DATABASE_URL está configurado corretamente
+- Executar `npm run db:push` localmente com DATABASE_URL do Vercel
+- Usar script de configuração: `node scripts/setup-vercel-db.js`
+- Verificar se as migrações foram aplicadas: `drizzle-kit generate`
 
 ### Erro 404 nas APIs
 - Verificar se arquivos estão em `/api/`
