@@ -32,13 +32,12 @@
 
 ### 🔧 Configurações Otimizadas
 
-**vercel.json Completo:**
-- ✅ Node.js 20.x runtime
-- ✅ Otimizações de performance (1024MB memory, 30s timeout)
-- ✅ Headers CORS configurados
+**vercel.json Simplificado:**
+- ✅ Configuração mínima (recomendação do Vercel)
+- ✅ Auto-detecção de TypeScript
+- ✅ Runtime padrão (mais estável)
 - ✅ Rewrites para SPA
-- ✅ Região otimizada (iad1)
-- ✅ URLs limpos e sem trailing slash
+- ✅ Menos pontos de falha
 
 **Dependências Verificadas:**
 - ✅ @vercel/node para serverless functions
