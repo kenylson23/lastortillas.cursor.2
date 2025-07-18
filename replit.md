@@ -214,6 +214,14 @@ Preferred communication style: Simple, everyday language.
   - Implemented login.js with authentication system and role-based access
   - All pages integrate with existing APIs: /api/menu-items, /api/orders, /api/reservations, /api/tables
   - Added comprehensive documentation (NEXTJS_PAGES_SUMMARY.md)
+- July 18, 2025: Project cleanup - removed Vite conflicts for Next.js purity
+  - Removed vite.config.ts, server/vite.ts, build.js (Vite-specific files)
+  - Removed duplicate configurations: tailwind.config.ts, tsconfig.vercel.json
+  - Updated server/index.ts to remove Vite dependencies and use pure Express
+  - Updated tsconfig.json for Next.js with moduleResolution: "node"
+  - Enhanced package-nextjs.json with Drizzle ORM and proper Next.js dependencies
+  - Project now has clean Next.js architecture without bundler conflicts
+  - Created comprehensive cleanup documentation (CLEANUP_SUMMARY.md)
   - Implemented LocationModal component with full location details
   - Added OurLocations section replacing single location display
   - Updated Hero messaging to reflect multi-location presence
