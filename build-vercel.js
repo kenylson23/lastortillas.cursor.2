@@ -7,65 +7,80 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-console.log('🚀 Building Las Tortilhas for Vercel deployment...');
+console.log('Building Las Tortillas Mexican Grill for Vercel...');
 
 try {
-  // Ensure clean slate
-  console.log('🧹 Cleaning previous builds...');
+  // Clean previous builds
   if (fs.existsSync('dist')) {
     fs.rmSync('dist', { recursive: true, force: true });
   }
 
-  // Create directory structure early to avoid issues
-  fs.mkdirSync('dist/public', { recursive: true });
-  console.log('📁 Created output directory: dist/public');
-
-  // Run optimized build with increased resources
-  console.log('⚡ Starting build process...');
-  console.log('ℹ️  This may take 2-3 minutes due to dependencies...');
-  
+  // Build the application
+  console.log('Building static application...');
   execSync('vite build', {
-    stdio: 'pipe', // Reduce output noise
+    stdio: 'inherit',
     env: {
       ...process.env,
-      NODE_ENV: 'production',
-      NODE_OPTIONS: '--max-old-space-size=8192',
-      CI: 'true', // Optimize for CI environment
-      VITE_LEGACY: 'false'
+      NODE_ENV: 'production'
     }
   });
 
-  // Verify the build output
-  const outputPath = path.join(__dirname, 'dist', 'public');
-  const indexFile = path.join(outputPath, 'index.html');
+  // Copy public assets if they exist
+  const publicPath = path.join(__dirname, 'public');
+  const distPath = path.join(__dirname, 'dist');
+  
+  if (fs.existsSync(publicPath)) {
+    const files = fs.readdirSync(publicPath, { withFileTypes: true });
+    files.forEach(file => {
+      const srcPath = path.join(publicPath, file.name);
+      const destPath = path.join(distPath, file.name);
+      
+      if (file.isDirectory()) {
+        fs.cpSync(srcPath, destPath, { recursive: true });
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+      }
+    });
+    console.log('Public assets copied to dist/');
+  }
 
-  if (fs.existsSync(indexFile)) {
-    const files = fs.readdirSync(outputPath);
-    const staticFiles = files.filter(f => 
-      f.endsWith('.html') || f.endsWith('.js') || f.endsWith('.css')
-    );
+  // Verify build - check both possible locations
+  const publicDistPath = path.join(distPath, 'public');
+  let indexFile = path.join(distPath, 'index.html');
+  
+  if (!fs.existsSync(indexFile) && fs.existsSync(publicDistPath)) {
+    indexFile = path.join(publicDistPath, 'index.html');
     
-    console.log('✅ Build completed successfully!');
-    console.log(`📦 Output: ${staticFiles.length} static files in dist/public/`);
-    console.log(`🎯 Files: ${staticFiles.slice(0, 5).join(', ')}${staticFiles.length > 5 ? '...' : ''}`);
-    
-    // Ensure proper structure for Vercel
-    const stats = fs.statSync(indexFile);
-    console.log(`📄 index.html: ${Math.round(stats.size / 1024)}KB`);
-    
+    // Move files from dist/public to dist for Vercel
+    if (fs.existsSync(indexFile)) {
+      const files = fs.readdirSync(publicDistPath);
+      files.forEach(file => {
+        const srcPath = path.join(publicDistPath, file);
+        const destPath = path.join(distPath, file);
+        
+        if (fs.statSync(srcPath).isDirectory()) {
+          fs.cpSync(srcPath, destPath, { recursive: true });
+        } else {
+          fs.copyFileSync(srcPath, destPath);
+        }
+      });
+      
+      // Remove the public subdirectory
+      fs.rmSync(publicDistPath, { recursive: true, force: true });
+      console.log('Moved files from dist/public to dist/');
+    }
+  }
+  
+  // Final verification
+  const finalIndexFile = path.join(distPath, 'index.html');
+  if (fs.existsSync(finalIndexFile)) {
+    console.log('Build completed successfully!');
+    console.log(`Output: ${fs.readdirSync(distPath).length} files in dist/`);
   } else {
-    throw new Error('Build completed but index.html not found in expected location');
+    throw new Error('Build failed: index.html not found');
   }
 
 } catch (error) {
-  console.error('❌ Build failed:', error.message);
-  
-  // Provide helpful error context
-  if (error.code === 'ETIMEDOUT') {
-    console.error('💡 Build timed out. This is usually due to complex dependencies.');
-  } else if (error.status === 137) {
-    console.error('💡 Out of memory. Try increasing NODE_OPTIONS memory.');
-  }
-  
+  console.error('Build failed:', error.message);
   process.exit(1);
 }

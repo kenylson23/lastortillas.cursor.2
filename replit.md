@@ -310,3 +310,12 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
+- July 18, 2025: Optimized Vercel deployment configuration for clean production builds
+  - Removed duplicate and conflicting build scripts (build-for-vercel.js, build-static.js)
+  - Created unified build-vercel.js with intelligent output directory handling
+  - Updated vercel.json with optimized cache headers and clean configuration
+  - Added .vercelignore to exclude unnecessary files from deployment
+  - Implemented automatic file restructuring from dist/public to dist for Vercel compatibility
+  - Added comprehensive deployment documentation in DEPLOY.md
+  - Streamlined build process: clean → vite build → move files → verify → deploy
+  - Optimized for static deployment with proper asset handling and performance headers
