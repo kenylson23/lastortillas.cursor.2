@@ -42,26 +42,20 @@ export default function Contact() {
     setIsCheckingAvailability(true);
     
     try {
-      const response = await fetch(`/api/availability?date=${date}&time=${time}`);
-      const data = await response.json();
-      
-      if (data.available) {
+      // Para deploy estático, sempre mostrar como disponível
+      // Em produção real, isso seria integrado via WhatsApp
+      setTimeout(() => {
         setAvailabilityStatus({
           available: true,
-          message: "✓ Horário disponível!"
+          message: "✓ Entre em contato via WhatsApp para confirmar disponibilidade"
         });
-      } else {
-        setAvailabilityStatus({
-          available: false,
-          message: "✗ Horário já reservado. Escolha outro horário."
-        });
-      }
+        setIsCheckingAvailability(false);
+      }, 1000);
     } catch (error) {
       setAvailabilityStatus({
-        available: false,
-        message: "Erro ao verificar disponibilidade"
+        available: true,
+        message: "Entre em contato via WhatsApp para verificar disponibilidade"
       });
-    } finally {
       setIsCheckingAvailability(false);
     }
   }, []);
