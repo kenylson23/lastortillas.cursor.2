@@ -330,12 +330,12 @@ Preferred communication style: Simple, everyday language.
   - Successfully configured for Replit deployment
   - Build output: 474KB main bundle with code splitting for optimal performance
   - All cart data persists in localStorage per location for excellent user experience
-  - Implemented WhatsApp integration for order processing via wa.me links
-  - Updated menu system to use static MENU_ITEMS from constants.ts with full item details
-  - Added LOCATIONS data with delivery fees and static table management
-  - Created generateOrderId() and createWhatsAppOrderMessage() utilities for order processing
-  - Updated EnhancedCart and OnlineMenu components to work without backend dependencies
-  - Converted all price displays to use formatPrice() utility function
-  - Successfully configured for Replit deployment
-  - Build output: 474KB main bundle with code splitting for optimal performance
-  - All cart data persists in localStorage per location for excellent user experience
+- July 18, 2025: Vercel migration preparation (Option 1 - Static SPA)
+  - Restructured project for Vercel deployment (moved client/src to src/, client/index.html to root)
+  - Removed all backend dependencies: Express, Drizzle ORM, PostgreSQL, multer, passport, session management
+  - Created vercel.json with SPA routing configuration and optimized headers
+  - Created vite.config.vercel.ts with proper path aliases for Vercel build
+  - Added .vercelignore to exclude unnecessary files from deployment
+  - Project now ready for 100% static deployment on Vercel with zero backend dependencies
+  - Maintained all frontend functionality: admin panel, order system, cart persistence
+  - Created comprehensive deployment documentation (DEPLOY.md, README_VERCEL.md)

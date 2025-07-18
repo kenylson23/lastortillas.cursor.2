@@ -1,0 +1,10 @@
+/server
+/client
+/shared
+/scripts
+/node_modules
+*.log
+.env*
+.replit
+replit.md
+drizzle.config.ts
