@@ -1,222 +1,95 @@
-# Guia de Deploy para Vercel - Las Tortillas Mexican Grill
+# Guia de Deploy no Vercel - Las Tortillas Mexican Grill
 
-## 📋 Status do Projeto
+## Configuração Corrigida
 
-✅ **Completamente adaptado ao ambiente Vercel**
+✅ **Problemas Resolvidos:**
+- Comando Vite não encontrado durante build
+- Dependências de build ausentes
+- Script de build personalizado criado
+- Configuração TypeScript otimizada
 
-### ✅ Configurações Implementadas
+## Como Fazer Deploy
 
-- **Frontend**: React SPA com Vite
-- **Backend**: Serverless Functions (/api)
-- **Database**: PostgreSQL com Drizzle ORM
-- **Runtime**: Node.js 20.x
-- **Build**: Vite build otimizado
+### 1. Configuração de Segredos no Vercel
 
-## 🚀 Como Fazer Deploy
-
-### 1. Preparar o Projeto
+Antes de fazer deploy, configure estas variáveis de ambiente no Vercel:
 
 ```bash
-# Verificar se tudo está funcionando localmente
-npm run dev
-
-# Executar build para testar
-vite build
+DATABASE_URL=postgresql://usuario:senha@host:5432/database
+PGHOST=host-do-banco
+PGPORT=5432
+PGUSER=usuario
+PGPASSWORD=senha
+PGDATABASE=nome-do-banco
 ```
 
-### 2. Configurar Vercel CLI
+### 2. Deploy Manual
 
+1. **Instale o Vercel CLI:**
 ```bash
-# Instalar Vercel CLI (se necessário)
-npm i -g vercel
+npm install -g vercel
+```
 
-# Login no Vercel
+2. **Faça login no Vercel:**
+```bash
 vercel login
-
-# Inicializar projeto
-vercel
 ```
 
-### 3. Configurar Variáveis de Ambiente
-
-⚠️ **IMPORTANTE**: Este é o passo mais crítico!
-
-**Opção A - Dashboard do Vercel:**
-1. Acesse vercel.com → Settings → Environment Variables
-2. Adicione `DATABASE_URL` com valor do seu banco PostgreSQL
-3. Adicione `NODE_ENV` com valor `production`
-
-**Opção B - Via CLI:**
+3. **Execute o deploy:**
 ```bash
-# Configurar DATABASE_URL
-vercel env add DATABASE_URL production
-# Cole a URL: postgresql://user:password@host:port/database
-
-# Configurar NODE_ENV
-vercel env add NODE_ENV production
-```
-
-**Opção C - Script Automático:**
-```bash
-./scripts/setup-vercel-secrets.sh
-```
-
-### 4. Deploy
-
-```bash
-# Deploy de desenvolvimento
-vercel
-
-# Deploy de produção
 vercel --prod
 ```
 
-## 🗂️ Estrutura para Vercel
+### 3. Deploy via Dashboard
+
+1. Conecte seu repositório no dashboard do Vercel
+2. As configurações já estão prontas no `vercel.json`
+3. O build será executado automaticamente
+
+## Arquivos Criados/Alterados
+
+- `vercel.json` - Configuração do Vercel atualizada
+- `build-vercel.js` - Script de build personalizado
+- `tsconfig.vercel.json` - Configuração TypeScript para build
+
+## Estrutura de Build
 
 ```
-├── api/                    # Serverless Functions
-│   ├── menu-items.ts      # CRUD menu items
-│   ├── orders.ts          # CRUD orders
-│   ├── reservations.ts    # CRUD reservations
-│   └── tables.ts          # CRUD tables
-├── lib/                   # Utilities
-│   ├── db.ts             # Database connection
-│   └── utils.ts          # Helper functions
-├── src/                  # Frontend (React)
-├── dist/                 # Build output
-├── vercel.json          # Configuração Vercel
-└── build.js             # Build script auxiliar
+dist/
+├── public/          # Frontend (HTML, CSS, JS)
+│   ├── index.html
+│   └── assets/
+├── index.js         # Backend compilado
+└── ...
 ```
 
-## ⚙️ Configurações do vercel.json
+## Verificação Local
 
-```json
-{
-  "framework": "vite",
-  "buildCommand": "vite build",
-  "outputDirectory": "dist",
-  "functions": {
-    "api/**/*.ts": {
-      "runtime": "nodejs20.x"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/$1"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ]
-}
-```
-
-## 🔌 APIs Disponíveis
-
-### Menu Items
-- `GET /api/menu-items` - Listar itens do menu
-- `POST /api/menu-items` - Criar item
-- `PUT /api/menu-items` - Atualizar item
-- `DELETE /api/menu-items` - Remover item
-
-### Orders
-- `GET /api/orders` - Listar pedidos
-- `POST /api/orders` - Criar pedido
-- `PUT /api/orders` - Atualizar pedido
-- `DELETE /api/orders` - Remover pedido
-
-### Reservations
-- `GET /api/reservations` - Listar reservas
-- `POST /api/reservations` - Criar reserva
-
-### Tables
-- `GET /api/tables` - Listar mesas
-- `POST /api/tables` - Criar mesa
-- `PUT /api/tables` - Atualizar mesa
-- `DELETE /api/tables` - Remover mesa
-
-## 🗄️ Database Setup
-
-Após o primeiro deploy, executar:
-
+Para testar o build localmente:
 ```bash
-# Push do schema para o banco
-npm run db:push
-
-# Verificar se as tabelas foram criadas
-# (dados de exemplo serão inseridos automaticamente)
+node build-vercel.js
 ```
 
-## 🔍 Verificações Pós-Deploy
+## Funcionalidades Disponíveis
 
-### 1. Configurar Database no Vercel
+- ✅ Frontend React com Vite
+- ✅ Backend Express.js
+- ✅ API endpoints serverless
+- ✅ Banco de dados PostgreSQL
+- ✅ Autenticação e sessões
+- ✅ Upload de arquivos
+- ✅ Sistema de pedidos e reservas
 
-```bash
-# Após o deploy, configurar o banco com o script
-node scripts/setup-vercel-db.js
-```
+## Próximos Passos
 
-### 2. Verificações
+1. Configure as variáveis de ambiente no Vercel
+2. Execute o deploy
+3. Teste as funcionalidades no ambiente de produção
+4. Configure domínio personalizado (opcional)
 
-1. **Frontend**: Verificar se a página principal carrega
-2. **APIs**: Testar endpoints em `https://seu-app.vercel.app/api/menu-items`
-3. **Database**: Verificar se dados são inseridos/recuperados
-4. **Images**: Verificar se imagens são servidas corretamente
+## Suporte
 
-### 3. Solução para "Push não está refletindo"
-
-Se o schema não estiver sendo aplicado automaticamente:
-
-```bash
-# Opção 1: Executar localmente com DATABASE_URL do Vercel
-export DATABASE_URL="postgresql://user:pass@host:port/db"
-npm run db:push
-
-# Opção 2: Usar o script de configuração
-node scripts/setup-vercel-db.js
-
-# Opção 3: Aplicar migrações geradas
-drizzle-kit generate
-# Depois aplicar no Vercel dashboard ou via API
-```
-
-## 🐛 Troubleshooting
-
-### Erro de Database Connection
-- Verificar se DATABASE_URL está configurado no Vercel
-- Confirmar que o banco PostgreSQL está acessível
-- Executar `node scripts/setup-vercel-db.js` após deploy
-
-### Push não está refletindo no Vercel
-- Verificar se DATABASE_URL está configurado corretamente
-- Executar `npm run db:push` localmente com DATABASE_URL do Vercel
-- Usar script de configuração: `node scripts/setup-vercel-db.js`
-- Verificar se as migrações foram aplicadas: `drizzle-kit generate`
-
-### Erro: "DATABASE_URL is not defined" ou "Database secret not found"
-- **Causa**: Variável de ambiente não configurada no Vercel
-- **Solução**: Configurar segredos com `./scripts/setup-vercel-secrets.sh`
-- **Alternativa**: Usar dashboard do Vercel → Settings → Environment Variables
-- **Verificar**: `vercel env ls` para ver todas as variáveis configuradas
-
-### Erro 404 nas APIs
-- Verificar se arquivos estão em `/api/`
-- Confirmar configuração do vercel.json
-
-### Erro de Build
-- Executar `node build-vercel.mjs` localmente
-- Verificar logs do build no dashboard Vercel
-
-## 📞 Suporte
-
-O projeto está **100% configurado para Vercel** com:
-
-✅ Serverless Functions funcionais
-✅ Database PostgreSQL integrado
-✅ Frontend React otimizado
-✅ Build script automatizado
-✅ Configurações de produção
-
-**Status**: Pronto para deploy! 🚀
+Se encontrar problemas durante o deploy, verifique:
+- Variáveis de ambiente configuradas
+- Logs de build no dashboard do Vercel
+- Conectividade com banco de dados

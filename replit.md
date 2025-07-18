@@ -101,11 +101,11 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 - **Integration**: Vite proxy configuration for API requests
 
 ### Production Build (Vercel)
-- **Type**: Static Single Page Application (SPA)
-- **Build Command**: `vite build`
-- **Output Directory**: `dist`
-- **Framework**: Vite (auto-detected)
-- **Reservations**: WhatsApp integration (no backend required)
+- **Type**: Full-stack application with serverless functions
+- **Build Command**: `node build-vercel.js` (custom script)
+- **Output Directory**: `dist/public`
+- **Framework**: Vite + Express.js backend
+- **Database**: PostgreSQL with Drizzle ORM
 
 ### Environment Configuration
 - **Vercel Configuration**: `vercel.json` with SPA routing
@@ -173,6 +173,15 @@ Preferred communication style: Simple, everyday language.
 - July 13, 2025: Multi-location system implementation
   - Added support for 3 Las Tortillas locations: 2 restaurants + 1 mobile unit
   - Created modal/overlay system for detailed location information
+- July 18, 2025: Fixed database connection and Vercel deployment issues
+  - Resolved DATABASE_URL environment variable not being set
+  - Created new PostgreSQL database with proper configuration
+  - Applied database migrations successfully using Drizzle
+  - Fixed Vercel build issues with custom build script (build-vercel.js)
+  - Moved Vite to production dependencies to resolve "command not found" errors
+  - Updated vercel.json configuration for full-stack deployment
+  - Created comprehensive deployment guide (VERCEL_DEPLOY_GUIDE.md)
+  - Verified local and production build processes work correctly
   - Implemented LocationModal component with full location details
   - Added OurLocations section replacing single location display
   - Updated Hero messaging to reflect multi-location presence
