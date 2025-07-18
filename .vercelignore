@@ -1,19 +1,27 @@
 # Arquivos e pastas ignorados no deploy Vercel
 
-# Desenvolvimento
-server/
-scripts/optimize-node.js
-scripts/test-database.js
-
-# Dependências de desenvolvimento
-node_modules/
-.env.local
-.env.development
-
-# Builds e cache
+# Desenvolvimento local
 .replit
 .config/
-dist/public/
+server/index.ts
+server/routes.ts
+server/storage.ts
+server/vite.ts
+
+# Scripts de desenvolvimento
+scripts/optimize-node.js
+scripts/test-database.js
+scripts/setup-vercel-*.sh
+scripts/deploy-*.sh
+scripts/prepare-*.sh
+build.js
+
+# Dependências já gerenciadas pelo Vercel
+node_modules/
+
+# Arquivos de ambiente locais
+.env.local
+.env.development
 
 # Arquivos temporários
 *.log
@@ -24,10 +32,12 @@ Thumbs.db
 # Documentação de desenvolvimento
 replit.md
 README.md
+*_GUIDE.md
+*_COMPLETE.md
 
 # Assets não utilizados
 attached_assets/
 public/uploads/menu-*.jpg
 
-# Scripts de desenvolvimento
-build.js
+# Builds antigos (Vercel cria novo)
+dist/
