@@ -118,13 +118,6 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
-- July 18, 2025: Fixed Vercel build and deployment issues
-  - Corrected WebSocket configuration for Neon Database using dynamic import
-  - Fixed "vite: comando não encontrado" error by using npx in build script
-  - Configured PostgreSQL database with proper schema migration
-  - Verified hero image loading and build optimization (259KB included correctly)
-  - Updated vercel.json with Node.js 20.x specification for better compatibility
-  - All build processes working: hero image, CSS (91KB), and JavaScript (470KB)
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
 - June 29, 2025: Prepared for Vercel deployment as static SPA
@@ -192,14 +185,13 @@ Preferred communication style: Simple, everyday language.
 - July 13, 2025: Custom authentication system implementation
   - Completely removed Replit Auth system per user request
   - Implemented simple localStorage-based authentication for admin access
-  - Created new Login page with secure credentials (username: "administrador", password: "lasTortillas2025!")
+  - Created new Login page with admin credentials (username: "admin", password: "admin123")
   - Added protected route system for admin panel with automatic redirection
   - Updated navigation to show login/logout functionality based on authentication state
   - Added custom toast notification system for user feedback
   - Implemented useAuth hook for authentication state management
   - Admin login now redirects to complete management dashboard
   - Both desktop and mobile navigation updated with authentication controls
-  - Enhanced form security with autoComplete="off" to prevent browser password suggestions
 - July 13, 2025: Image upload system implementation
   - Added complete image upload functionality for menu items
   - Implemented multer middleware for file processing and validation

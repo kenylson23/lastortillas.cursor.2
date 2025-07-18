@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
     { href: "#inicio", label: "Início" },
@@ -48,13 +46,12 @@ export default function Navigation() {
                 </button>
               ))}
               <a
-                href="https://wa.me/244949639932?text=Olá! Gostaria de fazer um pedido no Las Tortillas Mexican Grill."
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/menu"
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-sm"
               >
-                Pedir via WhatsApp
+                Pedir Online
               </a>
+
             </div>
           </div>
           
@@ -130,16 +127,16 @@ export default function Navigation() {
                   {/* Divisor */}
                   <div className="border-t border-gray-200 my-4"></div>
                   
-                  {/* Botão de pedido via WhatsApp */}
+                  {/* Botão de pedido online */}
                   <a
-                    href="https://wa.me/244949639932?text=Olá! Gostaria de fazer um pedido no Las Tortillas Mexican Grill."
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href="/menu"
                     className="block bg-green-600 text-white px-6 py-4 rounded-xl hover:bg-green-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    🛒 Pedir via WhatsApp
+                    🛒 Pedir Online
                   </a>
+                  
+
                 </div>
 
                 {/* Footer do menu */}

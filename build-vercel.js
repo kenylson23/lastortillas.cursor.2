@@ -24,8 +24,8 @@ try {
   console.log('⚡ Starting build process...');
   console.log('ℹ️  This may take 2-3 minutes due to dependencies...');
   
-  execSync('npx vite build', {
-    stdio: 'inherit', // Show build output for debugging
+  execSync('vite build', {
+    stdio: 'pipe', // Reduce output noise
     env: {
       ...process.env,
       NODE_ENV: 'production',
