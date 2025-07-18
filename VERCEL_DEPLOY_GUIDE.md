@@ -10,7 +10,7 @@
 - **Backend**: Serverless Functions (/api)
 - **Database**: PostgreSQL com Drizzle ORM
 - **Runtime**: Node.js 20.x
-- **Build**: Script otimizado (build-vercel.mjs)
+- **Build**: Vite build otimizado
 
 ## 🚀 Como Fazer Deploy
 
@@ -21,7 +21,7 @@
 npm run dev
 
 # Executar build para testar
-node build-vercel.mjs
+vite build
 ```
 
 ### 2. Configurar Vercel CLI
@@ -74,7 +74,7 @@ vercel --prod
 ├── src/                  # Frontend (React)
 ├── dist/                 # Build output
 ├── vercel.json          # Configuração Vercel
-└── build-vercel.mjs     # Build script
+└── build.js             # Build script auxiliar
 ```
 
 ## ⚙️ Configurações do vercel.json
@@ -82,7 +82,7 @@ vercel --prod
 ```json
 {
   "framework": "vite",
-  "buildCommand": "node build-vercel.mjs",
+  "buildCommand": "vite build",
   "outputDirectory": "dist",
   "functions": {
     "api/**/*.ts": {
