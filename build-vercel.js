@@ -25,7 +25,7 @@ try {
   console.log('ℹ️  This may take 2-3 minutes due to dependencies...');
   
   execSync('vite build', {
-    stdio: 'pipe', // Reduce output noise
+    stdio: 'inherit', // Show build output for debugging
     env: {
       ...process.env,
       NODE_ENV: 'production',
