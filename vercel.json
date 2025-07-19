@@ -1,58 +1,20 @@
 {
-  "version": 2,
-  "name": "las-tortillas-mexican-grill",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  },
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
+  "buildCommand": "node build-vercel.js",
+  "outputDirectory": "dist/public",
+  "installCommand": "npm install",
   "functions": {
-    "pages/api/**/*.js": {
-      "runtime": "@vercel/node",
-      "maxDuration": 10
-    },
-    "pages/api/**/*.ts": {
-      "runtime": "@vercel/node",
-      "maxDuration": 10
+    "api/**/*.ts": {
+      "runtime": "@vercel/node"
     }
   },
-  "regions": ["iad1"],
-  "github": {
-    "silent": true
-  },
-  "headers": [
+  "rewrites": [
     {
       "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ],
-  "redirects": [
+      "destination": "/api/$1"
+    },
     {
-      "source": "/home",
-      "destination": "/",
-      "permanent": true
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
