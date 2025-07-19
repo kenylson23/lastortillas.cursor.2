@@ -15,7 +15,7 @@ export default function Login() {
     console.log('Tentando login com:', credentials);
 
     // Simple authentication - in production, this would be handled by the backend
-    if (credentials.username === 'admin' && credentials.password === 'admin123') {
+    if (credentials.username === 'administrador' && credentials.password === 'lasTortillas2025!') {
       localStorage.setItem('isAuthenticated', 'true');
       console.log('Login bem-sucedido');
       toast({
@@ -58,7 +58,12 @@ export default function Login() {
 
         {/* Card do Formulário */}
         <div className="bg-white rounded-xl shadow-lg p-6 sm:p-8">
-          <form className="space-y-6" onSubmit={handleSubmit}>
+          <form 
+            className="space-y-6" 
+            onSubmit={handleSubmit}
+            autoComplete="off"
+            data-form-type="other"
+          >
             <div className="space-y-4">
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-2">
@@ -73,6 +78,7 @@ export default function Login() {
                   onChange={(e) => setCredentials({...credentials, username: e.target.value})}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   placeholder="Digite o nome de usuário"
+                  autoComplete="new-password"
                 />
               </div>
               <div>
@@ -88,6 +94,7 @@ export default function Login() {
                   onChange={(e) => setCredentials({...credentials, password: e.target.value})}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   placeholder="Digite a senha"
+                  autoComplete="new-password"
                 />
               </div>
             </div>
@@ -114,9 +121,9 @@ export default function Login() {
 
             <div className="text-center space-y-3">
               <div className="text-xs sm:text-sm text-gray-500 bg-gray-50 p-3 rounded-lg border">
-                <div className="font-medium text-gray-700 mb-1">Credenciais de teste:</div>
-                <div>👤 Usuário: <span className="font-mono">admin</span></div>
-                <div>🔑 Senha: <span className="font-mono">admin123</span></div>
+                <div className="font-medium text-gray-700 mb-1">Credenciais de acesso:</div>
+                <div>👤 Usuário: <span className="font-mono">administrador</span></div>
+                <div>🔑 Senha: <span className="font-mono">lasTortillas2025!</span></div>
               </div>
               <button
                 type="button"

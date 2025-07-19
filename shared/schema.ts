@@ -74,7 +74,6 @@ export const orders = pgTable("orders", {
   notes: text("notes"),
   estimatedDeliveryTime: text("estimated_delivery_time"),
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const orderItems = pgTable("order_items", {
@@ -84,20 +83,16 @@ export const orderItems = pgTable("order_items", {
   quantity: integer("quantity").notNull(),
   unitPrice: numeric("unit_price", { precision: 10, scale: 2 }).notNull(),
   customizations: text("customizations").array(), // customizations for this specific item
-  subtotal: numeric("subtotal", { precision: 10, scale: 2 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const tables = pgTable("tables", {
   id: serial("id").primaryKey(),
-  number: integer("number").notNull(),
   locationId: text("location_id").notNull(), // "ilha", "talatona", "movel"
-  capacity: integer("capacity").notNull(), // número de pessoas
+  tableNumber: integer("table_number").notNull(),
+  seats: integer("seats").notNull(),
   status: text("status").notNull().default("available"), // "available", "occupied", "reserved", "maintenance"
-  position: text("position"), // "janela", "centro", "varanda", etc.
-  features: text("features").array(), // ["ar_condicionado", "vista_mar", "kids_area"]
-  notes: text("notes"), // observações especiais
   createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertReservationSchema = createInsertSchema(reservations).omit({

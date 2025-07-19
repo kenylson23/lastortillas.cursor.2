@@ -1,47 +1,35 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb, schema } from '../lib/db';
-import { createInsertSchema } from 'drizzle-zod';
-
-// Validation schema
-const insertReservationSchema = createInsertSchema(schema.reservations).omit({
-  id: true,
-  createdAt: true,
-});
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { db } from '../server/db';
+import { reservations, insertReservationSchema } from '../shared/schema';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
+  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
   try {
-    switch (req.method) {
-      case 'GET':
-        const db = getDb();
-        const allReservations = await db.select().from(schema.reservations);
-        return res.status(200).json(allReservations);
-
-      case 'POST':
-        const validation = insertReservationSchema.safeParse(req.body);
-        if (!validation.success) {
-          return res.status(400).json({ error: 'Invalid data', details: validation.error.errors });
-        }
-
-        const newReservation = await db.insert(reservations)
-          .values(validation.data)
-          .returning();
-
-        return res.status(201).json(newReservation[0]);
-
-      default:
-        return res.status(405).json({ error: 'Method not allowed' });
+    if (req.method === 'GET') {
+      const allReservations = await db.select().from(reservations);
+      return res.status(200).json(allReservations);
     }
-  } catch (error) {
-    console.error('Reservations API error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+
+    if (req.method === 'POST') {
+      const validatedData = insertReservationSchema.parse(req.body);
+      const newReservation = await db.insert(reservations).values([validatedData]).returning();
+      return res.status(201).json(newReservation[0]);
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (error: any) {
+    console.error('Error in reservations API:', error);
+    if (error.name === 'ZodError') {
+      return res.status(400).json({ error: "Dados inválidos", details: error.errors });
+    }
+    return res.status(500).json({ error: error.message });
   }
 }

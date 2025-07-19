@@ -100,17 +100,17 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 - **Database**: In-memory storage for rapid development
 - **Integration**: Vite proxy configuration for API requests
 
-### Production Build (Vercel)
-- **Type**: Full-stack application with serverless functions
-- **Build Command**: `node build-vercel.js` (custom script)
-- **Output Directory**: `dist/public`
-- **Framework**: Vite + Express.js backend
+### Production Build (Replit)
+- **Type**: Full-stack application with Express backend and React frontend
+- **Build Command**: `npm run dev`
 - **Database**: PostgreSQL with Drizzle ORM
+- **Backend**: Express.js with TypeScript
+- **Frontend**: React with Vite build system
 
 ### Environment Configuration
-- **Vercel Configuration**: `vercel.json` with SPA routing
+- **Database**: PostgreSQL connection via DATABASE_URL
+- **API**: RESTful endpoints for reservations, contacts, and menu items
 - **WhatsApp Integration**: Direct linking to +244 949639932
-- **Static Assets**: Optimized for CDN delivery
 
 ## User Preferences
 
@@ -118,19 +118,53 @@ Preferred communication style: Simple, everyday language.
 
 ## Changelog
 
+- July 17, 2025: Migrated from Express.js to Vercel serverless architecture
+  - Created comprehensive Vercel API functions for all endpoints
+  - Implemented serverless functions for menu-items, reservations, contacts, orders, and authentication
+  - Added availability checking API for reservation system
+  - Created table management API for restaurant seating
+  - Fixed database connection issues in Vercel environment
+  - Updated all API endpoints to use @vercel/node types
+  - Maintained Supabase integration for all database operations
+  - Created test infrastructure for Vercel deployment validation
+- July 17, 2025: Resolved database connection issues and completed deployment testing
+  - Fixed DATABASE_URL environment variable configuration
+  - Successfully recreated PostgreSQL database with proper schema
+  - Validated all database tables and relationships are working correctly
+  - Completed comprehensive build testing with successful production compilation
+  - Verified all API endpoints are functional (menu-items, reservations, contacts, orders, tables)
+  - Confirmed both development and production builds work correctly
+  - Application running successfully on port 5000 with full database connectivity
+- July 17, 2025: Migrated database from Replit PostgreSQL to Supabase
+  - Updated database connection to use Supabase pooler connection string
+  - Successfully connected to Supabase database with existing schema
+  - Verified data persistence and retrieval working correctly
+  - All API endpoints functioning properly with Supabase backend
+  - Application performance maintained with cloud database connection
+  - Enhanced scalability and reliability with Supabase infrastructure
+- July 17, 2025: Implemented complete Supabase integration with authentication and storage
+  - Added full Supabase client configuration with all API credentials
+  - Created comprehensive authentication system with user management
+  - Implemented Supabase storage integration for file uploads
+  - Added admin endpoints for user management and administrative tasks
+  - Created authentication APIs for register, login, and user management
+  - Integrated Supabase storage APIs for file upload and management
+  - Successfully tested user creation and authentication functionality
+  - All Supabase services now fully integrated and operational
 - June 29, 2025: Initial setup
 - June 29, 2025: Configured WhatsApp integration (+244 949639932) for reservations
-- June 29, 2025: Prepared for Vercel deployment as static SPA
-  - Removed backend dependencies from Contact form
-  - Added vercel.json configuration
-  - Updated build process for static deployment
-  - Created deployment documentation
-- June 29, 2025: Fixed Vercel 404 deployment errors
-  - Resolved Rollup import resolution failures by converting @/ aliases to relative paths
-  - Replaced complex UI components (Button, Card, Input, etc.) with standard HTML elements
-  - Simplified Contact form with native form elements while preserving WhatsApp functionality
-  - Build process now completes successfully without import errors
-  - Maintained all animations, styling, and core functionality
+- January 17, 2025: Removed all Vercel deployment configuration
+  - Deleted vercel.json, API folder, and all build scripts
+  - Updated documentation to reflect full-stack Replit deployment
+  - Cleaned up project structure for simplified development
+  - Updated build process for simplified Replit deployment
+  - Removed all Vercel-specific configuration files and scripts
+- January 17, 2025: Completed migration from Prisma to Drizzle ORM
+  - Removed all Prisma dependencies and configuration files
+  - Updated table schema to match Prisma structure exactly
+  - Fixed storage interface to work with new schema field names
+  - Successfully migrated to pure Drizzle ORM implementation
+  - All API endpoints working correctly with new database layer
 - July 8, 2025: Fixed concurrent reservation booking issues
   - Implemented mutex pattern to prevent race conditions in reservation creation
   - Added real-time availability checking with debounced API calls
@@ -173,56 +207,6 @@ Preferred communication style: Simple, everyday language.
 - July 13, 2025: Multi-location system implementation
   - Added support for 3 Las Tortillas locations: 2 restaurants + 1 mobile unit
   - Created modal/overlay system for detailed location information
-- July 18, 2025: Fixed database connection and Vercel deployment issues
-  - Resolved DATABASE_URL environment variable not being set
-  - Created new PostgreSQL database with proper configuration
-  - Applied database migrations successfully using Drizzle
-  - Fixed Vercel build issues with custom build script (build-vercel.js)
-  - Moved Vite to production dependencies to resolve "command not found" errors
-  - Updated vercel.json configuration for full-stack deployment
-  - Created comprehensive deployment guide (VERCEL_DEPLOY_GUIDE.md)
-  - Verified local and production build processes work correctly
-- July 18, 2025: Reorganized project structure following Next.js best practices
-  - Created Next.js-style folder structure with src/, public/, and data/ directories
-  - Organized components in src/components/ with UI components in subfolder
-  - Moved pages to src/pages/ including API routes in src/pages/api/
-  - Reorganized styles in src/styles/ and utilities in src/utils/
-  - Created data/ folder with mock data for development (menu items, locations, user roles)
-  - Added centralized export files (index.ts) for cleaner imports
-  - Created comprehensive PROJECT_STRUCTURE.md documentation
-  - Maintained all existing functionality while improving code organization
-- July 18, 2025: Complete Next.js configuration implementation
-  - Created package-nextjs.json with all required dependencies (React 18, Next.js 14, TailwindCSS, Supabase)
-  - Configured next.config.js with image optimization and domain settings
-  - Set up tailwind.config.js with Las Tortillas brand colors and custom animations
-  - Created postcss.config.js for CSS processing pipeline
-  - Generated .env.local template with Supabase and database placeholders
-  - Configured comprehensive .gitignore for Next.js projects
-  - Set up TypeScript configuration with path aliases (@/, @/components, etc.)
-  - Added ESLint configuration for Next.js best practices
-  - Created complete homepage (src/pages/index.tsx) with responsive design
-  - Implemented _app.tsx and _document.tsx with SEO optimization
-  - Added globals.css with brand styling and accessibility features
-  - Created comprehensive documentation (NEXTJS_SETUP.md, NEXTJS_COMPLETE_SETUP.md)
-  - Project ready for Next.js development with full TypeScript and TailwindCSS support
-  - Created complete Next.js pages in JavaScript utilizing existing APIs
-  - Implemented _app.js with authentication context and user management
-  - Built index.js (homepage) with menu integration and responsive design
-  - Created menu.js with full menu display, filtering, and search functionality
-  - Developed pedidos.js for comprehensive order management and creation
-  - Built admin.js with complete administrative dashboard and CRUD operations
-  - Implemented login.js with authentication system and role-based access
-  - All pages integrate with existing APIs: /api/menu-items, /api/orders, /api/reservations, /api/tables
-  - Added comprehensive documentation (NEXTJS_PAGES_SUMMARY.md)
-- July 18, 2025: Fixed hybrid architecture - Next.js frontend + Vite+Express backend
-  - Resolved @shared/schema import errors by using relative paths in server/routes.ts and server/storage.ts  
-  - Confirmed Vite is essential for Vercel deployment (user was correct!)
-  - Maintained hybrid architecture: Next.js for frontend pages, Vite+Express for backend APIs
-  - Removed duplicate configurations: tailwind.config.ts, tsconfig.vercel.json (cleanup)
-  - Updated tsconfig.json for Next.js with moduleResolution: "node"
-  - API server running successfully on port 5000 with database integration
-  - All menu items API endpoints functional (/api/menu-items returning data)
-  - Updated cleanup documentation explaining hybrid architecture benefits
   - Implemented LocationModal component with full location details
   - Added OurLocations section replacing single location display
   - Updated Hero messaging to reflect multi-location presence
@@ -235,13 +219,14 @@ Preferred communication style: Simple, everyday language.
 - July 13, 2025: Custom authentication system implementation
   - Completely removed Replit Auth system per user request
   - Implemented simple localStorage-based authentication for admin access
-  - Created new Login page with admin credentials (username: "admin", password: "admin123")
+  - Created new Login page with secure credentials (username: "administrador", password: "lasTortillas2025!")
   - Added protected route system for admin panel with automatic redirection
   - Updated navigation to show login/logout functionality based on authentication state
   - Added custom toast notification system for user feedback
   - Implemented useAuth hook for authentication state management
   - Admin login now redirects to complete management dashboard
   - Both desktop and mobile navigation updated with authentication controls
+  - Enhanced form security with autoComplete="off" to prevent browser password suggestions
 - July 13, 2025: Image upload system implementation
   - Added complete image upload functionality for menu items
   - Implemented multer middleware for file processing and validation
@@ -359,53 +344,3 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
-- July 18, 2025: Major conversion to Vercel full-stack deployment architecture
-  - Migrated from Replit Express backend to Vercel Serverless Functions
-  - Created comprehensive API endpoints: /api/menu-items, /api/orders, /api/reservations, /api/tables
-  - Implemented PostgreSQL database integration using Supabase for production
-  - Structured project for Vercel deployment: src/ (frontend), api/ (serverless functions), lib/ (utilities)
-  - Added @vercel/node dependency for serverless function runtime
-  - Created lib/db.ts for database connections using Drizzle ORM with Neon/Supabase
-  - Built api/ directory with TypeScript serverless functions for all CRUD operations
-  - Updated vercel.json configuration for proper routing between frontend and API
-  - Maintained all existing functionality while adding scalable backend infrastructure
-  - Frontend remains React SPA with TanStack Query for API communication
-  - Database schema preserved using Drizzle ORM with PostgreSQL
-  - Ready for production deployment with automatic scaling and persistent data storage
-  - Created single unified build script (build-vercel.mjs) to eliminate conflicts
-  - Build generates complete dist/ folder with all necessary files for Vercel deployment
-  - Includes fallback HTML for development and comprehensive deployment instructions
-- July 18, 2025: Node.js optimization and security improvements
-  - Fixed database connection issues by switching from Neon serverless to standard PostgreSQL driver
-  - Resolved DATABASE_URL environment variable missing issue by creating PostgreSQL database
-  - Updated database schema successfully with all tables (reservations, contacts, menu items, orders, tables)
-  - Removed problematic @neondatabase/serverless dependency causing WebSocket errors
-  - Updated security vulnerabilities in dependencies (esbuild, tsx, multer, express-session)
-  - Applied npm audit fixes to resolve moderate and high severity vulnerabilities
-  - Updated browserslist data to latest version to eliminate outdated warnings
-  - Optimized Node.js v20.18.1 and npm v10.8.2 configuration
-  - Application now runs stable on port 5000 with proper database connectivity
-  - All API endpoints verified working: /api/menu, /api/auth/user, /api/availability, /api/tables
-  - Sample menu data automatically populated on first database connection
-- July 19, 2025: Limpeza profunda e otimização para deploy no Vercel
-  - Removidos todos os arquivos duplicados e desnecessários (src/, attached_assets/, scripts/, data/, migrations/)
-  - Limpeza completa das configurações conflitantes (next.config.js, package-nextjs.json, build scripts duplicados)
-  - Correção de todas as importações de imagens problemáticas usando assets do diretório public/
-  - Otimização das APIs do Vercel com importações corretas (getDb, schema)
-  - Criação de .vercelignore para ignorar arquivos desnecessários no deploy
-  - Estrutura final limpa: api/ (serverless), client/ (frontend), lib/ (db), shared/ (schemas), public/ (assets)
-  - Todas as APIs funcionais: health, menu-items, orders, reservations, tables
-  - Aplicação rodando estável em desenvolvimento, pronta para deploy no Vercel
-  - Documentação atualizada (README.md) com instruções completas de deploy
-- July 18, 2025: Complete Vercel deployment adaptation and optimization
-  - Updated lib/db.ts to use standard PostgreSQL driver compatible with Vercel serverless functions
-  - Configured vercel.json for Node.js 20.x runtime and proper API routing
-  - Created optimized build-vercel.mjs script with comprehensive validation and build process
-  - All serverless functions tested and verified: /api/menu-items, /api/orders, /api/reservations, /api/tables
-  - Implemented proper CORS headers and error handling for production environment
-  - Updated database connection pool settings optimized for serverless architecture (max 10 connections)
-  - Created comprehensive VERCEL_DEPLOY_GUIDE.md with deployment instructions
-  - Frontend build successfully generates optimized production assets (474KB JS, 91KB CSS)
-  - All API endpoints use @vercel/node with proper TypeScript validation
-  - Project is 100% ready for Vercel deployment with full-stack serverless architecture
-  - Build verification confirms all dependencies and configurations are correct

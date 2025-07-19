@@ -1,87 +1,31 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getDb, schema } from '../lib/db';
-import { createInsertSchema } from 'drizzle-zod';
-import { eq } from 'drizzle-orm';
-
-// Validation schema
-const insertMenuItemSchema = createInsertSchema(schema.menuItems).omit({
-  id: true,
-  createdAt: true,
-});
+import { VercelRequest, VercelResponse } from '@vercel/node';
+import { db } from '../server/db';
+import { menuItems } from '../shared/schema';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
+  // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  const db = getDb();
-
   try {
-    switch (req.method) {
-      case 'GET':
-        const items = await db.select().from(schema.menuItems);
-        return res.status(200).json(items);
-
-      case 'POST':
-        const validation = insertMenuItemSchema.safeParse(req.body);
-        if (!validation.success) {
-          return res.status(400).json({ error: 'Invalid data', details: validation.error.errors });
-        }
-
-        const newItem = await db.insert(schema.menuItems)
-          .values(validation.data)
-          .returning();
-
-        return res.status(201).json(newItem[0]);
-
-      case 'PUT':
-        const { id, ...updateData } = req.body;
-        if (!id) {
-          return res.status(400).json({ error: 'ID is required' });
-        }
-
-        const updateValidation = insertMenuItemSchema.partial().safeParse(updateData);
-        if (!updateValidation.success) {
-          return res.status(400).json({ error: 'Invalid data', details: updateValidation.error.errors });
-        }
-
-        const updatedItem = await db.update(schema.menuItems)
-          .set(updateValidation.data)
-          .where(eq(schema.menuItems.id, id))
-          .returning();
-
-        if (updatedItem.length === 0) {
-          return res.status(404).json({ error: 'Menu item not found' });
-        }
-
-        return res.status(200).json(updatedItem[0]);
-
-      case 'DELETE':
-        const deleteId = req.query.id || req.body.id;
-        if (!deleteId) {
-          return res.status(400).json({ error: 'ID is required' });
-        }
-
-        const deletedItem = await db.delete(menuItems)
-          .where(eq(menuItems.id, Number(deleteId)))
-          .returning();
-
-        if (deletedItem.length === 0) {
-          return res.status(404).json({ error: 'Menu item not found' });
-        }
-
-        return res.status(200).json({ message: 'Menu item deleted successfully' });
-
-      default:
-        return res.status(405).json({ error: 'Method not allowed' });
+    if (req.method === 'GET') {
+      const items = await db.select().from(menuItems);
+      return res.status(200).json(items);
     }
-  } catch (error) {
-    console.error('Menu items API error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+
+    if (req.method === 'POST') {
+      const newItem = await db.insert(menuItems).values([req.body]).returning();
+      return res.status(201).json(newItem[0]);
+    }
+
+    return res.status(405).json({ error: 'Method not allowed' });
+  } catch (error: any) {
+    console.error('Error in menu-items API:', error);
+    return res.status(500).json({ error: error.message });
   }
 }
