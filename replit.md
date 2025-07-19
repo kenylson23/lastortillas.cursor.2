@@ -344,3 +344,12 @@ Preferred communication style: Simple, everyday language.
   - Admin panel includes "Limpar Tudo" button to clear all stored data across locations
   - Data persistence maintains user experience while switching between restaurant locations
   - Robust error handling prevents data corruption in localStorage
+- July 19, 2025: Removed Vercel deployment configuration
+  - Cleaned up all Vercel-specific files and configurations
+  - Removed api/ folder containing serverless functions
+  - Deleted vercel.json, next.config.js, and build scripts
+  - Uninstalled @vercel/node and vercel packages
+  - Removed documentation files related to Vercel migration
+  - Project now configured for Replit deployment only
+  - Reduced project size from 819MB to 694MB (15% reduction)
+  - All visual components and functionality preserved
