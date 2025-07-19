@@ -41,6 +41,7 @@ export default function OnlineMenu({
   const [lastCreatedOrder, setLastCreatedOrder] = useState<Order | null>(null);
   const [showTracking, setShowTracking] = useState(false);
   const [trackingOrderId, setTrackingOrderId] = useState('');
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
   
   const [customerInfo, setCustomerInfo] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -332,159 +333,81 @@ export default function OnlineMenu({
         <div className="absolute bottom-32 left-1/4 w-14 h-14 bg-red-50 rounded-full opacity-25 animate-pulse" style={{animationDelay: '4s'}}></div>
       </div>
       
-      {/* Unified Header with Location Selection */}
-      <div className="bg-white shadow-md text-gray-800 sticky top-0 z-40 border-b border-gray-200">
-        {/* Main Header */}
-        <div className="p-3 sm:p-4">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
+      {/* Clean Header */}
+      <div className="bg-white shadow-sm text-gray-800 sticky top-0 z-40 border-b border-gray-200">
+        <div className="px-4 py-3 sm:px-6 sm:py-4">
+          <div className="max-w-6xl mx-auto flex justify-between items-center">
+            {/* Logo */}
             <div className="flex items-center space-x-3">
               <div className="text-2xl">🌮</div>
-              <div>
-                <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
-                <p className="text-xs sm:text-sm text-gray-600 font-medium">Pedidos Online</p>
-              </div>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-3">
-              <button
-                onClick={onBackToSite}
-                className="bg-gray-100 text-gray-700 px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-300 text-xs sm:text-sm font-semibold border border-gray-300"
-              >
-                🏠 Voltar
-              </button>
+
+            {/* Right Section */}
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              {/* Location Selector */}
+              <div className="relative">
+                <select
+                  value={locationId}
+                  onChange={(e) => onLocationChange(e.target.value)}
+                  className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                >
+                  <option value="">📍 Selecionar Local</option>
+                  <option value="ilha">🏖️ Las Tortillas Ilha</option>
+                  <option value="talatona">🏢 Las Tortillas Talatona</option>
+                  <option value="movel">🚐 Las Tortillas Móvel</option>
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                    <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
+                  </svg>
+                </div>
+              </div>
+
+              {/* Cart Button */}
               {!showTracking && (
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className={`relative p-3 sm:p-4 rounded-lg transition-all duration-300 border ${cart.length > 0 ? 'bg-red-500 text-white border-red-600' : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-red-500 hover:text-white hover:border-red-600'}`}
+                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                    cart.length > 0 
+                      ? 'bg-red-500 text-white hover:bg-red-600' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white'
+                  }`}
                 >
-                  <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                   </svg>
+                  <span className="hidden sm:inline text-sm">
+                    {cart.length > 0 ? `Carrinho (${cart.reduce((sum, item) => sum + item.quantity, 0)})` : 'Carrinho'}
+                  </span>
                   {cart.length > 0 && (
-                    <span className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 bg-orange-500 text-white text-xs sm:text-sm rounded-full w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center font-bold shadow-lg">
+                    <span className="sm:hidden absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                       {cart.reduce((sum, item) => sum + item.quantity, 0)}
                     </span>
                   )}
                 </button>
               )}
-            </div>
-          </div>
-        </div>
-        
-        {/* Location Selection Bar */}
-        <div className="bg-gray-50 border-t border-gray-200">
-          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
-            <div className="flex flex-col space-y-3 sm:space-y-0 sm:flex-row sm:items-center sm:gap-4">
-              <span className="text-xs sm:text-sm font-semibold text-gray-700 flex-shrink-0 flex items-center">
-                📍 Localização: {getLocationName(locationId)}
-              </span>
-              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+
+              {/* Admin Access - Discrete */}
+              {isAuthenticated && (
                 <button
-                  onClick={() => onLocationChange('ilha')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
-                    locationId === 'ilha'
-                      ? 'bg-red-500 text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
-                  }`}
+                  onClick={() => setShowAdminPanel(true)}
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  title="Ferramentas Admin"
                 >
-                  🏝️ Ilha
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </button>
-                <button
-                  onClick={() => onLocationChange('talatona')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
-                    locationId === 'talatona'
-                      ? 'bg-red-500 text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
-                  }`}
-                >
-                  🏢 Talatona
-                </button>
-                <button
-                  onClick={() => onLocationChange('movel')}
-                  className={`px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 text-xs sm:text-sm font-semibold w-full sm:w-auto ${
-                    locationId === 'movel'
-                      ? 'bg-red-500 text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-red-500 hover:text-white'
-                  }`}
-                >
-                  🚚 Móvel
-                </button>
-              </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Admin Quick Access Panel - apenas para admins logados */}
-      {isAuthenticated && (
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 border-b">
-          <div className="max-w-4xl mx-auto px-3 sm:px-4 py-3">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">👨‍💼</span>
-                <div>
-                  <h3 className="text-white font-bold text-sm">Modo Administrador</h3>
-                  <p className="text-blue-100 text-xs">Funcionalidades especiais ativadas</p>
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => {
-                    // Preenchimento automático para teste rápido
-                    setCustomerInfo({
-                      ...customerInfo,
-                      name: 'Admin Test',
-                      phone: '+244999888777',
-                      email: 'admin@lastortillas.ao',
-                      address: 'Luanda Centro',
-                      orderType: 'delivery',
-                      paymentMethod: 'cash',
-                      notes: 'Pedido de teste - Admin'
-                    });
-                  }}
-                  className="bg-white text-blue-600 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-50 transition-colors flex items-center gap-1.5"
-                >
-                  <span>⚡</span>
-                  Preencher Teste
-                </button>
-                
-                <a
-                  href="/admin"
-                  className="bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-yellow-600 transition-colors flex items-center gap-1.5"
-                >
-                  <span>📊</span>
-                  Painel Admin
-                </a>
-                
-                <button
-                  onClick={() => {
-                    // Adicionar um item popular automaticamente para teste
-                    const popularItem = menuItems.find(item => item.name.includes('Nachos'));
-                    if (popularItem) {
-                      addToCart(popularItem);
-                    }
-                  }}
-                  className="bg-green-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-green-600 transition-colors flex items-center gap-1.5"
-                >
-                  <span>🌮</span>
-                  Add Popular
-                </button>
-                
-                <button
-                  onClick={clearAllData}
-                  className="bg-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-red-600 transition-colors flex items-center gap-1.5"
-                >
-                  <span>🗑️</span>
-                  Limpar Tudo
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Navigation Tabs */}
-      <div className="sticky top-20 sm:top-24 z-30 bg-white shadow-sm border-b border-gray-200">
+      <div className="sticky top-16 sm:top-20 z-30 bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-4xl mx-auto p-4 sm:p-6">
           <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
             <button
@@ -643,6 +566,101 @@ export default function OnlineMenu({
           setShowTracking(true);
         }}
       />
+
+      {/* Admin Panel Modal - Discrete */}
+      {showAdminPanel && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-y-auto"
+          >
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gray-900">
+                  🛠️ Ferramentas Admin
+                </h3>
+                <button
+                  onClick={() => setShowAdminPanel(false)}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div className="p-6 space-y-4">
+              {/* Quick Test Data */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-gray-800">🎯 Teste Rápido</h4>
+                <button
+                  onClick={() => {
+                    setCustomerInfo({
+                      name: 'João Silva',
+                      phone: '+244 912 345 678',
+                      email: 'joao@exemplo.com',
+                      address: 'Rua das Flores, 123 - Talatona',
+                      orderType: 'delivery' as const,
+                      paymentMethod: 'cash' as const,
+                      notes: 'Teste admin - pedido rápido',
+                      tableId: null
+                    });
+                    setShowAdminPanel(false);
+                  }}
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition-colors text-sm"
+                >
+                  Preencher Dados de Teste
+                </button>
+              </div>
+
+              {/* Popular Items */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-gray-800">🌟 Itens Populares</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {menuData.slice(0, 4).map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        addToCart(item, []);
+                        setShowAdminPanel(false);
+                      }}
+                      className="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-3 rounded-lg transition-colors text-xs"
+                    >
+                      {item.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Navigation */}
+              <div className="space-y-3">
+                <h4 className="font-semibold text-gray-800">🚀 Navegação</h4>
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      window.location.href = '/admin';
+                    }}
+                    className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition-colors text-sm"
+                  >
+                    Painel Administrativo
+                  </button>
+                  <button
+                    onClick={() => {
+                      clearAllData();
+                      setShowAdminPanel(false);
+                    }}
+                    className="w-full bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition-colors text-sm"
+                  >
+                    Limpar Todos os Dados
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 }
