@@ -273,30 +273,102 @@ export default function Kitchen() {
         </div>
       </div>
 
-      {/* Statistics Dashboard */}
+      {/* Enhanced Statistics Dashboard */}
       {showStats && (
-        <div className="bg-gray-800 border-b border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-3 text-center">
+        <div className="bg-gradient-to-r from-gray-800 to-gray-700 border-b border-gray-600">
+          <div className="max-w-7xl mx-auto px-4 py-6">
+            {/* Main Stats Row */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              {/* Active Orders - Primary Metric */}
+              <div className="bg-gradient-to-br from-orange-600/30 to-red-600/20 border-2 border-orange-500/40 rounded-xl p-6 text-center relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <Flame className="w-8 h-8 text-orange-400" />
+                    <div className="text-4xl font-black text-orange-400">{kitchenStats.activeOrders}</div>
+                  </div>
+                  <div className="text-lg font-semibold text-orange-200">Pedidos em Preparo</div>
+                  <div className="text-xs text-orange-300/80 mt-1">Requer atenção imediata</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent"></div>
+              </div>
+
+              {/* Ready Orders */}
+              <div className="bg-gradient-to-br from-green-600/30 to-emerald-600/20 border-2 border-green-500/40 rounded-xl p-6 text-center relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <CheckCircle className="w-8 h-8 text-green-400" />
+                    <div className="text-4xl font-black text-green-400">{orders.filter(o => o.status === 'ready').length}</div>
+                  </div>
+                  <div className="text-lg font-semibold text-green-200">Pedidos Prontos</div>
+                  <div className="text-xs text-green-300/80 mt-1">Aguardando entrega</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent"></div>
+              </div>
+
+              {/* Urgent Orders */}
+              <div className="bg-gradient-to-br from-red-600/30 to-pink-600/20 border-2 border-red-500/40 rounded-xl p-6 text-center relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <AlertCircle className="w-8 h-8 text-red-400" />
+                    <div className="text-4xl font-black text-red-400">{kitchenStats.delayedOrders}</div>
+                  </div>
+                  <div className="text-lg font-semibold text-red-200">Pedidos Urgentes</div>
+                  <div className="text-xs text-red-300/80 mt-1">Mais de 20 min</div>
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent"></div>
+              </div>
+            </div>
+
+            {/* Secondary Stats Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {/* Total Orders Today */}
+              <div className="bg-gray-700/50 border border-gray-600/50 rounded-lg p-4 text-center backdrop-blur-sm">
                 <div className="text-2xl font-bold text-blue-400">{kitchenStats.totalOrders}</div>
-                <div className="text-xs text-blue-300">Total Hoje</div>
+                <div className="text-sm text-blue-300 font-medium">Total Hoje</div>
+                <div className="text-xs text-gray-400 mt-1">Todos os pedidos</div>
               </div>
-              <div className="bg-orange-600/20 border border-orange-500/30 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-orange-400">{kitchenStats.activeOrders}</div>
-                <div className="text-xs text-orange-300">Em Preparo</div>
+
+              {/* Completed Today */}
+              <div className="bg-gray-700/50 border border-gray-600/50 rounded-lg p-4 text-center backdrop-blur-sm">
+                <div className="text-2xl font-bold text-emerald-400">{kitchenStats.completedToday}</div>
+                <div className="text-sm text-emerald-300 font-medium">Concluídos</div>
+                <div className="text-xs text-gray-400 mt-1">Entregues hoje</div>
               </div>
-              <div className="bg-green-600/20 border border-green-500/30 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-green-400">{kitchenStats.completedToday}</div>
-                <div className="text-xs text-green-300">Concluídos</div>
+
+              {/* Average Time */}
+              <div className="bg-gray-700/50 border border-gray-600/50 rounded-lg p-4 text-center backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-1">
+                  <Timer className="w-5 h-5 text-yellow-400" />
+                  <div className="text-2xl font-bold text-yellow-400">{kitchenStats.averageTime}</div>
+                  <span className="text-sm text-yellow-300">min</span>
+                </div>
+                <div className="text-sm text-yellow-300 font-medium">Tempo Médio</div>
+                <div className="text-xs text-gray-400 mt-1">Por pedido</div>
               </div>
-              <div className="bg-yellow-600/20 border border-yellow-500/30 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-yellow-400">{kitchenStats.averageTime}min</div>
-                <div className="text-xs text-yellow-300">Tempo Médio</div>
+
+              {/* Efficiency Indicator */}
+              <div className="bg-gray-700/50 border border-gray-600/50 rounded-lg p-4 text-center backdrop-blur-sm">
+                <div className="text-2xl font-bold text-purple-400">
+                  {kitchenStats.totalOrders > 0 ? Math.round((kitchenStats.completedToday / kitchenStats.totalOrders) * 100) : 0}%
+                </div>
+                <div className="text-sm text-purple-300 font-medium">Eficiência</div>
+                <div className="text-xs text-gray-400 mt-1">Taxa conclusão</div>
               </div>
-              <div className="bg-red-600/20 border border-red-500/30 rounded-lg p-3 text-center">
-                <div className="text-2xl font-bold text-red-400">{kitchenStats.delayedOrders}</div>
-                <div className="text-xs text-red-300">Atrasados</div>
+            </div>
+
+            {/* Performance Indicators */}
+            <div className="mt-4 flex items-center justify-center gap-6">
+              <div className="flex items-center gap-2">
+                <div className={`w-3 h-3 rounded-full ${kitchenStats.delayedOrders === 0 ? 'bg-green-500' : kitchenStats.delayedOrders < 3 ? 'bg-yellow-500' : 'bg-red-500'}`}></div>
+                <span className="text-sm text-gray-300">
+                  Status: {kitchenStats.delayedOrders === 0 ? 'Excelente' : kitchenStats.delayedOrders < 3 ? 'Normal' : 'Crítico'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-gray-400" />
+                <span className="text-sm text-gray-300">
+                  Atualizado em tempo real
+                </span>
               </div>
             </div>
           </div>
@@ -442,52 +514,71 @@ export default function Kitchen() {
                     </div>
                   </div>
 
-                  {/* Customer Info with icons */}
-                  <div className="mb-4 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Users className="w-4 h-4 text-blue-400" />
-                      <span className="font-medium text-white">{order.customerName}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-green-400" />
-                      <span className="text-sm text-gray-400">{order.customerPhone}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-purple-400" />
-                      <span className="text-sm text-gray-400 capitalize">
-                        {order.orderType} • {order.locationId}
-                        {order.tableId && ` • Mesa ${order.tableId}`}
-                      </span>
+                  {/* Customer & Order Info Card */}
+                  <div className="mb-4 bg-gray-700/30 rounded-lg p-3 border-l-4 border-blue-500">
+                    <div className="grid grid-cols-1 gap-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                        <span className="font-semibold text-white truncate">{order.customerName}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />
+                        <span className="text-sm text-gray-300">{order.customerPhone}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                        <div className="text-sm text-gray-300">
+                          <span className="capitalize font-medium">{order.orderType}</span>
+                          <span className="mx-1">•</span>
+                          <span className="capitalize">{order.locationId}</span>
+                          {order.tableId && (
+                            <>
+                              <span className="mx-1">•</span>
+                              <span className="text-purple-300 font-medium">Mesa {order.tableId}</span>
+                            </>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Items do Pedido com design melhorado */}
+                  {/* Items do Pedido - Melhor organização */}
                   <div className="mb-4">
-                    <div className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                      <ChefHat className="w-4 h-4" />
-                      Itens do Pedido:
-                    </div>
-                    <div className="space-y-2">
-                      {order.items?.map((item, index) => (
-                        <div key={index} className="bg-gray-700/50 rounded-lg p-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-white">
-                              <span className="text-orange-400 font-bold">{item.quantity}x</span> {item.name}
-                            </span>
-                            {item.preparationTime && (
-                              <span className="text-xs text-gray-400 flex items-center gap-1">
-                                <Timer className="w-3 h-3" />
-                                {item.preparationTime}min
-                              </span>
+                    <div className="bg-gray-700/40 rounded-lg p-3 border border-gray-600/50">
+                      <div className="text-sm font-semibold text-gray-200 mb-3 flex items-center gap-2 border-b border-gray-600 pb-2">
+                        <ChefHat className="w-4 h-4 text-orange-400" />
+                        Itens para Preparar ({order.items?.length || 0})
+                      </div>
+                      <div className="space-y-2">
+                        {order.items?.map((item, index) => (
+                          <div key={index} className="bg-gray-800/60 rounded-md p-3 border-l-3 border-orange-500">
+                            <div className="flex items-start justify-between mb-1">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                                    {item.quantity}
+                                  </span>
+                                  <span className="text-white font-medium">{item.name}</span>
+                                </div>
+                              </div>
+                              {item.preparationTime && (
+                                <div className="bg-yellow-600/20 text-yellow-300 text-xs px-2 py-1 rounded-md flex items-center gap-1 flex-shrink-0">
+                                  <Timer className="w-3 h-3" />
+                                  {item.preparationTime}min
+                                </div>
+                              )}
+                            </div>
+                            {item.customizations && item.customizations.length > 0 && (
+                              <div className="mt-2 bg-yellow-900/40 rounded-md p-2 border-l-2 border-yellow-500">
+                                <div className="text-xs text-yellow-300 font-medium mb-1">Customizações:</div>
+                                <div className="text-xs text-yellow-200">
+                                  {item.customizations.join(' • ')}
+                                </div>
+                              </div>
                             )}
                           </div>
-                          {item.customizations && item.customizations.length > 0 && (
-                            <div className="text-xs text-yellow-400 mt-1 pl-2 border-l-2 border-yellow-600">
-                              {item.customizations.join(', ')}
-                            </div>
-                          )}
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -538,27 +629,47 @@ export default function Kitchen() {
                     )}
                   </div>
 
-                  {/* Footer com total e tempo estimado */}
-                  <div className="mt-4 pt-3 border-t border-gray-600">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <div className="text-xl font-bold text-green-400">
-                          AOA {parseFloat(order.totalAmount).toLocaleString('pt-AO')}
+                  {/* Footer - Informações importantes */}
+                  <div className="mt-4 space-y-3">
+                    {/* Valor total e tempo estimado */}
+                    <div className="bg-gray-700/40 rounded-lg p-3 border border-gray-600/50">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="text-xs text-gray-400 uppercase tracking-wide">Valor Total</div>
+                          <div className="text-xl font-bold text-green-400">
+                            AOA {parseFloat(order.totalAmount).toLocaleString('pt-AO')}
+                          </div>
                         </div>
                         {order.estimatedDeliveryTime && (
-                          <div className="text-xs text-gray-400">
-                            Est: {order.estimatedDeliveryTime}
+                          <div className="text-right">
+                            <div className="text-xs text-gray-400 uppercase tracking-wide">Tempo Est.</div>
+                            <div className="text-sm font-medium text-blue-400">
+                              {order.estimatedDeliveryTime}
+                            </div>
                           </div>
                         )}
                       </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-400">Prioridade</div>
-                        <div className={`text-sm font-medium ${
-                          order.priority === 'urgent' ? 'text-red-400' :
-                          order.priority === 'high' ? 'text-orange-400' :
-                          'text-gray-400'
+                    </div>
+
+                    {/* Prioridade e status */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <div className="text-xs text-gray-400">PRIORIDADE:</div>
+                        <div className={`px-2 py-1 rounded-full text-xs font-bold ${
+                          order.priority === 'urgent' ? 'bg-red-600/30 text-red-300 border border-red-500' :
+                          order.priority === 'high' ? 'bg-orange-600/30 text-orange-300 border border-orange-500' :
+                          'bg-gray-600/30 text-gray-300 border border-gray-500'
                         }`}>
                           {order.priority ? order.priority.toUpperCase() : 'NORMAL'}
+                        </div>
+                      </div>
+                      
+                      <div className="text-right">
+                        <div className="text-xs text-gray-400">TEMPO DECORRIDO</div>
+                        <div className={`text-sm font-bold ${
+                          isDelayed ? 'text-red-400' : isUrgent ? 'text-yellow-400' : 'text-gray-300'
+                        }`}>
+                          {duration}
                         </div>
                       </div>
                     </div>
