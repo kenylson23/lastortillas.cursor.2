@@ -116,6 +116,20 @@ Las Tortillas Mexican Grill is a full-stack web application for a Mexican restau
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### July 19, 2025: Enhanced Table Management System
+- Fixed PostgreSQL database connection issues by creating new database instance
+- Implemented comprehensive table creation improvements with bulk creation mode
+- Added intelligent auto-numbering system that suggests next available table numbers
+- Created batch table creation feature for quick restaurant setup
+- Enhanced table modal with capacity quick-select buttons (2, 4, 6, 8 people)
+- Added visual status indicators with color-coded borders for different table states
+- Implemented location-based statistics dashboard showing table counts and availability
+- Added template-based setup for typical restaurant configurations
+- Improved form validation with real-time duplicate detection
+- Enhanced UI with better visual hierarchy and improved user experience
+
 ## Changelog
 
 - July 17, 2025: Migrated from Express.js to Vercel serverless architecture

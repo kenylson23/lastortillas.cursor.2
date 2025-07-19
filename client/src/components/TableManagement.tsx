@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X, Copy, Zap, Grid } from 'lucide-react';
 import { Table, InsertTable } from '@shared/schema';
 
 interface TableModalProps {
@@ -19,6 +19,23 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
     status: table?.status || 'available'
   });
 
+  const [bulkCreate, setBulkCreate] = useState(false);
+  const [bulkQuantity, setBulkQuantity] = useState(5);
+  const [startNumber, setStartNumber] = useState(1);
+
+  // Auto-ajustar número da mesa ao mudar local
+  useEffect(() => {
+    if (!table && formData.locationId) {
+      const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
+      const maxNumber = tablesInLocation.length > 0 
+        ? Math.max(...tablesInLocation.map(t => t.tableNumber)) 
+        : 0;
+      const nextNumber = maxNumber + 1;
+      setFormData(prev => ({ ...prev, tableNumber: nextNumber }));
+      setStartNumber(nextNumber);
+    }
+  }, [formData.locationId, allTables, table]);
+
   const locations = [
     { id: 'talatona', name: 'Talatona' },
     { id: 'ilha', name: 'Ilha de Luanda' },
@@ -34,8 +51,49 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    
+    if (bulkCreate) {
+      // Criar múltiplas mesas
+      const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
+      const existingNumbers = tablesInLocation.map(t => t.tableNumber);
+      
+      for (let i = 0; i < bulkQuantity; i++) {
+        let newNumber = startNumber + i;
+        
+        // Pular números já existentes
+        while (existingNumbers.includes(newNumber)) {
+          newNumber++;
+        }
+        
+        const newTable = {
+          ...formData,
+          tableNumber: newNumber
+        };
+        
+        onSave(newTable);
+        existingNumbers.push(newNumber);
+      }
+    } else {
+      onSave(formData);
+    }
+    
     onClose();
+  };
+
+  const getNextAvailableNumbers = (quantity: number) => {
+    const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
+    const existingNumbers = new Set(tablesInLocation.map(t => t.tableNumber));
+    const availableNumbers = [];
+    let current = startNumber;
+    
+    while (availableNumbers.length < quantity) {
+      if (!existingNumbers.has(current)) {
+        availableNumbers.push(current);
+      }
+      current++;
+    }
+    
+    return availableNumbers;
   };
 
   if (!isOpen) return null;
@@ -43,14 +101,84 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4">
-          {table ? 'Editar Mesa' : 'Nova Mesa'}
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold">
+            {table ? 'Editar Mesa' : 'Nova Mesa'}
+          </h2>
+          
+          {!table && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setBulkCreate(!bulkCreate)}
+                className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm transition-colors ${
+                  bulkCreate 
+                    ? 'bg-blue-100 text-blue-700 border border-blue-300' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {bulkCreate ? <Grid className="w-4 h-4" /> : <Zap className="w-4 h-4" />}
+                {bulkCreate ? 'Criação em lote' : 'Criação rápida'}
+              </button>
+              
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 hover:bg-gray-100 rounded"
+              >
+                <X className="w-5 h-5 text-gray-500" />
+              </button>
+            </div>
+          )}
+        </div>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          
+          {/* Modo de criação em lote */}
+          {bulkCreate && !table && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Grid className="w-5 h-5 text-blue-600" />
+                <h3 className="font-semibold text-blue-900">Criação em Lote</h3>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4 mb-3">
+                <div>
+                  <label className="block text-sm font-medium text-blue-900 mb-1">Quantidade</label>
+                  <input
+                    type="number"
+                    value={bulkQuantity}
+                    onChange={(e) => setBulkQuantity(Math.max(1, Math.min(20, parseInt(e.target.value) || 1)))}
+                    className="w-full p-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="1"
+                    max="20"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-blue-900 mb-1">Começar do nº</label>
+                  <input
+                    type="number"
+                    value={startNumber}
+                    onChange={(e) => setStartNumber(parseInt(e.target.value) || 1)}
+                    className="w-full p-2 border border-blue-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    min="1"
+                  />
+                </div>
+              </div>
+              
+              <div className="text-sm text-blue-700">
+                <strong>Mesas a criar:</strong> {getNextAvailableNumbers(bulkQuantity).join(', ')}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Número da Mesa</label>
+              <label className="block text-sm font-medium mb-1">
+                {bulkCreate ? 'Número inicial' : 'Número da Mesa'}
+                <span className="text-red-500 ml-1">*</span>
+              </label>
               {(() => {
                 const existingNumbers = allTables
                   .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
@@ -104,82 +232,134 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Capacidade</label>
-              <input
-                type="number"
-                value={formData.seats}
-                onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
-                className="w-full p-2 border rounded-md"
-                required
-                min="1"
-                max="12"
-              />
+              <label className="block text-sm font-medium mb-1">
+                Capacidade 
+                <span className="text-red-500 ml-1">*</span>
+              </label>
+              <div className="relative">
+                <input
+                  type="number"
+                  value={formData.seats}
+                  onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
+                  className="w-full p-2 pr-8 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                  min="1"
+                  max="12"
+                />
+                <Users className="absolute right-2 top-2.5 w-5 h-5 text-gray-400" />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">Entre 1 e 12 pessoas</p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Local</label>
-            <select
-              value={formData.locationId}
-              onChange={(e) => setFormData({ ...formData, locationId: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              required
-            >
-              {locations.map(location => (
-                <option key={location.id} value={location.id}>
-                  {location.name}
-                </option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium mb-1">
+              Local 
+              <span className="text-red-500 ml-1">*</span>
+            </label>
+            <div className="relative">
+              <select
+                value={formData.locationId}
+                onChange={(e) => setFormData({ ...formData, locationId: e.target.value })}
+                className="w-full p-2 pr-8 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none"
+                required
+              >
+                {locations.map(location => (
+                  <option key={location.id} value={location.id}>
+                    {location.name}
+                  </option>
+                ))}
+              </select>
+              <MapPin className="absolute right-2 top-2.5 w-5 h-5 text-gray-400 pointer-events-none" />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <select
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              required
-            >
-              {statusOptions.map(status => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
-          </div>
+          {!bulkCreate && (
+            <div>
+              <label className="block text-sm font-medium mb-1">Status inicial</label>
+              <select
+                value={formData.status}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                className="w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                required
+              >
+                {statusOptions.map(status => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
 
 
-          <div className="flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
-            >
-              Cancelar
-            </button>
-            {(() => {
-              const existingNumbers = allTables
-                .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                .map(t => t.tableNumber);
-              
-              const isDuplicate = existingNumbers.includes(formData.tableNumber || 0);
-              
-              return (
+          {/* Sugestões rápidas para capacidade */}
+          <div className="bg-gray-50 rounded-lg p-4">
+            <h4 className="font-medium text-gray-900 mb-2">Sugestões rápidas</h4>
+            <div className="grid grid-cols-4 gap-2">
+              {[2, 4, 6, 8].map(capacity => (
                 <button
-                  type="submit"
-                  disabled={isDuplicate}
-                  className={`px-4 py-2 rounded-md transition-colors ${
-                    isDuplicate 
-                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                      : 'bg-red-600 text-white hover:bg-red-700'
+                  key={capacity}
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, seats: capacity }))}
+                  className={`p-2 rounded-md text-sm transition-colors ${
+                    formData.seats === capacity
+                      ? 'bg-blue-100 text-blue-700 border border-blue-300'
+                      : 'bg-white border border-gray-300 hover:border-blue-300'
                   }`}
                 >
-                  {table ? 'Atualizar' : 'Criar'}
+                  <Users className="w-4 h-4 mx-auto mb-1" />
+                  {capacity}p
                 </button>
-              );
-            })()}
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-500">
+              {bulkCreate 
+                ? `Criando ${bulkQuantity} mesas em ${locations.find(l => l.id === formData.locationId)?.name}`
+                : `Mesa ${formData.tableNumber} em ${locations.find(l => l.id === formData.locationId)?.name}`
+              }
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+              >
+                Cancelar
+              </button>
+              {(() => {
+                const existingNumbers = allTables
+                  .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
+                  .map(t => t.tableNumber);
+                
+                const isDuplicate = !bulkCreate && existingNumbers.includes(formData.tableNumber || 0);
+                const isFormValid = formData.tableNumber && formData.seats && formData.locationId && !isDuplicate;
+
+                return (
+                  <button
+                    type="submit"
+                    disabled={!isFormValid}
+                    className={`flex items-center gap-2 px-6 py-2 rounded-md transition-colors ${isFormValid 
+                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                      : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
+                  >
+                    {bulkCreate ? <Grid className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                    {table 
+                      ? 'Atualizar Mesa' 
+                      : bulkCreate 
+                        ? `Criar ${bulkQuantity} Mesas` 
+                        : 'Criar Mesa'
+                    }
+                  </button>
+                );
+              })()}
+            </div>
           </div>
         </form>
       </div>
@@ -465,24 +645,94 @@ export default function TableManagement() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestão de Mesas</h2>
-        <button
-          onClick={() => {
-            setSelectedTable(null);
-            setModalOpen(true);
-          }}
-          className="flex items-center space-x-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Nova Mesa</span>
-        </button>
+        <div>
+          <h2 className="text-2xl font-bold">Gestão de Mesas</h2>
+          <p className="text-gray-600 mt-1">Gerencie mesas de todos os locais do restaurante</p>
+        </div>
+        
+        <div className="flex gap-3">
+          {/* Template rápido para restaurante típico */}
+          <button
+            onClick={() => {
+              if (window.confirm('Criar 10 mesas típicas (2-6 pessoas) para Talatona?')) {
+                // Criar conjunto padrão de mesas
+                const defaultTables = [
+                  { tableNumber: 1, seats: 2, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 2, seats: 2, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 3, seats: 4, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 4, seats: 4, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 5, seats: 4, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 6, seats: 6, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 7, seats: 6, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 8, seats: 2, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 9, seats: 8, locationId: 'talatona', status: 'available' },
+                  { tableNumber: 10, seats: 4, locationId: 'talatona', status: 'available' },
+                ];
+                
+                defaultTables.forEach(table => {
+                  createTableMutation.mutate(table as InsertTable);
+                });
+              }
+            }}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+          >
+            <Zap className="w-4 h-4" />
+            <span>Setup Rápido</span>
+          </button>
+          
+          <button
+            onClick={() => {
+              setSelectedTable(null);
+              setModalOpen(true);
+            }}
+            className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Nova Mesa</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex space-x-4 mb-6">
+      {/* Estatísticas resumidas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        {locations.slice(1).map(location => {
+          const locationTables = Array.isArray(tables) ? tables.filter((table: Table) => table.locationId === location.id) : [];
+          const availableCount = locationTables.filter(t => t.status === 'available').length;
+          const occupiedCount = locationTables.filter(t => t.status === 'occupied').length;
+          
+          return (
+            <div key={location.id} className="bg-white rounded-lg border p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="font-semibold text-gray-900">{location.name}</h3>
+                <MapPin className="w-4 h-4 text-gray-400" />
+              </div>
+              <div className="space-y-1">
+                <div className="text-2xl font-bold text-gray-900">{locationTables.length}</div>
+                <div className="text-xs text-gray-500">
+                  {availableCount} disponíveis • {occupiedCount} ocupadas
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="font-semibold text-red-900">Total Geral</h3>
+            <Users className="w-4 h-4 text-red-500" />
+          </div>
+          <div className="space-y-1">
+            <div className="text-2xl font-bold text-red-900">{Array.isArray(tables) ? tables.length : 0}</div>
+            <div className="text-xs text-red-700">mesas em todos os locais</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-4 mb-6">
         <select
           value={selectedLocation}
           onChange={(e) => setSelectedLocation(e.target.value)}
-          className="px-3 py-2 border rounded-md"
+          className="px-3 py-2 border rounded-md focus:ring-2 focus:ring-red-500 focus:border-red-500"
         >
           {locations.map(location => (
             <option key={location.id} value={location.id}>
@@ -490,84 +740,101 @@ export default function TableManagement() {
             </option>
           ))}
         </select>
+        
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-green-100 border border-green-300 rounded"></div>
+            Disponível
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-red-100 border border-red-300 rounded"></div>
+            Ocupada
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-yellow-100 border border-yellow-300 rounded"></div>
+            Reservada
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="w-3 h-3 bg-gray-100 border border-gray-300 rounded"></div>
+            Manutenção
+          </div>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {filteredTables.map((table: Table) => (
-          <div key={table.id} className="bg-white rounded-lg shadow-md p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-lg font-semibold">Mesa {table.number}</h3>
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
-                  <span>{locations.find(l => l.id === table.locationId)?.name}</span>
+          <div 
+            key={table.id} 
+            className={`bg-white rounded-lg shadow-md border-l-4 transition-all hover:shadow-lg ${
+              table.status === 'available' ? 'border-green-500' :
+              table.status === 'occupied' ? 'border-red-500' :
+              table.status === 'reserved' ? 'border-yellow-500' :
+              'border-gray-500'
+            }`}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Mesa {table.tableNumber}</h3>
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <MapPin className="w-3 h-3" />
+                    <span>{locations.find(l => l.id === table.locationId)?.name}</span>
+                  </div>
+                </div>
+                <div className="flex space-x-1">
+                  <button
+                    onClick={() => handleEditTable(table)}
+                    className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                    title="Editar mesa"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTable(table.id)}
+                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                    title="Excluir mesa"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => handleEditTable(table)}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => handleDeleteTable(table.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
 
-            <div className="space-y-3">
-              <div className="flex items-center space-x-2">
-                <Users className="w-4 h-4 text-gray-500" />
-                <span className="text-sm">{table.capacity} pessoas</span>
-              </div>
-
-              {table.position && (
-                <div className="flex items-center space-x-2">
-                  <MapPin className="w-4 h-4 text-gray-500" />
-                  <span className="text-sm">{table.position}</span>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-2">
-                {getStatusIcon(table.status)}
-                <span className={`text-sm px-2 py-1 rounded-full ${getStatusColor(table.status)}`}>
-                  {getStatusText(table.status)}
-                </span>
-              </div>
-
-              {table.features && table.features.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {table.features.map((feature, index) => (
-                    <span key={index} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
-                      {feature.replace('_', ' ')}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Users className="w-4 h-4 text-gray-500" />
+                    <span className="text-sm font-medium">{table.seats} pessoas</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {getStatusIcon(table.status)}
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusColor(table.status)}`}>
+                      {getStatusText(table.status)}
                     </span>
-                  ))}
+                  </div>
                 </div>
-              )}
-            </div>
 
-            <div className="mt-4 space-y-2">
-              <select
-                value={table.status}
-                onChange={(e) => handleStatusChange(table.id, e.target.value)}
-                className="w-full p-2 border rounded-md text-sm"
-              >
-                <option value="available">Disponível</option>
-                <option value="occupied">Ocupada</option>
-                <option value="reserved">Reservada</option>
-                <option value="maintenance">Manutenção</option>
-              </select>
-            </div>
+                <div className="border-t pt-3">
+                  <label className="block text-xs font-medium text-gray-700 mb-1">
+                    Alterar Status:
+                  </label>
+                  <select
+                    value={table.status}
+                    onChange={(e) => handleStatusChange(table.id, e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                  >
+                    <option value="available">Disponível</option>
+                    <option value="occupied">Ocupada</option>
+                    <option value="reserved">Reservada</option>
+                    <option value="maintenance">Manutenção</option>
+                  </select>
+                </div>
 
-            {table.notes && (
-              <div className="mt-3 p-2 bg-gray-50 rounded text-sm">
-                <p className="text-gray-700">{table.notes}</p>
+                <div className="border-t pt-2 text-xs text-gray-500">
+                  <div>ID: {table.id}</div>
+                  <div>Criada: {new Date(table.createdAt).toLocaleDateString('pt-AO')}</div>
+                </div>
               </div>
-            )}
+            </div>
           </div>
         ))}
       </div>
