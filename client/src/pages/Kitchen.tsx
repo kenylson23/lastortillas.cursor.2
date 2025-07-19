@@ -51,9 +51,29 @@ export default function Kitchen() {
     }
   }, [isAuthenticated, isLoading, setLocation]);
 
-  const { data: orders = [], isLoading: ordersLoading, refetch } = useQuery<Order[]>({
+  // Mutation for updating order status
+  const updateStatusMutation = useMutation({
+    mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
+      const response = await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to update order status');
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+    },
+  });
+
+  const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ['/api/orders'],
-    refetchInterval: autoRefresh ? 3000 : false, // Auto-refresh a cada 3 segundos
+    refetchInterval: autoRefresh ? 3000 : false,
   });
 
   // Sound notification for new orders
@@ -61,9 +81,8 @@ export default function Kitchen() {
     if (soundEnabled && orders.length > 0) {
       const newOrders = orders.filter(o => o.status === 'received');
       if (newOrders.length > 0) {
-        // Play sound notification (simple beep)
         const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+j');
-        audio.play().catch(() => {}); // Ignore errors if audio can't play
+        audio.play().catch(() => {});
       }
     }
   }, [orders.length, soundEnabled]);
@@ -83,40 +102,7 @@ export default function Kitchen() {
     return null;
   }
 
-  // Enhanced filtering and sorting
-  const filteredOrders = orders
-    .filter(order => {
-      // Status filter
-      let statusMatch = true;
-      if (filter === 'active') statusMatch = ['received', 'preparing'].includes(order.status);
-      else if (filter === 'ready') statusMatch = order.status === 'ready';
-      else if (filter === 'urgent') statusMatch = ['received', 'preparing'].includes(order.status) && isOrderUrgent(order);
-      
-      // Location filter
-      const locationMatch = selectedLocation === 'all' || order.locationId === selectedLocation;
-      
-      return statusMatch && locationMatch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'priority') {
-        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
-        return (priorityOrder[b.priority || 'normal'] || 2) - (priorityOrder[a.priority || 'normal'] || 2);
-      } else if (sortBy === 'type') {
-        return a.orderType.localeCompare(b.orderType);
-      } else {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-    });
-
-  // Calculate kitchen statistics
-  const kitchenStats: KitchenStats = {
-    totalOrders: orders.length,
-    activeOrders: orders.filter(o => ['received', 'preparing'].includes(o.status)).length,
-    completedToday: orders.filter(o => o.status === 'delivered' && isToday(o.createdAt)).length,
-    averageTime: calculateAverageTime(orders),
-    delayedOrders: orders.filter(o => isOrderDelayed(o)).length,
-  };
-
+  // Helper functions
   function isOrderUrgent(order: Order): boolean {
     const orderTime = new Date(order.createdAt);
     const now = new Date();
@@ -147,7 +133,7 @@ export default function Kitchen() {
     
     const totalTime = completedOrders.reduce((sum, order) => {
       const start = new Date(order.createdAt);
-      const now = new Date(); // In real scenario, this would be completion time
+      const now = new Date();
       return sum + (now.getTime() - start.getTime()) / (1000 * 60);
     }, 0);
     
@@ -185,28 +171,40 @@ export default function Kitchen() {
     }
   };
 
-  // Mutation for updating order status
-  const updateStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
-      const response = await fetch(`/api/orders/${orderId}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
-    },
-  });
-
   const updateOrderStatus = (orderId: number, newStatus: string) => {
     updateStatusMutation.mutate({ orderId, status: newStatus });
+  };
+
+  // Enhanced filtering and sorting
+  const filteredOrders = orders
+    .filter(order => {
+      let statusMatch = true;
+      if (filter === 'active') statusMatch = ['received', 'preparing'].includes(order.status);
+      else if (filter === 'ready') statusMatch = order.status === 'ready';
+      else if (filter === 'urgent') statusMatch = ['received', 'preparing'].includes(order.status) && isOrderUrgent(order);
+      
+      const locationMatch = selectedLocation === 'all' || order.locationId === selectedLocation;
+      
+      return statusMatch && locationMatch;
+    })
+    .sort((a, b) => {
+      if (sortBy === 'priority') {
+        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
+        return (priorityOrder[b.priority || 'normal'] || 2) - (priorityOrder[a.priority || 'normal'] || 2);
+      } else if (sortBy === 'type') {
+        return a.orderType.localeCompare(b.orderType);
+      } else {
+        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      }
+    });
+
+  // Calculate kitchen statistics
+  const kitchenStats: KitchenStats = {
+    totalOrders: orders.length,
+    activeOrders: orders.filter(o => ['received', 'preparing'].includes(o.status)).length,
+    completedToday: orders.filter(o => o.status === 'delivered' && isToday(o.createdAt)).length,
+    averageTime: calculateAverageTime(orders),
+    delayedOrders: orders.filter(o => isOrderDelayed(o)).length,
   };
 
   return (
@@ -383,17 +381,17 @@ export default function Kitchen() {
         </div>
       </div>
 
-      {/* Lista de Pedidos */}
+      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         {ordersLoading ? (
           <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin mx-auto text-orange-500" />
-            <p className="mt-4 text-gray-400">Carregando pedidos...</p>
+            <RefreshCw className="w-8 h-8 animate-spin text-orange-400 mx-auto mb-4" />
+            <p className="text-gray-400">Carregando pedidos...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-6xl mb-4">🍽️</div>
-            <h3 className="text-xl font-bold text-gray-400 mb-2">Nenhum pedido encontrado</h3>
+            <AlertCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+            <p className="text-xl text-gray-400 mb-2">Nenhum pedido encontrado</p>
             <p className="text-gray-500">
               {filter === 'active' && 'Não há pedidos ativos no momento.'}
               {filter === 'ready' && 'Não há pedidos prontos no momento.'}
