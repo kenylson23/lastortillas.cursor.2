@@ -65,6 +65,16 @@ export default function Admin() {
                 <span className="hidden sm:inline">Fazer Pedido</span>
                 <span className="sm:hidden">Pedido</span>
               </button>
+              
+              {/* Acesso ao painel da cozinha */}
+              <button
+                onClick={() => setLocation('/cozinha')}
+                className="bg-orange-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm sm:text-base flex items-center gap-2 shadow-md"
+              >
+                <span className="text-lg">👨‍🍳</span>
+                <span className="hidden sm:inline">Cozinha</span>
+                <span className="sm:hidden">Chef</span>
+              </button>
               <button
                 onClick={() => setLocation('/')}
                 className="text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"

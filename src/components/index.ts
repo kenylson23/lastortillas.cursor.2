@@ -16,6 +16,7 @@ export { default as OrderManagement } from './OrderManagement';
 export { default as TableManagement } from './TableManagement';
 export { default as OrderTracking } from './OrderTracking';
 export { default as OrderStats } from './OrderStats';
+export { default as KitchenDashboard } from './KitchenDashboard';
 
 // Componentes de UI especializados
 export { default as EnhancedCart } from './EnhancedCart';
