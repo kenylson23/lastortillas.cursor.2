@@ -500,9 +500,9 @@ export default function TableManagement() {
     }
   };
 
-  const filteredTables = tables?.filter((table: Table) => 
+  const filteredTables = Array.isArray(tables) ? tables.filter((table: Table) => 
     selectedLocation === 'all' || table.locationId === selectedLocation
-  ) || [];
+  ) : [];
 
   const locations = [
     { id: 'all', name: 'Todos os Locais' },
