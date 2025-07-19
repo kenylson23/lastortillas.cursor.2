@@ -43,6 +43,23 @@ export default function Admin() {
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
+          {/* Banner de acesso à cozinha */}
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-3 rounded-lg mb-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">👨‍🍳</span>
+              <div>
+                <h3 className="font-bold">Acesso Rápido à Cozinha</h3>
+                <p className="text-sm opacity-90">Gerencie pedidos em tempo real</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setLocation('/cozinha')}
+              className="bg-white text-orange-600 px-4 py-2 rounded-lg font-bold hover:bg-orange-50 transition-colors"
+            >
+              IR PARA COZINHA
+            </button>
+          </div>
+
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
@@ -55,36 +72,39 @@ export default function Admin() {
               </div>
               <p className="text-sm sm:text-base text-gray-600 mt-1">Gestão Las Tortillas • Dados em tempo real</p>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-end">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto justify-end">
               {/* Acesso rápido ao sistema de pedidos */}
               <button
                 onClick={() => setLocation('/menu')}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base flex items-center gap-2 shadow-md"
+                className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm flex items-center gap-2 shadow-md min-w-0"
               >
-                <span className="text-lg">🛒</span>
+                <span>🛒</span>
                 <span className="hidden sm:inline">Fazer Pedido</span>
                 <span className="sm:hidden">Pedido</span>
               </button>
               
-              {/* Acesso ao painel da cozinha */}
+              {/* Botão da cozinha mais visível */}
               <button
                 onClick={() => setLocation('/cozinha')}
-                className="bg-orange-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm sm:text-base flex items-center gap-2 shadow-md"
+                className="bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm flex items-center gap-2 shadow-md min-w-0 border-2 border-orange-400"
+                title="Acessar Painel da Cozinha"
               >
-                <span className="text-lg">👨‍🍳</span>
-                <span className="hidden sm:inline">Cozinha</span>
-                <span className="sm:hidden">Chef</span>
+                <span>👨‍🍳</span>
+                <span className="hidden sm:inline font-bold">COZINHA</span>
+                <span className="sm:hidden font-bold">CHEF</span>
               </button>
+              
               <button
                 onClick={() => setLocation('/')}
-                className="text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
+                className="text-gray-600 hover:text-gray-900 transition-colors text-sm px-2"
               >
                 <span className="hidden sm:inline">Voltar ao Site</span>
                 <span className="sm:hidden">Site</span>
               </button>
+              
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+                className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
               >
                 Logout
               </button>
