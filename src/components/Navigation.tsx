@@ -62,6 +62,12 @@ export default function Navigation() {
                   >
                     Admin
                   </a>
+                  <a
+                    href="/cozinha"
+                    className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors duration-200 font-medium text-sm"
+                  >
+                    Cozinha
+                  </a>
                   <button
                     onClick={logout}
                     className="text-gray-600 hover:text-red-600 transition-colors duration-200 font-medium text-sm"
@@ -171,6 +177,14 @@ export default function Navigation() {
                         onClick={() => setIsMenuOpen(false)}
                       >
                         👨‍💼 Painel Admin
+                      </a>
+                      
+                      <a
+                        href="/cozinha"
+                        className="block bg-orange-600 text-white px-6 py-4 rounded-xl hover:bg-orange-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        👨‍🍳 Painel Cozinha
                       </a>
                       <button
                         onClick={() => {
