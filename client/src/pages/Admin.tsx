@@ -56,6 +56,17 @@ export default function Admin() {
               <p className="text-sm sm:text-base text-gray-600 mt-1">Gestão Las Tortillas • Dados em tempo real</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-end">
+              {/* Banner de acesso à cozinha - DESTAQUE */}
+              <button
+                onClick={() => setLocation('/cozinha')}
+                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all text-sm sm:text-base flex items-center gap-2 shadow-lg font-bold border-2 border-orange-300"
+                title="Acessar Painel da Cozinha"
+              >
+                <span className="text-lg">👨‍🍳</span>
+                <span className="hidden sm:inline">PAINEL COZINHA</span>
+                <span className="sm:hidden">COZINHA</span>
+              </button>
+              
               {/* Acesso rápido ao sistema de pedidos */}
               <button
                 onClick={() => setLocation('/menu')}
