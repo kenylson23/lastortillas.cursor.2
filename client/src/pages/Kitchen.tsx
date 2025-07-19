@@ -4,6 +4,28 @@ import { useAuth } from '../hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Clock, CheckCircle, AlertCircle, RefreshCw, ArrowLeft, Timer, Bell, Users, MapPin, Phone, Flame, Pause, Play, Star, ChefHat, TrendingUp } from 'lucide-react';
 
+// Force dark theme styles
+const darkThemeStyles = `
+  .kitchen-container * {
+    background-color: inherit !important;
+    color: inherit !important;
+  }
+  .kitchen-container {
+    background-color: #111827 !important;
+    color: #ffffff !important;
+  }
+  .kitchen-header {
+    background-color: #1f2937 !important;
+  }
+  .kitchen-controls {
+    background-color: #374151 !important;
+  }
+  .kitchen-card {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+  }
+`;
+
 interface Order {
   id: number;
   customerName: string;
@@ -37,6 +59,23 @@ interface KitchenStats {
 export default function Kitchen() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, isLoading } = useAuth();
+
+  // Apply dark theme styles
+  useEffect(() => {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = darkThemeStyles;
+    document.head.appendChild(styleElement);
+    
+    // Force body background to dark
+    document.body.style.backgroundColor = '#111827';
+    document.body.style.color = '#ffffff';
+    
+    return () => {
+      document.head.removeChild(styleElement);
+      document.body.style.backgroundColor = '';
+      document.body.style.color = '';
+    };
+  }, []);
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -208,9 +247,9 @@ export default function Kitchen() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+    <div className="kitchen-container min-h-screen bg-gray-900 text-white" style={{ backgroundColor: '#111827 !important', color: '#ffffff !important' }}>
       {/* Professional Header */}
-      <div className="bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 border-b-2 border-orange-500/30 shadow-2xl">
+      <div className="kitchen-header bg-gray-800 border-b-2 border-orange-500/30 shadow-2xl" style={{ backgroundColor: '#1f2937 !important' }}>
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
             {/* Left Section - Brand & Navigation */}
@@ -303,7 +342,7 @@ export default function Kitchen() {
 
       {/* Professional Analytics Dashboard */}
       {showStats && (
-        <div className="bg-gradient-to-r from-gray-800 via-gray-750 to-gray-800 border-b border-gray-600/50 shadow-inner">
+        <div className="bg-gray-800 border-b border-gray-600/50 shadow-inner" style={{ backgroundColor: '#1f2937' }}>
           <div className="max-w-7xl mx-auto px-6 py-8">
             {/* Primary KPI Row */}
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
@@ -408,7 +447,7 @@ export default function Kitchen() {
       )}
 
       {/* Professional Control Panel */}
-      <div className="bg-gradient-to-r from-gray-700 via-gray-800 to-gray-700 border-b border-gray-500/50 shadow-2xl">
+      <div className="kitchen-controls bg-gray-800 border-b border-gray-500/50 shadow-2xl" style={{ backgroundColor: '#1f2937 !important' }}>
         <div className="max-w-7xl mx-auto px-6 py-6">
           <div className="space-y-6">
             {/* Primary Filter Controls */}
@@ -480,7 +519,7 @@ export default function Kitchen() {
             </div>
 
             {/* Secondary Controls */}
-            <div className="flex flex-wrap gap-6 items-center justify-between bg-gray-700/30 rounded-2xl p-4 border border-gray-600/50">
+            <div className="flex flex-wrap gap-6 items-center justify-between bg-gray-700 rounded-2xl p-4 border border-gray-600" style={{ backgroundColor: '#374151' }}>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-bold text-white bg-gradient-to-r from-orange-500 to-red-500 px-4 py-2 rounded-xl shadow-lg">
@@ -539,7 +578,7 @@ export default function Kitchen() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto px-4 py-6" style={{ backgroundColor: 'transparent' }}>
         {ordersLoading ? (
           <div className="text-center py-12">
             <RefreshCw className="w-8 h-8 animate-spin text-orange-400 mx-auto mb-4" />
@@ -568,7 +607,12 @@ export default function Kitchen() {
                   isDelayed ? 'bg-yellow-900/30 border-yellow-500 shadow-yellow-500/20' :
                   order.status === 'ready' ? 'bg-green-900/30 border-green-500 shadow-green-500/20' :
                   'bg-gray-800 border-gray-600 shadow-gray-800/20'
-                } shadow-lg`}>
+                } shadow-lg`} style={{ 
+                  backgroundColor: isUrgent ? '#7f1d1d' : 
+                                  isDelayed ? '#78350f' : 
+                                  order.status === 'ready' ? '#14532d' : '#1f2937',
+                  color: '#ffffff'
+                }}>
                   
                   {/* Header do Pedido */}
                   <div className="flex items-center justify-between mb-3">
