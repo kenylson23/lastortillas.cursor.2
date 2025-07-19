@@ -418,7 +418,7 @@ export default function Kitchen() {
                 className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-3 shadow-xl border-2 ${
                   filter === 'active'
                     ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-orange-500/50 transform scale-110 border-orange-300'
-                    : 'bg-white text-gray-800 hover:bg-orange-50 border-orange-400 hover:border-orange-500 hover:shadow-orange-200/50'
+                    : 'bg-gray-700 text-gray-200 hover:bg-orange-600/20 border-orange-400 hover:border-orange-300 hover:text-orange-200'
                 }`}
               >
                 <Flame className="w-6 h-6" />
@@ -435,7 +435,7 @@ export default function Kitchen() {
                 className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-3 shadow-xl border-2 ${
                   filter === 'ready'
                     ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-500/50 transform scale-110 border-green-300'
-                    : 'bg-white text-gray-800 hover:bg-green-50 border-green-400 hover:border-green-500 hover:shadow-green-200/50'
+                    : 'bg-gray-700 text-gray-200 hover:bg-green-600/20 border-green-400 hover:border-green-300 hover:text-green-200'
                 }`}
               >
                 <CheckCircle className="w-6 h-6" />
@@ -452,7 +452,7 @@ export default function Kitchen() {
                 className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-3 shadow-xl border-2 ${
                   filter === 'urgent'
                     ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/50 transform scale-110 border-red-300'
-                    : 'bg-white text-gray-800 hover:bg-red-50 border-red-400 hover:border-red-500 hover:shadow-red-200/50'
+                    : 'bg-gray-700 text-gray-200 hover:bg-red-600/20 border-red-400 hover:border-red-300 hover:text-red-200'
                 }`}
               >
                 <AlertCircle className="w-6 h-6" />
@@ -469,7 +469,7 @@ export default function Kitchen() {
                 className={`px-6 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-3 shadow-xl border-2 ${
                   filter === 'all'
                     ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/50 transform scale-110 border-blue-300'
-                    : 'bg-white text-gray-800 hover:bg-blue-50 border-blue-400 hover:border-blue-500 hover:shadow-blue-200/50'
+                    : 'bg-gray-700 text-gray-200 hover:bg-blue-600/20 border-blue-400 hover:border-blue-300 hover:text-blue-200'
                 }`}
               >
                 <div className="text-left">
@@ -489,11 +489,11 @@ export default function Kitchen() {
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
-                    className="bg-white text-gray-900 px-4 py-2 rounded-xl border-2 border-orange-400 focus:border-orange-600 focus:outline-none hover:border-orange-500 transition-colors font-bold shadow-lg min-w-[160px]"
+                    className="bg-gray-600 text-white px-4 py-2 rounded-xl border-2 border-orange-400 focus:border-orange-300 focus:outline-none hover:border-orange-500 transition-colors font-bold shadow-lg min-w-[160px]"
                   >
-                    <option value="time">⏰ Por Tempo</option>
-                    <option value="priority">🔥 Por Prioridade</option>
-                    <option value="type">📍 Por Tipo</option>
+                    <option value="time" className="bg-gray-600 text-white">⏰ Por Tempo</option>
+                    <option value="priority" className="bg-gray-600 text-white">🔥 Por Prioridade</option>
+                    <option value="type" className="bg-gray-600 text-white">📍 Por Tipo</option>
                   </select>
                 </div>
                 
@@ -504,12 +504,12 @@ export default function Kitchen() {
                   <select
                     value={selectedLocation}
                     onChange={(e) => setSelectedLocation(e.target.value)}
-                    className="bg-white text-gray-900 px-4 py-2 rounded-xl border-2 border-purple-400 focus:border-purple-600 focus:outline-none hover:border-purple-500 transition-colors font-bold shadow-lg min-w-[140px]"
+                    className="bg-gray-600 text-white px-4 py-2 rounded-xl border-2 border-purple-400 focus:border-purple-300 focus:outline-none hover:border-purple-500 transition-colors font-bold shadow-lg min-w-[140px]"
                   >
-                    <option value="all">🌍 Todas</option>
-                    <option value="ilha">🏢 Ilha</option>
-                    <option value="talatona">🏪 Talatona</option>
-                    <option value="movel">🚐 Móvel</option>
+                    <option value="all" className="bg-gray-600 text-white">🌍 Todas</option>
+                    <option value="ilha" className="bg-gray-600 text-white">🏢 Ilha</option>
+                    <option value="talatona" className="bg-gray-600 text-white">🏪 Talatona</option>
+                    <option value="movel" className="bg-gray-600 text-white">🚐 Móvel</option>
                   </select>
                 </div>
               </div>
