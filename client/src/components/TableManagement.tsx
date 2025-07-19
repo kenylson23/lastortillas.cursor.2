@@ -13,13 +13,10 @@ interface TableModalProps {
 
 function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalProps) {
   const [formData, setFormData] = useState<Partial<InsertTable>>({
-    number: table?.number || 1,
+    tableNumber: table?.tableNumber || 1,
     locationId: table?.locationId || 'talatona',
-    capacity: table?.capacity || 2,
-    status: table?.status || 'available',
-    position: table?.position || '',
-    features: table?.features || [],
-    notes: table?.notes || ''
+    seats: table?.seats || 2,
+    status: table?.status || 'available'
   });
 
   const locations = [
@@ -35,27 +32,10 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
     { value: 'maintenance', label: 'Manutenção', color: 'bg-gray-100 text-gray-800' }
   ];
 
-  const features = [
-    'ar_condicionado',
-    'vista_mar',
-    'kids_area',
-    'acessibilidade',
-    'varanda',
-    'vip'
-  ];
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave(formData);
     onClose();
-  };
-
-  const toggleFeature = (feature: string) => {
-    const currentFeatures = formData.features || [];
-    const newFeatures = currentFeatures.includes(feature)
-      ? currentFeatures.filter(f => f !== feature)
-      : [...currentFeatures, feature];
-    setFormData({ ...formData, features: newFeatures });
   };
 
   if (!isOpen) return null;
@@ -74,17 +54,17 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
               {(() => {
                 const existingNumbers = allTables
                   .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                  .map(t => t.number);
+                  .map(t => t.tableNumber);
                 
-                const isDuplicate = existingNumbers.includes(formData.number || 0);
+                const isDuplicate = existingNumbers.includes(formData.tableNumber || 0);
                 
                 return (
                   <>
                     <div className="relative">
                       <input
                         type="number"
-                        value={formData.number}
-                        onChange={(e) => setFormData({ ...formData, number: parseInt(e.target.value) })}
+                        value={formData.tableNumber}
+                        onChange={(e) => setFormData({ ...formData, tableNumber: parseInt(e.target.value) })}
                         className={`w-full p-2 border rounded-md ${isDuplicate 
                           ? 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-200' 
                           : 'border-gray-300 focus:border-blue-500 focus:ring-blue-200'
@@ -104,7 +84,7 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
                         <div className="flex items-center gap-2">
                           <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
                           <p className="text-sm text-red-700">
-                            <strong>Mesa {formData.number} já existe</strong> no local {locations.find(l => l.id === formData.locationId)?.name}
+                            <strong>Mesa {formData.tableNumber} já existe</strong> no local {locations.find(l => l.id === formData.locationId)?.name}
                           </p>
                         </div>
                         <p className="text-xs text-red-600 mt-1">
@@ -127,8 +107,8 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
               <label className="block text-sm font-medium mb-1">Capacidade</label>
               <input
                 type="number"
-                value={formData.capacity}
-                onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) })}
+                value={formData.seats}
+                onChange={(e) => setFormData({ ...formData, seats: parseInt(e.target.value) })}
                 className="w-full p-2 border rounded-md"
                 required
                 min="1"
@@ -169,44 +149,7 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Posição</label>
-            <input
-              type="text"
-              value={formData.position}
-              onChange={(e) => setFormData({ ...formData, position: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              placeholder="Ex: Janela, Centro, Varanda"
-            />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Características</label>
-            <div className="grid grid-cols-2 gap-2">
-              {features.map(feature => (
-                <label key={feature} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    checked={formData.features?.includes(feature) || false}
-                    onChange={() => toggleFeature(feature)}
-                    className="rounded"
-                  />
-                  <span className="text-sm">{feature.replace('_', ' ')}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Observações</label>
-            <textarea
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="w-full p-2 border rounded-md"
-              rows={3}
-              placeholder="Observações especiais sobre a mesa..."
-            />
-          </div>
 
           <div className="flex justify-end space-x-3">
             <button
@@ -219,9 +162,9 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
             {(() => {
               const existingNumbers = allTables
                 .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                .map(t => t.number);
+                .map(t => t.tableNumber);
               
-              const isDuplicate = existingNumbers.includes(formData.number || 0);
+              const isDuplicate = existingNumbers.includes(formData.tableNumber || 0);
               
               return (
                 <button

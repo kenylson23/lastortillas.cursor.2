@@ -126,18 +126,25 @@ export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
 export const insertTableSchema = createInsertSchema(tables).omit({
   id: true,
   createdAt: true,
-  updatedAt: true,
 });
 
-export type InsertReservation = z.infer<typeof insertReservationSchema>;
+// Types from Drizzle schema inference
 export type Reservation = typeof reservations.$inferSelect;
-export type InsertContact = z.infer<typeof insertContactSchema>;
+export type InsertReservation = z.infer<typeof insertReservationSchema>;
+
 export type Contact = typeof contacts.$inferSelect;
-export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+export type InsertContact = z.infer<typeof insertContactSchema>;
+
 export type MenuItem = typeof menuItems.$inferSelect;
-export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type InsertMenuItem = z.infer<typeof insertMenuItemSchema>;
+
 export type Order = typeof orders.$inferSelect;
-export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+export type InsertOrder = z.infer<typeof insertOrderSchema>;
+
 export type OrderItem = typeof orderItems.$inferSelect;
-export type InsertTable = z.infer<typeof insertTableSchema>;
+export type InsertOrderItem = z.infer<typeof insertOrderItemSchema>;
+
 export type Table = typeof tables.$inferSelect;
+export type InsertTable = z.infer<typeof insertTableSchema>;
+
+
