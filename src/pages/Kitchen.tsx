@@ -1,5 +1,5 @@
-import KitchenDashboard from '../components/KitchenDashboard';
+import SimpleKitchenDashboard from '../components/SimpleKitchenDashboard';
 
 export default function Kitchen() {
-  return <KitchenDashboard />;
+  return <SimpleKitchenDashboard />;
 }
