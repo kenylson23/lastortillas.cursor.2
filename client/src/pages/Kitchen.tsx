@@ -383,10 +383,10 @@ export default function Kitchen() {
             <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setFilter('active')}
-                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
+                className={`px-5 py-3 rounded-xl font-bold transition-all duration-200 flex items-center gap-2 shadow-xl ${
                   filter === 'active'
-                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-orange-500/25 transform scale-105'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-orange-500/40 transform scale-105 border-2 border-orange-300'
+                    : 'bg-white text-gray-800 hover:bg-orange-50 border-2 border-orange-400 hover:border-orange-500'
                 }`}
               >
                 <Flame className="w-5 h-5" />
@@ -394,10 +394,10 @@ export default function Kitchen() {
               </button>
               <button
                 onClick={() => setFilter('ready')}
-                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
+                className={`px-5 py-3 rounded-xl font-bold transition-all duration-200 flex items-center gap-2 shadow-xl ${
                   filter === 'ready'
-                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-green-500/25 transform scale-105'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
+                    ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-500/40 transform scale-105 border-2 border-green-300'
+                    : 'bg-white text-gray-800 hover:bg-green-50 border-2 border-green-400 hover:border-green-500'
                 }`}
               >
                 <CheckCircle className="w-5 h-5" />
@@ -405,10 +405,10 @@ export default function Kitchen() {
               </button>
               <button
                 onClick={() => setFilter('urgent')}
-                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
+                className={`px-5 py-3 rounded-xl font-bold transition-all duration-200 flex items-center gap-2 shadow-xl ${
                   filter === 'urgent'
-                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-red-500/25 transform scale-105'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
+                    ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-500/40 transform scale-105 border-2 border-red-300'
+                    : 'bg-white text-gray-800 hover:bg-red-50 border-2 border-red-400 hover:border-red-500'
                 }`}
               >
                 <AlertCircle className="w-5 h-5" />
@@ -416,10 +416,10 @@ export default function Kitchen() {
               </button>
               <button
                 onClick={() => setFilter('all')}
-                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg ${
+                className={`px-5 py-3 rounded-xl font-bold transition-all duration-200 shadow-xl ${
                   filter === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/25 transform scale-105'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
+                    ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white shadow-blue-500/40 transform scale-105 border-2 border-blue-300'
+                    : 'bg-white text-gray-800 hover:bg-blue-50 border-2 border-blue-400 hover:border-blue-500'
                 }`}
               >
                 Todos ({orders.length})
@@ -429,40 +429,46 @@ export default function Kitchen() {
             {/* Sort and Location Controls - Row 2 */}
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-300">Ordenar:</span>
+                <span className="text-sm font-semibold text-white bg-gray-600 px-3 py-1 rounded-lg">Ordenar:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
-                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border-2 border-gray-500 focus:border-orange-500 focus:outline-none hover:border-gray-400 transition-colors font-medium shadow-lg"
+                  className="bg-white text-gray-900 px-4 py-2 rounded-lg border-2 border-orange-400 focus:border-orange-600 focus:outline-none hover:border-orange-500 transition-colors font-semibold shadow-lg min-w-[150px]"
                 >
-                  <option value="time" className="bg-gray-700 text-white">⏰ Por Tempo</option>
-                  <option value="priority" className="bg-gray-700 text-white">🔥 Por Prioridade</option>
-                  <option value="type" className="bg-gray-700 text-white">📍 Por Tipo</option>
+                  <option value="time" className="bg-white text-gray-900">⏰ Por Tempo</option>
+                  <option value="priority" className="bg-white text-gray-900">🔥 Por Prioridade</option>
+                  <option value="type" className="bg-white text-gray-900">📍 Por Tipo</option>
                 </select>
               </div>
               
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-300">Localização:</span>
+                <span className="text-sm font-semibold text-white bg-gray-600 px-3 py-1 rounded-lg">Localização:</span>
                 <select
                   value={selectedLocation}
                   onChange={(e) => setSelectedLocation(e.target.value)}
-                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border-2 border-gray-500 focus:border-purple-500 focus:outline-none hover:border-gray-400 transition-colors font-medium shadow-lg"
+                  className="bg-white text-gray-900 px-4 py-2 rounded-lg border-2 border-purple-400 focus:border-purple-600 focus:outline-none hover:border-purple-500 transition-colors font-semibold shadow-lg min-w-[150px]"
                 >
-                  <option value="all" className="bg-gray-700 text-white">🌍 Todas</option>
-                  <option value="ilha" className="bg-gray-700 text-white">🏢 Ilha</option>
-                  <option value="talatona" className="bg-gray-700 text-white">🏪 Talatona</option>
-                  <option value="movel" className="bg-gray-700 text-white">🚐 Móvel</option>
+                  <option value="all" className="bg-white text-gray-900">🌍 Todas</option>
+                  <option value="ilha" className="bg-white text-gray-900">🏢 Ilha</option>
+                  <option value="talatona" className="bg-white text-gray-900">🏪 Talatona</option>
+                  <option value="movel" className="bg-white text-gray-900">🚐 Móvel</option>
                 </select>
               </div>
 
               {/* Quick Stats */}
               <div className="ml-auto flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1 text-gray-400">
-                  <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin text-green-400' : ''}`} />
-                  <span>{autoRefresh ? 'Auto-refresh ativo' : 'Auto-refresh pausado'}</span>
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg ${
+                  autoRefresh ? 'bg-green-600/20 border border-green-500' : 'bg-gray-600/20 border border-gray-500'
+                }`}>
+                  <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin text-green-400' : 'text-gray-400'}`} />
+                  <span className={autoRefresh ? 'text-green-300 font-medium' : 'text-gray-400'}>
+                    {autoRefresh ? 'Auto-refresh ativo' : 'Auto-refresh pausado'}
+                  </span>
                 </div>
-                <div className="text-gray-400">
-                  {filteredOrders.length} de {orders.length} pedidos
+                <div className="bg-blue-600/20 border border-blue-500 px-3 py-1 rounded-lg">
+                  <span className="text-blue-300 font-medium">
+                    {filteredOrders.length} de {orders.length} pedidos
+                  </span>
                 </div>
               </div>
             </div>
