@@ -376,78 +376,95 @@ export default function Kitchen() {
       )}
 
       {/* Advanced Filters and Controls */}
-      <div className="bg-gray-800 border-b border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            {/* Status Filters */}
-            <div className="flex gap-2">
+      <div className="bg-gray-800 border-b border-gray-600 shadow-lg">
+        <div className="max-w-7xl mx-auto px-4 py-5">
+          <div className="space-y-4">
+            {/* Status Filters - Row 1 */}
+            <div className="flex flex-wrap gap-3">
               <button
                 onClick={() => setFilter('active')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
                   filter === 'active'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-orange-500/25 transform scale-105'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
                 }`}
               >
-                <Flame className="w-4 h-4" />
+                <Flame className="w-5 h-5" />
                 Ativos ({orders.filter(o => ['received', 'preparing'].includes(o.status)).length})
               </button>
               <button
                 onClick={() => setFilter('ready')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
                   filter === 'ready'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-green-500/25 transform scale-105'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
                 }`}
               >
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="w-5 h-5" />
                 Prontos ({orders.filter(o => o.status === 'ready').length})
               </button>
               <button
                 onClick={() => setFilter('urgent')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 flex items-center gap-2 shadow-lg ${
                   filter === 'urgent'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-red-600 to-pink-600 text-white shadow-red-500/25 transform scale-105'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
                 }`}
               >
-                <AlertCircle className="w-4 h-4" />
+                <AlertCircle className="w-5 h-5" />
                 Urgentes ({orders.filter(o => ['received', 'preparing'].includes(o.status) && isOrderUrgent(o)).length})
               </button>
               <button
                 onClick={() => setFilter('all')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-5 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg ${
                   filter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-blue-500/25 transform scale-105'
+                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white border border-gray-600'
                 }`}
               >
                 Todos ({orders.length})
               </button>
             </div>
 
-            {/* Sort and Location Controls */}
-            <div className="flex gap-2">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
-                className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-orange-500 focus:outline-none"
-              >
-                <option value="time">Ordenar por Tempo</option>
-                <option value="priority">Ordenar por Prioridade</option>
-                <option value="type">Ordenar por Tipo</option>
-              </select>
+            {/* Sort and Location Controls - Row 2 */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-300">Ordenar:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border-2 border-gray-500 focus:border-orange-500 focus:outline-none hover:border-gray-400 transition-colors font-medium shadow-lg"
+                >
+                  <option value="time" className="bg-gray-700 text-white">⏰ Por Tempo</option>
+                  <option value="priority" className="bg-gray-700 text-white">🔥 Por Prioridade</option>
+                  <option value="type" className="bg-gray-700 text-white">📍 Por Tipo</option>
+                </select>
+              </div>
               
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-orange-500 focus:outline-none"
-              >
-                <option value="all">Todas as Localizações</option>
-                <option value="ilha">Ilha</option>
-                <option value="talatona">Talatona</option>
-                <option value="movel">Móvel</option>
-              </select>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-300">Localização:</span>
+                <select
+                  value={selectedLocation}
+                  onChange={(e) => setSelectedLocation(e.target.value)}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border-2 border-gray-500 focus:border-purple-500 focus:outline-none hover:border-gray-400 transition-colors font-medium shadow-lg"
+                >
+                  <option value="all" className="bg-gray-700 text-white">🌍 Todas</option>
+                  <option value="ilha" className="bg-gray-700 text-white">🏢 Ilha</option>
+                  <option value="talatona" className="bg-gray-700 text-white">🏪 Talatona</option>
+                  <option value="movel" className="bg-gray-700 text-white">🚐 Móvel</option>
+                </select>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="ml-auto flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-1 text-gray-400">
+                  <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin text-green-400' : ''}`} />
+                  <span>{autoRefresh ? 'Auto-refresh ativo' : 'Auto-refresh pausado'}</span>
+                </div>
+                <div className="text-gray-400">
+                  {filteredOrders.length} de {orders.length} pedidos
+                </div>
+              </div>
             </div>
           </div>
         </div>
