@@ -387,6 +387,16 @@ Preferred communication style: Simple, everyday language.
   - Application now runs stable on port 5000 with proper database connectivity
   - All API endpoints verified working: /api/menu, /api/auth/user, /api/availability, /api/tables
   - Sample menu data automatically populated on first database connection
+- July 19, 2025: Limpeza profunda e otimização para deploy no Vercel
+  - Removidos todos os arquivos duplicados e desnecessários (src/, attached_assets/, scripts/, data/, migrations/)
+  - Limpeza completa das configurações conflitantes (next.config.js, package-nextjs.json, build scripts duplicados)
+  - Correção de todas as importações de imagens problemáticas usando assets do diretório public/
+  - Otimização das APIs do Vercel com importações corretas (getDb, schema)
+  - Criação de .vercelignore para ignorar arquivos desnecessários no deploy
+  - Estrutura final limpa: api/ (serverless), client/ (frontend), lib/ (db), shared/ (schemas), public/ (assets)
+  - Todas as APIs funcionais: health, menu-items, orders, reservations, tables
+  - Aplicação rodando estável em desenvolvimento, pronta para deploy no Vercel
+  - Documentação atualizada (README.md) com instruções completas de deploy
 - July 18, 2025: Complete Vercel deployment adaptation and optimization
   - Updated lib/db.ts to use standard PostgreSQL driver compatible with Vercel serverless functions
   - Configured vercel.json for Node.js 20.x runtime and proper API routing

@@ -1,33 +1,28 @@
-// Database connection utilities for Vercel serverless functions
-import { Pool } from 'pg';
-import { drizzle } from 'drizzle-orm/node-postgres';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
 import * as schema from '../shared/schema';
 
-// Get database URL from environment
-const databaseUrl = process.env.DATABASE_URL;
+let db: ReturnType<typeof drizzle<typeof schema>>;
 
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL environment variable is required');
+export function getDb() {
+  if (!db) {
+    const connectionString = process.env.DATABASE_URL;
+    
+    if (!connectionString) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+
+    // For serverless functions, use a connection pool
+    const client = postgres(connectionString, {
+      max: 1, // Limit connections for serverless
+      idle_timeout: 20,
+      max_lifetime: 60 * 30, // 30 minutes
+    });
+
+    db = drizzle(client, { schema });
+  }
+
+  return db;
 }
 
-// Create connection pool for serverless functions
-const pool = new Pool({
-  connectionString: databaseUrl,
-  max: 10, // Lower connection limit for serverless
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 2000,
-  ssl: databaseUrl.includes('localhost') ? false : {
-    rejectUnauthorized: false
-  }
-});
-
-// Add error handling for pool
-pool.on('error', (err) => {
-  console.error('Database pool error:', err);
-});
-
-// Create database connection
-export const db = drizzle(pool, { schema });
-
-// Export schema for convenience
-export * from '../shared/schema';
+export { schema };

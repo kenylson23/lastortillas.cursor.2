@@ -1,39 +1,27 @@
-// Health check endpoint for Vercel
-import { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export default function handler(
+  request: VercelRequest,
+  response: VercelResponse,
+) {
+  // Handle CORS
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'GET');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+  if (request.method === 'OPTIONS') {
+    response.status(200).end();
+    return;
   }
 
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  try {
-    // Basic health check
-    const health = {
-      status: 'healthy',
+  if (request.method === 'GET') {
+    return response.status(200).json({
+      status: 'ok',
       timestamp: new Date().toISOString(),
-      environment: process.env.NODE_ENV || 'production',
-      version: '1.0.0',
-      services: {
-        database: process.env.DATABASE_URL ? 'configured' : 'missing',
-        api: 'running'
-      }
-    };
-
-    return res.status(200).json(health);
-  } catch (error) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Health check failed',
-      timestamp: new Date().toISOString()
+      service: 'Las Tortillas Mexican Grill API',
+      version: '1.0.0'
     });
   }
+
+  return response.status(405).json({ message: 'Method not allowed' });
 }

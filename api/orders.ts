@@ -1,11 +1,10 @@
-// Vercel Serverless Function for orders
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { db, orders, tables } from '../lib/db';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getDb, schema } from '../lib/db';
 import { createInsertSchema } from 'drizzle-zod';
 import { eq, and } from 'drizzle-orm';
 
 // Validation schema
-const insertOrderSchema = createInsertSchema(orders).omit({
+const insertOrderSchema = createInsertSchema(schema.orders).omit({
   id: true,
   createdAt: true,
 });
@@ -23,7 +22,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     switch (req.method) {
       case 'GET':
-        const allOrders = await db.select().from(orders);
+        const db = getDb();
+        const allOrders = await db.select().from(schema.orders);
         return res.status(200).json(allOrders);
 
       case 'POST':

@@ -1,11 +1,10 @@
-// Vercel Serverless Function for menu items
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { db, menuItems } from '../lib/db';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getDb, schema } from '../lib/db';
 import { createInsertSchema } from 'drizzle-zod';
 import { eq } from 'drizzle-orm';
 
 // Validation schema
-const insertMenuItemSchema = createInsertSchema(menuItems).omit({
+const insertMenuItemSchema = createInsertSchema(schema.menuItems).omit({
   id: true,
   createdAt: true,
 });
@@ -20,10 +19,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
+  const db = getDb();
+
   try {
     switch (req.method) {
       case 'GET':
-        const items = await db.select().from(menuItems);
+        const items = await db.select().from(schema.menuItems);
         return res.status(200).json(items);
 
       case 'POST':
@@ -32,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(400).json({ error: 'Invalid data', details: validation.error.errors });
         }
 
-        const newItem = await db.insert(menuItems)
+        const newItem = await db.insert(schema.menuItems)
           .values(validation.data)
           .returning();
 
@@ -49,9 +50,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           return res.status(400).json({ error: 'Invalid data', details: updateValidation.error.errors });
         }
 
-        const updatedItem = await db.update(menuItems)
+        const updatedItem = await db.update(schema.menuItems)
           .set(updateValidation.data)
-          .where(eq(menuItems.id, id))
+          .where(eq(schema.menuItems.id, id))
           .returning();
 
         if (updatedItem.length === 0) {

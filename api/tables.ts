@@ -1,11 +1,10 @@
-// Vercel Serverless Function for tables
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { db, tables } from '../lib/db';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getDb, schema } from '../lib/db';
 import { createInsertSchema } from 'drizzle-zod';
 import { eq } from 'drizzle-orm';
 
 // Validation schema
-const insertTableSchema = createInsertSchema(tables).omit({
+const insertTableSchema = createInsertSchema(schema.tables).omit({
   id: true,
   createdAt: true,
 });
@@ -25,9 +24,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       case 'GET':
         const { locationId } = req.query;
         
-        let query = db.select().from(tables);
+        const db = getDb();
+        let query = db.select().from(schema.tables);
         if (locationId) {
-          query = query.where(eq(tables.locationId, locationId as string));
+          query = query.where(eq(schema.tables.locationId, locationId as string));
         }
         
         const allTables = await query;

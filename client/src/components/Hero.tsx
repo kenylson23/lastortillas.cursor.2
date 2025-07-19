@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
+// Using optimized images from public directory
 import LoadingSpinner from "./LoadingSpinner";
 
 export default function Hero() {
@@ -31,7 +31,7 @@ export default function Hero() {
     // Configurar para carregamento prioritário
     img.fetchPriority = 'high';
     img.loading = 'eager';
-    img.src = heroImage;
+    img.src = '/hero-desktop.webp';
     
     // Cleanup
     return () => {
@@ -48,7 +48,7 @@ export default function Hero() {
           imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          backgroundImage: `url(${heroImage})`,
+          backgroundImage: `url('/hero-desktop.webp')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',

@@ -1,12 +1,9 @@
-// Vercel Serverless Function for reservations
-import { VercelRequest, VercelResponse } from '@vercel/node';
-import { db, reservations } from '../lib/db';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { getDb, schema } from '../lib/db';
 import { createInsertSchema } from 'drizzle-zod';
-import { z } from 'zod';
-import { corsHeaders, apiResponse, apiError, validateRequestMethod } from '../lib/utils';
 
 // Validation schema
-const insertReservationSchema = createInsertSchema(reservations).omit({
+const insertReservationSchema = createInsertSchema(schema.reservations).omit({
   id: true,
   createdAt: true,
 });
@@ -24,7 +21,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     switch (req.method) {
       case 'GET':
-        const allReservations = await db.select().from(reservations);
+        const db = getDb();
+        const allReservations = await db.select().from(schema.reservations);
         return res.status(200).json(allReservations);
 
       case 'POST':
