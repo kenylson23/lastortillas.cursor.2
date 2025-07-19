@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
@@ -42,6 +42,9 @@ export default function OnlineMenu({
   const [showTracking, setShowTracking] = useState(false);
   const [trackingOrderId, setTrackingOrderId] = useState('');
   const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [quickSearchFocus, setQuickSearchFocus] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showQuickActions, setShowQuickActions] = useState(false);
   
   const [customerInfo, setCustomerInfo] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -78,6 +81,51 @@ export default function OnlineMenu({
       localStorage.setItem(`customerInfo_${locationId}`, JSON.stringify(customerInfo));
     }
   }, [customerInfo, locationId]);
+
+  // Keyboard shortcuts for better navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Only activate shortcuts when not typing in input fields
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      switch (e.key) {
+        case '/':
+          e.preventDefault();
+          document.getElementById('search-input')?.focus();
+          break;
+        case 'c':
+          if (e.ctrlKey || e.metaKey) return; // Don't override copy
+          e.preventDefault();
+          if (cart.length > 0) setIsCartOpen(true);
+          break;
+        case 'Escape':
+          e.preventDefault();
+          setIsCartOpen(false);
+          setShowAdminPanel(false);
+          setSearchQuery('');
+          break;
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+          if (e.ctrlKey || e.metaKey) return;
+          e.preventDefault();
+          const categoryIndex = parseInt(e.key) - 1;
+          const availableCategories = ['Todos', ...Array.from(new Set(menuItems.map((item: MenuItem) => item.category)))];
+          if (categoryIndex < availableCategories.length) {
+            setSelectedCategory(availableCategories[categoryIndex]);
+          }
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [cart.length]);
 
   // Carregar carrinho e dados quando a localização muda
   useEffect(() => {
@@ -201,9 +249,23 @@ export default function OnlineMenu({
 
   const categories = ['Todos', ...Array.from(new Set(menuItems.map((item: MenuItem) => item.category)))];
 
-  const filteredItems = selectedCategory === 'Todos' 
-    ? menuItems
-    : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
+  const filteredItems = useMemo(() => {
+    let items = selectedCategory === 'Todos' 
+      ? menuItems
+      : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      items = items.filter(item => 
+        item.name.toLowerCase().includes(query) ||
+        item.description.toLowerCase().includes(query) ||
+        item.category.toLowerCase().includes(query)
+      );
+    }
+    
+    return items;
+  }, [menuItems, selectedCategory, searchQuery]);
 
   // Debug logs (temporarily enabled for troubleshooting)
   console.log('OnlineMenu - menuItems:', menuItems);
@@ -435,14 +497,110 @@ export default function OnlineMenu({
           </div>
           
           {!showTracking && (
-            <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
-              {categories.map((category, index) => {
-                const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
+            <>
+              {/* Quick Search Bar */}
+              <div className="mb-4">
+                <div className="relative max-w-md">
+                  <input
+                    id="search-input"
+                    type="text"
+                    placeholder="🔍 Buscar pratos... (Pressione / para focar)"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => setQuickSearchFocus(true)}
+                    onBlur={() => setQuickSearchFocus(false)}
+                    className={`w-full px-4 py-3 pl-12 pr-4 rounded-lg border-2 transition-all duration-300 text-sm ${
+                      quickSearchFocus || searchQuery
+                        ? 'border-red-500 bg-white shadow-md ring-2 ring-red-100'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    }`}
+                  />
+                  <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  {searchQuery && (
+                    <button
+                      onClick={() => setSearchQuery('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {searchQuery && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''} para "{searchQuery}"
+                  </div>
+                )}
+              </div>
+
+              {/* Navigation Breadcrumb & Quick Actions */}
+              <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <span>📍 {getLocationName(locationId)}</span>
+                  <span>→</span>
+                  <span className="font-medium text-red-600">{selectedCategory}</span>
+                  {searchQuery && (
+                    <>
+                      <span>→</span>
+                      <span className="bg-red-100 text-red-700 px-2 py-1 rounded">Busca: "{searchQuery}"</span>
+                    </>
+                  )}
+                </div>
+                
+                {/* Keyboard Shortcuts Info */}
+                <button
+                  onClick={() => setShowQuickActions(!showQuickActions)}
+                  className="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center space-x-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Atalhos</span>
+                </button>
+              </div>
+
+              {/* Quick Actions Panel */}
+              {showQuickActions && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="mb-4 bg-gray-50 rounded-lg p-4 border border-gray-200"
+                >
+                  <h4 className="font-semibold text-gray-800 mb-3 text-sm">⚡ Navegação Rápida</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                    <div className="flex items-center space-x-2">
+                      <kbd className="px-2 py-1 bg-white rounded border border-gray-300 font-mono">/</kbd>
+                      <span>Focar na busca</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <kbd className="px-2 py-1 bg-white rounded border border-gray-300 font-mono">C</kbd>
+                      <span>Abrir carrinho</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <kbd className="px-2 py-1 bg-white rounded border border-gray-300 font-mono">ESC</kbd>
+                      <span>Fechar modais</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <kbd className="px-2 py-1 bg-white rounded border border-gray-300 font-mono">1-6</kbd>
+                      <span>Categorias</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Category Filters */}
+              <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
+                {categories.map((category, index) => {
+                  const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => setSelectedCategory(category)}
+                      className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
                       selectedCategory === category
                         ? 'bg-red-500 text-white shadow-md border-red-500'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
@@ -454,6 +612,7 @@ export default function OnlineMenu({
                 );
               })}
             </div>
+            </>
           )}
         </div>
       </div>
