@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { auth, adminAuth } from "../shared/auth";
-import { storage as supabaseStorage, adminStorage } from "../shared/storage";
+
 // Cache otimizado para verificação de disponibilidade
 const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
 const CACHE_DURATION = 5000; // 5 segundos para dados mais atualizados
@@ -534,7 +534,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // =================== SUPABASE AUTHENTICATION ENDPOINTS ===================
+  // =================== AUTHENTICATION ENDPOINTS ===================
 
   // Register user
   app.post("/api/auth/register", async (req, res) => {
@@ -593,7 +593,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // =================== SUPABASE STORAGE ENDPOINTS ===================
+  // =================== LOCAL FILE STORAGE ENDPOINTS ===================
 
   // Upload file
   app.post("/api/storage/upload", upload.single('file'), async (req, res) => {
@@ -602,22 +602,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "Nenhum arquivo enviado" });
       }
       
-      const { bucket = 'uploads' } = req.body;
-      const fileName = `${Date.now()}-${req.file.originalname}`;
-      
-      // Convert buffer to File object for Supabase
-      const file = new File([req.file.buffer], fileName, { type: req.file.mimetype });
-      
-      const { data, error } = await supabaseStorage.upload(bucket, fileName, file);
-      
-      if (error) {
-        return res.status(500).json({ error: error.message });
-      }
-      
-      const publicUrl = supabaseStorage.getPublicUrl(bucket, fileName);
+      const publicUrl = `/uploads/${req.file.filename}`;
       
       res.json({ 
-        data, 
+        data: { path: req.file.filename }, 
         publicUrl,
         message: "Arquivo enviado com sucesso" 
       });
@@ -630,7 +618,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/storage/url/:bucket/:path", async (req, res) => {
     try {
       const { bucket, path } = req.params;
-      const publicUrl = supabaseStorage.getPublicUrl(bucket, path);
+      const publicUrl = `/uploads/${bucket}/${path}`;
       
       res.json({ publicUrl });
     } catch (error: any) {
@@ -642,15 +630,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/storage/files/:bucket", async (req, res) => {
     try {
       const { bucket } = req.params;
-      const { path } = req.query;
       
-      const { data, error } = await supabaseStorage.list(bucket, path as string);
+      // List files from local uploads directory
+      const uploadsPath = path.join(process.cwd(), 'public', 'uploads', bucket);
       
-      if (error) {
-        return res.status(500).json({ error: error.message });
+      if (!fs.existsSync(uploadsPath)) {
+        return res.json({ files: [] });
       }
       
-      res.json({ files: data });
+      const files = fs.readdirSync(uploadsPath).map(file => ({
+        name: file,
+        created_at: fs.statSync(path.join(uploadsPath, file)).birthtime
+      }));
+      
+      res.json({ files });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }
