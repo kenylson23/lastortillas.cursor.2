@@ -619,7 +619,7 @@ export default function OnlineMenu({
               <div className="space-y-3">
                 <h4 className="font-semibold text-gray-800">🌟 Itens Populares</h4>
                 <div className="grid grid-cols-2 gap-2">
-                  {menuData.slice(0, 4).map((item) => (
+                  {menuItems.slice(0, 4).map((item) => (
                     <button
                       key={item.id}
                       onClick={() => {
