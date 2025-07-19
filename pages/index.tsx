@@ -131,7 +131,14 @@ export default function Home({ featuredItems }: HomeProps) {
 export const getStaticProps: GetStaticProps = async () => {
   try {
     // Get featured menu items (limit to 6 for homepage)
-    const featuredItems = await db.select().from(menuItems).limit(6);
+    const rawItems = await db.select().from(menuItems).limit(6);
+    
+    // Serialize Date objects to strings for JSON compatibility
+    const featuredItems = rawItems.map(item => ({
+      ...item,
+      createdAt: item.createdAt?.toISOString() || null,
+      updatedAt: item.updatedAt?.toISOString() || null,
+    }));
     
     return {
       props: {

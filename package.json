@@ -26,6 +26,7 @@
     "autoprefixer": "^10.4.16",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "critters": "^0.0.23",
     "date-fns": "^3.0.0",
     "drizzle-orm": "^0.39.0",
     "drizzle-zod": "^0.7.0",
