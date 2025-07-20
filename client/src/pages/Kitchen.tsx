@@ -60,18 +60,13 @@ export default function Kitchen() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, isLoading, userRole } = useAuth();
 
-  // Apply dark theme styles
+  // Apply red and white theme styles
   useEffect(() => {
-    const styleElement = document.createElement('style');
-    styleElement.textContent = darkThemeStyles;
-    document.head.appendChild(styleElement);
-    
-    // Force body background to dark
-    document.body.style.backgroundColor = '#111827';
-    document.body.style.color = '#ffffff';
+    // Force body background to white
+    document.body.style.backgroundColor = '#ffffff';
+    document.body.style.color = '#1f2937';
     
     return () => {
-      document.head.removeChild(styleElement);
       document.body.style.backgroundColor = '';
       document.body.style.color = '';
     };
@@ -247,16 +242,16 @@ export default function Kitchen() {
   };
 
   return (
-    <div className="kitchen-container min-h-screen bg-gray-900 text-white" style={{ backgroundColor: '#111827 !important', color: '#ffffff !important' }}>
+    <div className="kitchen-container min-h-screen bg-white text-gray-900" style={{ backgroundColor: '#ffffff !important', color: '#1f2937 !important' }}>
       {/* Compact Modern Header */}
-      <div className="bg-gray-800 border-b border-gray-700 shadow-lg" style={{ backgroundColor: '#1f2937 !important' }}>
+      <div className="bg-red-600 border-b border-red-700 shadow-lg" style={{ backgroundColor: '#dc2626 !important' }}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Left Section - Navigation & Title */}
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setLocation('/admin')}
-                className="flex items-center gap-2 text-gray-300 hover:text-white px-2 py-1 rounded-md hover:bg-gray-700 transition-colors"
+                className="flex items-center gap-2 text-red-100 hover:text-white px-2 py-1 rounded-md hover:bg-red-700 transition-colors"
                 title="Voltar ao Admin"
               >
                 <ArrowLeft className="w-4 h-4" />
@@ -264,29 +259,29 @@ export default function Kitchen() {
               </button>
               
               <div className="flex items-center gap-3">
-                <div className="bg-orange-500/20 p-2 rounded-lg">
-                  <ChefHat className="w-5 h-5 text-orange-400" />
+                <div className="bg-white/20 p-2 rounded-lg">
+                  <ChefHat className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h1 className="text-lg font-bold text-white">Central da Cozinha</h1>
-                  <p className="text-gray-400 text-xs">Las Tortillas Mexican Grill</p>
+                  <p className="text-red-100 text-xs">Las Tortillas Mexican Grill</p>
                 </div>
               </div>
             </div>
 
             {/* Center - Key Metrics */}
             <div className="hidden md:flex items-center gap-4">
-              <div className="bg-orange-500/20 border border-orange-500/40 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-orange-400">{kitchenStats.activeOrders}</div>
-                <div className="text-xs text-orange-300">Ativos</div>
+              <div className="bg-white/20 border border-white/40 rounded-lg px-3 py-2 text-center">
+                <div className="text-xl font-bold text-white">{kitchenStats.activeOrders}</div>
+                <div className="text-xs text-red-100">Ativos</div>
               </div>
-              <div className="bg-green-500/20 border border-green-500/40 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-green-400">{orders.filter(o => o.status === 'ready').length}</div>
-                <div className="text-xs text-green-300">Prontos</div>
+              <div className="bg-white/20 border border-white/40 rounded-lg px-3 py-2 text-center">
+                <div className="text-xl font-bold text-white">{orders.filter(o => o.status === 'ready').length}</div>
+                <div className="text-xs text-red-100">Prontos</div>
               </div>
-              <div className="bg-red-500/20 border border-red-500/40 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-red-400">{kitchenStats.delayedOrders}</div>
-                <div className="text-xs text-red-300">Urgentes</div>
+              <div className="bg-red-800/50 border border-red-800/60 rounded-lg px-3 py-2 text-center">
+                <div className="text-xl font-bold text-white">{kitchenStats.delayedOrders}</div>
+                <div className="text-xs text-red-100">Urgentes</div>
               </div>
             </div>
             
@@ -296,8 +291,8 @@ export default function Kitchen() {
                 onClick={() => setAutoRefresh(!autoRefresh)}
                 className={`p-2 rounded-md transition-colors ${
                   autoRefresh 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                    ? 'bg-white text-red-600' 
+                    : 'bg-red-800 text-red-100 hover:bg-red-700'
                 }`}
                 title={autoRefresh ? 'Pausar Auto-refresh' : 'Ativar Auto-refresh'}
               >
@@ -308,8 +303,8 @@ export default function Kitchen() {
                 onClick={() => setSoundEnabled(!soundEnabled)}
                 className={`p-2 rounded-md transition-colors ${
                   soundEnabled 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                    ? 'bg-white text-red-600' 
+                    : 'bg-red-800 text-red-100 hover:bg-red-700'
                 }`}
                 title={soundEnabled ? 'Desativar Som' : 'Ativar Som'}
               >
@@ -320,20 +315,20 @@ export default function Kitchen() {
                 onClick={() => setShowStats(!showStats)}
                 className={`p-2 rounded-md transition-colors ${
                   showStats 
-                    ? 'bg-purple-500 text-white' 
-                    : 'bg-gray-600 text-gray-300 hover:bg-gray-500'
+                    ? 'bg-white text-red-600' 
+                    : 'bg-red-800 text-red-100 hover:bg-red-700'
                 }`}
                 title={showStats ? 'Ocultar Stats' : 'Mostrar Stats'}
               >
                 <TrendingUp className="w-4 h-4" />
               </button>
               
-              <div className="flex items-center gap-2 bg-gray-700 rounded-md px-2 py-1">
+              <div className="flex items-center gap-2 bg-red-800 rounded-md px-2 py-1">
                 <div className={`w-2 h-2 rounded-full ${
                   kitchenStats.delayedOrders === 0 ? 'bg-green-400' : 
-                  kitchenStats.delayedOrders < 3 ? 'bg-yellow-400' : 'bg-red-400'
+                  kitchenStats.delayedOrders < 3 ? 'bg-yellow-400' : 'bg-red-300'
                 }`}></div>
-                <span className="text-xs text-gray-300">
+                <span className="text-xs text-red-100">
                   {kitchenStats.delayedOrders === 0 ? 'OK' : 
                    kitchenStats.delayedOrders < 3 ? 'Alerta' : 'Crítico'}
                 </span>
@@ -345,46 +340,46 @@ export default function Kitchen() {
 
       {/* Compact Stats Dashboard */}
       {showStats && (
-        <div className="bg-gray-800 border-b border-gray-700" style={{ backgroundColor: '#1f2937' }}>
+        <div className="bg-red-50 border-b border-red-200" style={{ backgroundColor: '#fef2f2' }}>
           <div className="max-w-7xl mx-auto px-4 py-4">
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-blue-400">{kitchenStats.totalOrders}</div>
-                <div className="text-xs text-blue-300">Total</div>
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
+                <div className="text-lg font-bold text-red-600">{kitchenStats.totalOrders}</div>
+                <div className="text-xs text-red-500">Total</div>
               </div>
               
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-emerald-400">{kitchenStats.completedToday}</div>
-                <div className="text-xs text-emerald-300">Concluídos</div>
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
+                <div className="text-lg font-bold text-red-600">{kitchenStats.completedToday}</div>
+                <div className="text-xs text-red-500">Concluídos</div>
               </div>
               
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-yellow-400">{kitchenStats.averageTime}min</div>
-                <div className="text-xs text-yellow-300">Tempo Médio</div>
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
+                <div className="text-lg font-bold text-red-600">{kitchenStats.averageTime}min</div>
+                <div className="text-xs text-red-500">Tempo Médio</div>
               </div>
               
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
-                <div className="text-lg font-bold text-purple-400">
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
+                <div className="text-lg font-bold text-red-600">
                   {kitchenStats.totalOrders > 0 ? Math.round((kitchenStats.completedToday / kitchenStats.totalOrders) * 100) : 0}%
                 </div>
-                <div className="text-xs text-purple-300">Eficiência</div>
+                <div className="text-xs text-red-500">Eficiência</div>
               </div>
               
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
                 <div className="flex items-center justify-center gap-1">
-                  <RefreshCw className={`w-3 h-3 ${autoRefresh ? 'animate-spin text-green-400' : 'text-gray-500'}`} />
-                  <div className="text-lg font-bold text-gray-300">
+                  <RefreshCw className={`w-3 h-3 ${autoRefresh ? 'animate-spin text-red-600' : 'text-gray-400'}`} />
+                  <div className="text-lg font-bold text-red-600">
                     {autoRefresh ? 'ON' : 'OFF'}
                   </div>
                 </div>
-                <div className="text-xs text-gray-400">Auto-refresh</div>
+                <div className="text-xs text-red-500">Auto-refresh</div>
               </div>
               
-              <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3 text-center">
-                <div className="text-xs text-gray-300 mb-1">
+              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
+                <div className="text-xs text-red-600 mb-1">
                   {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                 </div>
-                <div className="text-xs text-gray-400">Última Atualização</div>
+                <div className="text-xs text-red-500">Última Atualização</div>
               </div>
             </div>
           </div>
@@ -392,7 +387,7 @@ export default function Kitchen() {
       )}
 
       {/* Compact Filter Controls */}
-      <div className="bg-gray-800 border-b border-gray-700" style={{ backgroundColor: '#1f2937 !important' }}>
+      <div className="bg-white border-b border-red-200" style={{ backgroundColor: '#ffffff !important' }}>
         <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-4">
             {/* Filter Buttons */}
@@ -401,8 +396,8 @@ export default function Kitchen() {
                 onClick={() => setFilter('active')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   filter === 'active'
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-orange-600/20'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
                 }`}
               >
                 <Flame className="w-4 h-4" />
@@ -413,8 +408,8 @@ export default function Kitchen() {
                 onClick={() => setFilter('ready')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   filter === 'ready'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-green-600/20'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
                 }`}
               >
                 <CheckCircle className="w-4 h-4" />
@@ -425,8 +420,8 @@ export default function Kitchen() {
                 onClick={() => setFilter('urgent')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   filter === 'urgent'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-red-600/20'
+                    ? 'bg-red-700 text-white'
+                    : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
                 }`}
               >
                 <AlertCircle className="w-4 h-4" />
@@ -437,8 +432,8 @@ export default function Kitchen() {
                 onClick={() => setFilter('all')}
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   filter === 'all'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-blue-600/20'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
                 }`}
               >
                 Todos ({orders.length})
@@ -450,7 +445,7 @@ export default function Kitchen() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
-                className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-orange-400 focus:outline-none text-sm"
+                className="bg-white text-red-600 px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:outline-none text-sm"
               >
                 <option value="time">Por Tempo</option>
                 <option value="priority">Por Prioridade</option>
@@ -460,7 +455,7 @@ export default function Kitchen() {
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-gray-700 text-white px-3 py-2 rounded-lg border border-gray-600 focus:border-purple-400 focus:outline-none text-sm"
+                className="bg-white text-red-600 px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:outline-none text-sm"
               >
                 <option value="all">Todas</option>
                 <option value="ilha">Ilha</option>
@@ -476,14 +471,14 @@ export default function Kitchen() {
       <div className="max-w-7xl mx-auto px-4 py-6" style={{ backgroundColor: 'transparent' }}>
         {ordersLoading ? (
           <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-orange-400 mx-auto mb-4" />
-            <p className="text-gray-400">Carregando pedidos...</p>
+            <RefreshCw className="w-8 h-8 animate-spin text-red-600 mx-auto mb-4" />
+            <p className="text-red-600">Carregando pedidos...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
-            <AlertCircle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <p className="text-xl text-gray-400 mb-2">Nenhum pedido encontrado</p>
-            <p className="text-gray-500">
+            <AlertCircle className="w-16 h-16 text-red-300 mx-auto mb-4" />
+            <p className="text-xl text-red-600 mb-2">Nenhum pedido encontrado</p>
+            <p className="text-red-500">
               {filter === 'active' && 'Não há pedidos ativos no momento.'}
               {filter === 'ready' && 'Não há pedidos prontos no momento.'}
               {filter === 'all' && 'Nenhum pedido foi feito ainda hoje.'}
@@ -497,41 +492,41 @@ export default function Kitchen() {
               const duration = getOrderDuration(order);
               
               return (
-                <div key={order.id} className={`rounded-xl border-2 p-4 transition-all duration-300 hover:scale-105 ${
-                  isUrgent ? 'bg-red-900/30 border-red-500 shadow-red-500/20' :
-                  isDelayed ? 'bg-yellow-900/30 border-yellow-500 shadow-yellow-500/20' :
-                  order.status === 'ready' ? 'bg-green-900/30 border-green-500 shadow-green-500/20' :
-                  'bg-gray-800 border-gray-600 shadow-gray-800/20'
-                } shadow-lg`} style={{ 
-                  backgroundColor: isUrgent ? '#7f1d1d' : 
-                                  isDelayed ? '#78350f' : 
-                                  order.status === 'ready' ? '#14532d' : '#1f2937',
-                  color: '#ffffff'
+                <div key={order.id} className={`rounded-xl border-2 p-4 transition-all duration-300 hover:scale-105 shadow-lg ${
+                  isUrgent ? 'bg-red-50 border-red-600' :
+                  isDelayed ? 'bg-red-25 border-red-400' :
+                  order.status === 'ready' ? 'bg-green-50 border-green-600' :
+                  'bg-white border-red-200'
+                }`} style={{ 
+                  backgroundColor: isUrgent ? '#fef2f2' : 
+                                  isDelayed ? '#fef7f7' : 
+                                  order.status === 'ready' ? '#f0fdf4' : '#ffffff',
+                  color: '#1f2937'
                 }}>
                   
                   {/* Header do Pedido */}
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-orange-400">#{order.id}</span>
+                      <span className="text-2xl font-bold text-red-600">#{order.id}</span>
                       <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${getStatusColor(order.status)}`}>
                         {getStatusText(order.status)}
                       </span>
                       {isUrgent && (
-                        <span className="px-2 py-1 bg-red-600 text-white rounded-full text-xs font-bold flex items-center gap-1">
+                        <span className="px-2 py-1 bg-red-700 text-white rounded-full text-xs font-bold flex items-center gap-1">
                           <AlertCircle className="w-3 h-3" />
                           URGENTE
                         </span>
                       )}
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-red-600">
                         {new Date(order.createdAt).toLocaleTimeString('pt-BR', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
                       </div>
                       <div className={`text-xs font-medium ${
-                        isDelayed ? 'text-red-400' : 'text-gray-500'
+                        isDelayed ? 'text-red-700' : 'text-red-500'
                       }`}>
                         {duration}
                       </div>
@@ -539,15 +534,15 @@ export default function Kitchen() {
                   </div>
 
                   {/* Customer & Order Info Card */}
-                  <div className="mb-4 bg-gray-700/30 rounded-lg p-3 border-l-4 border-blue-500">
+                  <div className="mb-4 bg-red-50 rounded-lg p-3 border-l-4 border-red-600">
                     <div className="grid grid-cols-1 gap-2">
                       <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-blue-400 flex-shrink-0" />
-                        <span className="font-semibold text-white truncate">{order.customerName}</span>
+                        <Users className="w-4 h-4 text-red-600 flex-shrink-0" />
+                        <span className="font-semibold text-red-800 truncate">{order.customerName}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-green-400 flex-shrink-0" />
-                        <span className="text-sm text-gray-300">{order.customerPhone}</span>
+                        <Phone className="w-4 h-4 text-red-600 flex-shrink-0" />
+                        <span className="text-sm text-red-700">{order.customerPhone}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
