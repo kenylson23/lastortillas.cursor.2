@@ -522,77 +522,129 @@ export default function OnlineMenu({
           
           {!showTracking && (
             <>
-              {/* Barra de Busca Rápida */}
+              {/* Barra de Busca Rápida Melhorada */}
               <div className="mb-4">
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="🔍 Buscar pratos... (ex: tacos, burrito)"
+                    placeholder="🔍 Buscar pratos... (ex: tacos, burrito, nachos)"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-700 placeholder-gray-500 text-sm sm:text-base"
+                    className="w-full px-4 py-4 pl-12 pr-16 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-700 placeholder-gray-500 text-base bg-white shadow-sm"
                   />
-                  <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                    <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                  </div>
                   {searchTerm && (
                     <button
                       onClick={() => setSearchTerm('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-100 p-1 rounded-full transition-all"
                     >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                       </svg>
                     </button>
                   )}
+                  
+                  {/* Indicador de resultados */}
+                  {searchTerm && (
+                    <div className="absolute right-16 top-1/2 transform -translate-y-1/2 text-xs text-gray-500 font-semibold">
+                      {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Sugestões Populares - só aparece quando não há busca */}
+              {/* Sugestões Populares Melhoradas */}
               {!searchTerm && (
-                <div className="mb-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-100">
-                  <h3 className="text-sm font-bold text-red-700 mb-2 flex items-center">
-                    <span className="mr-2">⭐</span>
-                    Mais Populares - Adição Rápida
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
+                <div className="mb-6 p-4 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 rounded-xl border border-red-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-bold text-red-700 flex items-center">
+                      <span className="text-xl mr-2">🔥</span>
+                      Mais Pedidos - Adição Rápida
+                    </h3>
+                    <span className="text-xs text-red-600 bg-red-100 px-2 py-1 rounded-full font-semibold">
+                      🚀 Rápido
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {popularItems.map((item) => (
                       <button
                         key={item.id}
                         onClick={() => addToCart(item)}
-                        className="bg-white text-red-600 px-3 py-2 rounded-lg text-xs font-semibold hover:bg-red-500 hover:text-white transition-all duration-200 border border-red-200 flex items-center gap-1"
+                        className="bg-white text-red-700 p-3 rounded-xl text-sm font-bold hover:bg-red-500 hover:text-white transition-all duration-300 border-2 border-red-200 hover:border-red-500 shadow-sm hover:shadow-md flex flex-col items-center gap-2 group"
                       >
-                        <span>➕</span>
-                        {item.name}
-                        <span className="text-xs font-bold">({parseInt(item.price).toLocaleString()} AOA)</span>
+                        <span className="text-2xl group-hover:scale-110 transition-transform">🌮</span>
+                        <span className="text-center leading-tight">{item.name}</span>
+                        <span className="text-xs font-extrabold bg-red-100 group-hover:bg-red-200 px-2 py-1 rounded-lg">
+                          {parseInt(item.price).toLocaleString()} AOA
+                        </span>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Categorias */}
-              <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
-                {categories.map((category, index) => {
-                  const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
-                  return (
-                    <button
-                      key={category}
-                      onClick={() => {
-                        setSelectedCategory(category);
-                        setSearchTerm(''); // Limpar busca ao selecionar categoria
-                      }}
-                      className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
-                        selectedCategory === category
-                          ? 'bg-red-500 text-white shadow-md border-red-500'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
-                      }`}
-                    >
-                      <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
-                      {category}
-                    </button>
-                  );
-                })}
+              {/* Categorias Melhoradas */}
+              <div className="mb-4">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                  <span className="text-xl mr-2">📋</span>
+                  Categorias do Menu
+                </h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+                  {categories.map((category, index) => {
+                    const categoryData = {
+                      'Todos': { emoji: '🍽️', color: 'from-gray-500 to-gray-600', desc: 'Ver tudo' },
+                      'Tacos': { emoji: '🌮', color: 'from-red-500 to-red-600', desc: 'Tradicionais' },
+                      'Burritos': { emoji: '🌯', color: 'from-orange-500 to-orange-600', desc: 'Grandes' },
+                      'Quesadillas': { emoji: '🥙', color: 'from-yellow-500 to-yellow-600', desc: 'Crocantes' },
+                      'Aperitivos': { emoji: '🥗', color: 'from-green-500 to-green-600', desc: 'Para compartir' },
+                      'Enchiladas': { emoji: '🫔', color: 'from-purple-500 to-purple-600', desc: 'Com molho' },
+                      'Fajitas': { emoji: '🍖', color: 'from-pink-500 to-pink-600', desc: 'Na chapa' }
+                    };
+                    
+                    const categoryInfo = categoryData[category] || { emoji: '🍽️', color: 'from-gray-500 to-gray-600', desc: 'Delicioso' };
+                    const isSelected = selectedCategory === category;
+                    
+                    // Contar itens na categoria
+                    const itemCount = category === 'Todos' ? menuItems.length : menuItems.filter(item => item.category === category).length;
+                    
+                    return (
+                      <button
+                        key={category}
+                        onClick={() => {
+                          setSelectedCategory(category);
+                          setSearchTerm('');
+                        }}
+                        className={`p-3 rounded-xl transition-all duration-300 text-center border-2 group relative overflow-hidden ${
+                          isSelected
+                            ? `bg-gradient-to-br ${categoryInfo.color} text-white border-transparent shadow-lg scale-105`
+                            : 'bg-white text-gray-700 border-gray-200 hover:border-red-300 hover:shadow-md hover:scale-102'
+                        }`}
+                      >
+                        <div className={`text-3xl mb-2 transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
+                          {categoryInfo.emoji}
+                        </div>
+                        <div className={`font-bold text-sm mb-1 ${isSelected ? 'text-white' : 'text-gray-800'}`}>
+                          {category}
+                        </div>
+                        <div className={`text-xs ${isSelected ? 'text-white/90' : 'text-gray-500'} flex items-center justify-center gap-1`}>
+                          <span>{categoryInfo.desc}</span>
+                          <span className={`px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                            isSelected ? 'bg-white/20 text-white' : 'bg-red-100 text-red-600'
+                          }`}>
+                            {itemCount}
+                          </span>
+                        </div>
+                        
+                        {/* Efeito de brilho no hover */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </>
           )}

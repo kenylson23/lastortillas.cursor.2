@@ -107,6 +107,10 @@ export default function Kitchen() {
     }
   }, [soundEnabled, audioContext]);
 
+  // Estados para controles
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
   // Detectar novos pedidos e tocar som
   useEffect(() => {
     if (orders.length > lastOrderCount && lastOrderCount > 0) {
@@ -117,8 +121,6 @@ export default function Kitchen() {
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(true);
   const [showStats, setShowStats] = useState(true);
   const queryClient = useQueryClient();
 
