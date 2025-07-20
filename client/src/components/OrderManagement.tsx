@@ -232,7 +232,7 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
   const getTableInfo = (tableId: number | null) => {
     if (!tableId) return null;
     const table = allTables.find(t => t.id === tableId);
-    return table ? `Mesa ${table.number} (${table.capacity} pessoas)` : `Mesa #${tableId}`;
+    return table ? `Mesa ${table.tableNumber} (${table.seats} pessoas)` : `Mesa #${tableId}`;
   };
 
   if (isLoading) {
