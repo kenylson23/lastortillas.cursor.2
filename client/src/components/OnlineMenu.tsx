@@ -507,19 +507,19 @@ export default function OnlineMenu({
       
       {/* Clean Header */}
       <div className="bg-white shadow-sm text-gray-800 sticky top-0 z-40 border-b border-gray-200">
-        <div className="px-4 py-3 sm:px-6 sm:py-4">
-          <div className="max-w-6xl mx-auto flex justify-between items-center">
+        <div className="px-2 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4">
+          <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="text-2xl">🌮</div>
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="text-xl sm:text-2xl">🌮</div>
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
               
               {/* QR Code Table Indicator */}
               {tableId && tableNumber && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ml-2 ${
+                  className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ml-1 sm:ml-2 ${
                     tableStatus.isOccupied 
                       ? 'bg-amber-100 text-amber-800' 
                       : 'bg-green-100 text-green-800'
@@ -532,28 +532,29 @@ export default function OnlineMenu({
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     )}
                   </svg>
-                  <span>Mesa {tableNumber}</span>
-                  {tableStatus.isOccupied && <span className="text-xs">(Atenção)</span>}
+                  <span className="hidden sm:inline">Mesa {tableNumber}</span>
+                  <span className="sm:hidden">{tableNumber}</span>
+                  {tableStatus.isOccupied && <span className="text-xs hidden sm:inline">(Atenção)</span>}
                 </motion.div>
               )}
             </div>
 
             {/* Right Section */}
-            <div className="flex items-center space-x-3 sm:space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-3 w-full sm:w-auto justify-between sm:justify-end">
               {/* Location Selector */}
-              <div className="relative">
+              <div className="relative flex-1 sm:flex-none">
                 <select
                   value={locationId}
                   onChange={(e) => onLocationChange(e.target.value)}
-                  className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-3 pr-8 rounded-lg text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                  className="appearance-none bg-gray-50 border border-gray-200 text-gray-700 py-2 px-2 sm:px-3 pr-6 sm:pr-8 rounded-lg text-xs sm:text-sm font-medium hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all w-full"
                 >
-                  <option value="">📍 Selecionar Local</option>
-                  <option value="ilha">🏖️ Las Tortillas Ilha</option>
-                  <option value="talatona">🏢 Las Tortillas Talatona</option>
-                  <option value="movel">🚐 Las Tortillas Móvel</option>
+                  <option value="">📍 Local</option>
+                  <option value="ilha">🏖️ Ilha</option>
+                  <option value="talatona">🏢 Talatona</option>
+                  <option value="movel">🚐 Móvel</option>
                 </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                  <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-1 sm:px-2 text-gray-700">
+                  <svg className="fill-current h-3 w-3 sm:h-4 sm:w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                     <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                   </svg>
                 </div>
@@ -563,23 +564,21 @@ export default function OnlineMenu({
               {!showTracking && (
                 <button
                   onClick={() => setIsCartOpen(true)}
-                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 font-medium ${
+                  className={`relative flex items-center space-x-1 sm:space-x-2 px-3 sm:px-4 py-2 rounded-lg transition-all duration-300 font-medium text-xs sm:text-sm ${
                     cart.length > 0 
                       ? 'bg-red-500 text-white hover:bg-red-600' 
                       : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white'
                   }`}
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6M7 13l1.5-6m10 0v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
                   </svg>
-                  <span className="hidden sm:inline text-sm">
+                  <span className="hidden sm:inline">
                     {cart.length > 0 ? `Carrinho (${cart.reduce((sum, item) => sum + item.quantity, 0)})` : 'Carrinho'}
                   </span>
-                  {cart.length > 0 && (
-                    <span className="sm:hidden absolute -top-2 -right-2 bg-orange-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
-                      {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                    </span>
-                  )}
+                  <span className="sm:hidden">
+                    {cart.length > 0 ? cart.reduce((sum, item) => sum + item.quantity, 0) : 'Carrinho'}
+                  </span>
                 </button>
               )}
 
@@ -587,10 +586,10 @@ export default function OnlineMenu({
               {isAuthenticated && (
                 <button
                   onClick={() => setShowAdminPanel(true)}
-                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="p-1 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors"
                   title="Ferramentas Admin"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -602,30 +601,31 @@ export default function OnlineMenu({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="sticky top-16 sm:top-20 z-30 bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto p-4 sm:p-6">
-          <div className="flex gap-3 sm:gap-4 mb-4 sm:mb-6">
+      <div className="sticky top-12 sm:top-16 lg:top-20 z-30 bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-4xl mx-auto p-2 sm:p-4 lg:p-6">
+          <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4 lg:mb-6">
             <button
               onClick={() => setShowTracking(false)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-3.5 rounded-lg font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base ${
                 !showTracking
                   ? 'bg-red-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white border border-gray-300'
               }`}
             >
-              <span className="text-base sm:text-lg mr-2">🍽️</span>
+              <span className="text-sm sm:text-base lg:text-lg mr-1 sm:mr-2">🍽️</span>
               Menu
             </button>
             <button
               onClick={() => setShowTracking(true)}
-              className={`flex-1 sm:flex-none px-6 sm:px-8 py-3.5 rounded-lg font-semibold transition-all duration-300 text-sm sm:text-base ${
+              className={`flex-1 sm:flex-none px-4 sm:px-6 lg:px-8 py-2.5 sm:py-3 lg:py-3.5 rounded-lg font-semibold transition-all duration-300 text-xs sm:text-sm lg:text-base ${
                 showTracking
                   ? 'bg-red-500 text-white shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-red-500 hover:text-white border border-gray-300'
               }`}
             >
-              <span className="text-base sm:text-lg mr-2">📍</span>
-              Rastrear Pedido
+              <span className="text-sm sm:text-base lg:text-lg mr-1 sm:mr-2">📍</span>
+              <span className="hidden sm:inline">Rastrear Pedido</span>
+              <span className="sm:hidden">Rastrear</span>
             </button>
           </div>
           
@@ -658,29 +658,29 @@ export default function OnlineMenu({
               )}
 
               {/* Quick Search Bar */}
-              <div className="mb-4">
-                <div className="relative max-w-md">
+              <div className="mb-3 sm:mb-4">
+                <div className="relative max-w-full sm:max-w-md">
                   <input
                     id="search-input"
                     type="text"
-                    placeholder="🔍 Buscar pratos... (Pressione / para focar)"
+                    placeholder="🔍 Buscar pratos..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => setQuickSearchFocus(true)}
                     onBlur={() => setQuickSearchFocus(false)}
-                    className={`w-full px-4 py-3 pl-12 pr-4 rounded-lg border-2 transition-all duration-300 text-sm ${
+                    className={`w-full px-3 sm:px-4 py-2 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 rounded-lg border-2 transition-all duration-300 text-sm ${
                       quickSearchFocus || searchQuery
                         ? 'border-red-500 bg-white shadow-md ring-2 ring-red-100'
                         : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                     }`}
                   />
-                  <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -689,22 +689,24 @@ export default function OnlineMenu({
                   )}
                 </div>
                 {searchQuery && (
-                  <div className="mt-2 text-sm text-gray-600">
+                  <div className="mt-2 text-xs sm:text-sm text-gray-600">
                     {filteredItems.length} resultado{filteredItems.length !== 1 ? 's' : ''} para "{searchQuery}"
                   </div>
                 )}
               </div>
 
               {/* Navigation Breadcrumb & Quick Actions */}
-              <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <span>📍 {getLocationName(locationId)}</span>
+              <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+                <div className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm text-gray-600 overflow-hidden">
+                  <span className="truncate">📍 {getLocationName(locationId)}</span>
                   <span>→</span>
-                  <span className="font-medium text-red-600">{selectedCategory}</span>
+                  <span className="font-medium text-red-600 truncate">{selectedCategory}</span>
                   {searchQuery && (
                     <>
-                      <span>→</span>
-                      <span className="bg-red-100 text-red-700 px-2 py-1 rounded">Busca: "{searchQuery}"</span>
+                      <span className="hidden sm:inline">→</span>
+                      <span className="bg-red-100 text-red-700 px-1 sm:px-2 py-1 rounded text-xs truncate max-w-24 sm:max-w-none">
+                        <span className="hidden sm:inline">Busca: </span>"{searchQuery}"
+                      </span>
                     </>
                   )}
                 </div>
@@ -712,12 +714,13 @@ export default function OnlineMenu({
                 {/* Keyboard Shortcuts Info */}
                 <button
                   onClick={() => setShowQuickActions(!showQuickActions)}
-                  className="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center space-x-1"
+                  className="text-xs text-gray-500 hover:text-gray-700 transition-colors flex items-center space-x-1 self-end sm:self-auto"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  <span>Atalhos</span>
+                  <span className="hidden sm:inline">Atalhos</span>
+                  <span className="sm:hidden">?</span>
                 </button>
               </div>
 
@@ -752,21 +755,22 @@ export default function OnlineMenu({
               )}
 
               {/* Category Filters */}
-              <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
+              <div className="flex overflow-x-auto gap-1 sm:gap-2 pb-2 sm:pb-3 -mx-2 px-2 scrollbar-hide">
                 {categories.map((category, index) => {
                   const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
                   return (
                     <button
                       key={category}
                       onClick={() => setSelectedCategory(category)}
-                      className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
+                      className={`px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 lg:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-xs sm:text-sm lg:text-base flex-shrink-0 font-semibold border ${
                       selectedCategory === category
                         ? 'bg-red-500 text-white shadow-md border-red-500'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
                     }`}
                   >
-                    <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
-                    {category}
+                    <span className="text-xs sm:text-sm lg:text-base mr-1 sm:mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
+                    <span className="hidden sm:inline">{category}</span>
+                    <span className="sm:hidden">{category.length > 8 ? category.substring(0, 8) + '...' : category}</span>
                   </button>
                 );
               })}
@@ -777,15 +781,15 @@ export default function OnlineMenu({
       </div>
 
       {/* Content Area */}
-      <div className="max-w-7xl mx-auto p-4 sm:p-6 relative z-10">
+      <div className="max-w-7xl mx-auto p-2 sm:p-4 lg:p-6 relative z-10">
         {showTracking ? (
           /* Order Tracking Section */
           <div className="bg-white">
-            <div className="mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Rastrear Pedido</h2>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:items-end">
+            <div className="mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Rastrear Pedido</h2>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4 sm:items-end">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
                     Número do Pedido
                   </label>
                   <input
@@ -815,19 +819,19 @@ export default function OnlineMenu({
             </div>
             
             {trackingOrderId.trim() && (
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 <OrderTracking orderId={trackingOrderId} />
               </div>
             )}
             
             {!trackingOrderId.trim() && (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-                <div className="text-gray-600 text-4xl mb-4">📱</div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Como rastrear seu pedido?</h3>
-                <p className="text-gray-600 mb-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 sm:p-6 text-center">
+                <div className="text-gray-600 text-3xl sm:text-4xl mb-3 sm:mb-4">📱</div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-2">Como rastrear seu pedido?</h3>
+                <p className="text-gray-600 mb-3 sm:mb-4 text-sm sm:text-base">
                   Digite o número do seu pedido no campo acima para acompanhar o status em tempo real.
                 </p>
-                <div className="text-sm text-gray-600">
+                <div className="text-xs sm:text-sm text-gray-600 space-y-1">
                   <p>💡 Você recebeu o número do pedido na confirmação</p>
                   <p>📞 Dúvidas? Entre em contato: +244 949 639 932</p>
                 </div>
@@ -838,12 +842,12 @@ export default function OnlineMenu({
           /* Menu Items Section */
           <>
             {filteredItems.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-500 text-lg">Nenhum item encontrado.</p>
-                <p className="text-gray-400 text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
+              <div className="text-center py-6 sm:py-8">
+                <p className="text-gray-500 text-base sm:text-lg">Nenhum item encontrado.</p>
+                <p className="text-gray-400 text-xs sm:text-sm mt-2">Verifique se há itens disponíveis ou selecione outra categoria.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {filteredItems.map((item: MenuItem, index) => (
                   <MenuItemCard
                     key={item.id}
@@ -1021,19 +1025,19 @@ function MenuItemCard({
       whileHover={{ y: -12, scale: 1.03 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 group cursor-pointer"
+      className="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-lg hover:shadow-xl border border-gray-100 hover:border-gray-200 transition-all duration-300 group cursor-pointer"
     >
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent z-10"></div>
         <img
           src={item.image || '/api/placeholder/400/300'}
           alt={item.name}
-          className="w-full h-48 sm:h-56 object-cover transition-all duration-700 group-hover:scale-110"
+          className="w-full h-40 sm:h-48 lg:h-56 object-cover transition-all duration-700 group-hover:scale-110"
         />
         
         {/* Floating badges */}
         <motion.div 
-          className="absolute top-3 right-3 bg-white/90 text-gray-700 text-xs font-semibold px-3 py-1.5 rounded-2xl shadow-md backdrop-blur-sm z-20"
+          className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 text-gray-700 text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl shadow-md backdrop-blur-sm z-20"
           animate={{ scale: isHovered ? 1.1 : 1 }}
           transition={{ duration: 0.3 }}
         >
@@ -1042,53 +1046,54 @@ function MenuItemCard({
         
         {item.category && (
           <motion.div 
-            className="absolute top-3 left-3 bg-red-500/90 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-md backdrop-blur-sm z-20"
+            className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-red-500/90 text-white text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-md backdrop-blur-sm z-20"
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            {item.category}
+            <span className="hidden sm:inline">{item.category}</span>
+            <span className="sm:hidden">{item.category.length > 6 ? item.category.substring(0, 6) + '...' : item.category}</span>
           </motion.div>
         )}
 
         {/* Overlay gradient */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10"></div>
+        <div className="absolute bottom-0 left-0 right-0 h-20 sm:h-24 bg-gradient-to-t from-black/60 via-black/20 to-transparent z-10"></div>
         
         {/* Price overlay */}
-        <div className="absolute bottom-4 left-4 z-20">
+        <div className="absolute bottom-2 sm:bottom-4 left-2 sm:left-4 z-20">
           <motion.div 
-            className="text-2xl sm:text-3xl font-bold text-white drop-shadow-lg"
+            className="text-xl sm:text-2xl lg:text-3xl font-bold text-white drop-shadow-lg"
             animate={{ scale: isHovered ? 1.1 : 1 }}
             transition={{ duration: 0.3 }}
           >
-            {item.price} <span className="text-lg text-red-200">AOA</span>
+            {item.price} <span className="text-sm sm:text-lg text-red-200">AOA</span>
           </motion.div>
         </div>
       </div>
       
-      <div className="p-4 sm:p-6 space-y-4">
-        <div className="space-y-2">
-          <h3 className="text-lg sm:text-xl font-bold text-red-600 group-hover:text-red-700 transition-colors duration-300">
+      <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
+        <div className="space-y-1 sm:space-y-2">
+          <h3 className="text-base sm:text-lg lg:text-xl font-bold text-red-600 group-hover:text-red-700 transition-colors duration-300">
             {item.name}
           </h3>
-          <p className="text-gray-600 text-sm leading-relaxed line-clamp-2">
+          <p className="text-gray-600 text-xs sm:text-sm leading-relaxed line-clamp-2">
             {item.description}
           </p>
         </div>
         
         {/* Customizations */}
         {item.customizations && item.customizations.length > 0 && (
-          <div className="space-y-3">
-            <p className="text-sm font-semibold text-gray-700 flex items-center">
-              <span className="mr-2">🌶️</span>
+          <div className="space-y-2 sm:space-y-3">
+            <p className="text-xs sm:text-sm font-semibold text-gray-700 flex items-center">
+              <span className="mr-1 sm:mr-2">🌶️</span>
               Personalizações
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {item.customizations.map(customization => (
                 <motion.button
                   key={customization}
                   onClick={() => toggleCustomization(customization)}
                   whileTap={{ scale: 0.95 }}
-                  className={`px-3 py-1.5 text-xs rounded-lg transition-all duration-300 font-semibold border ${
+                  className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs rounded-lg transition-all duration-300 font-semibold border ${
                     selectedCustomizations.includes(customization)
                       ? 'bg-red-500 text-white shadow-md border-red-500'
                       : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-red-500 hover:text-white hover:border-red-500'
@@ -1105,16 +1110,17 @@ function MenuItemCard({
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-red-500 text-white px-6 py-3.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
+          className="w-full bg-red-500 text-white px-4 sm:px-6 py-2.5 sm:py-3 lg:py-3.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-xs sm:text-sm lg:text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-1 sm:space-x-2"
         >
           <motion.span
             animate={{ rotate: isHovered ? 360 : 0 }}
             transition={{ duration: 0.5 }}
-            className="text-lg"
+            className="text-sm sm:text-base lg:text-lg"
           >
             🛒
           </motion.span>
-          <span>Adicionar ao Carrinho</span>
+          <span className="hidden sm:inline">Adicionar ao Carrinho</span>
+          <span className="sm:hidden">Adicionar</span>
         </motion.button>
       </div>
     </motion.div>
