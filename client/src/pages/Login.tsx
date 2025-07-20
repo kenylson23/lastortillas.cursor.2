@@ -37,7 +37,7 @@ export default function Login() {
         variant: "success",
       });
       setTimeout(() => {
-        setLocation('/kitchen');
+        setLocation('/cozinha');
       }, 1000);
     } else {
       console.log('Credenciais inválidas:', credentials);
