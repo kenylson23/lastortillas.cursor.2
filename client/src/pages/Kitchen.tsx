@@ -67,6 +67,7 @@ export default function Kitchen() {
   const [selectedLocation, setSelectedLocation] = useState('all');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'status'>('time');
   const [lastOrderCount, setLastOrderCount] = useState(0);
+  const [preparationTimes, setPreparationTimes] = useState<{[key: number]: string}>({});
 
   // Sistema de som
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -147,9 +148,34 @@ export default function Kitchen() {
     },
   });
 
+  const updatePreparationTimeMutation = useMutation({
+    mutationFn: async ({ orderId, minutes }: { orderId: number; minutes: number }) => {
+      const estimatedTime = new Date(Date.now() + minutes * 60 * 1000).toISOString();
+      const response = await fetch(`/api/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estimatedDeliveryTime: estimatedTime }),
+      });
+      if (!response.ok) throw new Error('Erro ao atualizar tempo de preparo');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+    },
+  });
+
   // Função para atualizar status do pedido
   const updateOrderStatus = (orderId: number, status: string) => {
     updateStatusMutation.mutate({ orderId, status });
+  };
+
+  // Função para definir tempo de preparo
+  const setPreparationTime = (orderId: number) => {
+    const minutes = parseInt(preparationTimes[orderId] || '0');
+    if (minutes > 0) {
+      updatePreparationTimeMutation.mutate({ orderId, minutes });
+      setPreparationTimes(prev => ({ ...prev, [orderId]: '' }));
+    }
   };
 
   // Detectar novos pedidos para notificação sonora
@@ -591,35 +617,78 @@ export default function Kitchen() {
                       </div>
                     </div>
 
-                    {/* Botões de Ação */}
-                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-                      {order.status === 'received' && (
-                        <button
-                          onClick={() => updateOrderStatus(order.id, 'preparing')}
-                          disabled={updateStatusMutation.isPending}
-                          className="px-3 sm:px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
-                        >
-                          Iniciar Preparo
-                        </button>
+                    {/* Seção de Tempo de Preparo e Botões de Ação */}
+                    <div className="flex flex-col space-y-3 sm:space-y-2 w-full sm:w-auto">
+                      {/* Tempo de Preparo Estimado */}
+                      {!order.estimatedDeliveryTime && ['received', 'preparing'].includes(order.status) && (
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 p-2 bg-blue-50 rounded-md border border-blue-200">
+                          <div className="flex items-center space-x-2 flex-1">
+                            <Clock className="h-4 w-4 text-blue-600 flex-shrink-0" />
+                            <span className="text-xs font-medium text-blue-800">Tempo estimado:</span>
+                            <input
+                              type="number"
+                              min="1"
+                              max="120"
+                              placeholder="min"
+                              value={preparationTimes[order.id] || ''}
+                              onChange={(e) => setPreparationTimes(prev => ({ ...prev, [order.id]: e.target.value }))}
+                              className="w-16 px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            <span className="text-xs text-blue-700">minutos</span>
+                          </div>
+                          <button
+                            onClick={() => setPreparationTime(order.id)}
+                            disabled={!preparationTimes[order.id] || updatePreparationTimeMutation.isPending}
+                            className="px-3 py-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-xs font-medium transition-colors"
+                          >
+                            Definir
+                          </button>
+                        </div>
                       )}
-                      {order.status === 'preparing' && (
-                        <button
-                          onClick={() => updateOrderStatus(order.id, 'ready')}
-                          disabled={updateStatusMutation.isPending}
-                          className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
-                        >
-                          Marcar como Pronto
-                        </button>
+
+                      {/* Exibir tempo estimado se já definido */}
+                      {order.estimatedDeliveryTime && (
+                        <div className="flex items-center space-x-2 p-2 bg-green-50 rounded-md border border-green-200">
+                          <Clock className="h-4 w-4 text-green-600" />
+                          <span className="text-xs font-medium text-green-800">
+                            Estimativa: {new Date(order.estimatedDeliveryTime).toLocaleTimeString('pt-BR', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                        </div>
                       )}
-                      {order.status === 'ready' && (
-                        <button
-                          onClick={() => updateOrderStatus(order.id, 'delivered')}
-                          disabled={updateStatusMutation.isPending}
-                          className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
-                        >
-                          Marcar como Entregue
-                        </button>
-                      )}
+
+                      {/* Botões de Ação do Pedido */}
+                      <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full">
+                        {order.status === 'received' && (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'preparing')}
+                            disabled={updateStatusMutation.isPending}
+                            className="px-3 sm:px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
+                          >
+                            Iniciar Preparo
+                          </button>
+                        )}
+                        {order.status === 'preparing' && (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'ready')}
+                            disabled={updateStatusMutation.isPending}
+                            className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
+                          >
+                            Marcar como Pronto
+                          </button>
+                        )}
+                        {order.status === 'ready' && (
+                          <button
+                            onClick={() => updateOrderStatus(order.id, 'delivered')}
+                            disabled={updateStatusMutation.isPending}
+                            className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
+                          >
+                            Marcar como Entregue
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

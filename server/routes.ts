@@ -314,17 +314,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update order status
-  app.patch("/api/orders/:id/status", async (req, res) => {
+  // Update order (status or estimatedDeliveryTime)
+  app.patch("/api/orders/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      const { status } = req.body;
+      const { status, estimatedDeliveryTime } = req.body;
       
-      if (!['received', 'preparing', 'ready', 'delivered', 'cancelled'].includes(status)) {
+      // Validate status if provided
+      if (status && !['received', 'preparing', 'ready', 'delivered', 'cancelled'].includes(status)) {
         return res.status(400).json({ error: "Invalid status" });
       }
       
-      const updatedOrder = await storage.updateOrderStatus(id, status);
+      let updatedOrder;
+      
+      if (status) {
+        updatedOrder = await storage.updateOrderStatus(id, status);
+      } else if (estimatedDeliveryTime) {
+        updatedOrder = await storage.updateOrderEstimatedTime(id, estimatedDeliveryTime);
+      } else {
+        return res.status(400).json({ error: "Either status or estimatedDeliveryTime is required" });
+      }
       
       // Send WhatsApp notification about status change (optional)
       // await sendStatusUpdateNotification(updatedOrder);

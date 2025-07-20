@@ -31,6 +31,7 @@ export interface IStorage {
   getOrdersByStatus(status: string): Promise<Order[]>;
   getOrdersByLocation(locationId: string): Promise<Order[]>;
   updateOrderStatus(id: number, status: string): Promise<Order>;
+  updateOrderEstimatedTime(id: number, estimatedDeliveryTime: string): Promise<Order>;
   deleteOrder(id: number): Promise<void>;
   
   // Order Items
@@ -300,6 +301,17 @@ export class DatabaseStorage implements IStorage {
         .set({ status: 'available' })
         .where(eq(tables.id, currentOrder.tableId));
     }
+
+    return order;
+  }
+
+  async updateOrderEstimatedTime(id: number, estimatedDeliveryTime: string): Promise<Order> {
+    await this.ensureInitialized();
+    const [order] = await db
+      .update(orders)
+      .set({ estimatedDeliveryTime })
+      .where(eq(orders.id, id))
+      .returning();
 
     return order;
   }

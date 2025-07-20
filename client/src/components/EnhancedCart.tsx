@@ -85,10 +85,7 @@ export default function EnhancedCart({
     return getSubtotal() + deliveryFee;
   };
 
-  const getPreparationTime = () => {
-    const maxTime = Math.max(...cart.map(item => item.preparationTime || 15));
-    return maxTime + (customerInfo.orderType === 'delivery' ? 30 : 0);
-  };
+  // Tempo de preparo será definido pela cozinha após receber o pedido
 
   const handleSubmitOrder = () => {
     if (cart.length === 0) return;
@@ -114,7 +111,7 @@ export default function EnhancedCart({
         paymentMethod: customerInfo.paymentMethod,
         paymentStatus: 'pending',
         notes: customerInfo.notes || undefined,
-        estimatedDeliveryTime: new Date(Date.now() + getPreparationTime() * 60 * 1000).toISOString()
+        estimatedDeliveryTime: undefined // Será definido pela cozinha
       },
       items: orderItems
     };

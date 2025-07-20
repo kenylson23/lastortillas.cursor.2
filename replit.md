@@ -130,6 +130,16 @@ Preferred communication style: Simple, everyday language.
 - **Tipografia Escalonável**: text-xs sm:text-sm para melhor legibilidade em diferentes telas
 - **Espaçamento Otimizado**: p-2 sm:p-4 e gap-2 sm:gap-4 para uso eficiente do espaço
 
+### July 20, 2025: Sistema de Tempo de Preparo Manual na Cozinha
+- **Gestão Manual de Tempo**: Cozinha agora define tempo de preparo estimado para cada pedido
+- **Interface Intuitiva**: Campo numérico para inserir minutos (1-120) com botão "Definir"
+- **Exibição Visual**: Mostra horário estimado de conclusão após definição
+- **Remoção do Cálculo Automático**: Eliminado cálculo automático baseado em itens do menu
+- **API Atualizada**: Novo endpoint PATCH `/api/orders/:id` para atualizar tempo estimado
+- **Backend Otimizado**: Função `updateOrderEstimatedTime` no storage para persistir dados
+- **Responsividade**: Interface funciona perfeitamente em tablets da cozinha
+- **Estados Visuais**: Diferentes cores para pedidos sem tempo (azul) e com tempo definido (verde)
+
 ### July 20, 2025: Sistema de Pedidos Online Totalmente Responsivo para Mobile
 - **Header Adaptável**: Layout flex-col em mobile, flex-row em desktop com logo e botão "Voltar ao Site"
 - **Navegação Responsiva**: Abas com texto adaptável (Menu/Rastrear abreviado em mobile)
