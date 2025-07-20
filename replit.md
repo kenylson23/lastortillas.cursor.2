@@ -118,6 +118,17 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### July 20, 2025: Página de Login Otimizada para Smartphones e Tablets
+- **Responsividade Aprimorada**: Layout otimizado para dispositivos móveis
+- **Breakpoints Inteligentes**: Classes responsivas sm: e lg: para diferentes tamanhos de tela
+- **Otimização de Espaçamento**: Padding e margins adaptáveis entre 4, 6 e 8 (sm:py-4, lg:py-12)
+- **Dimensões Responsivas**: Logo e elementos visuais se adaptam ao tamanho da tela (w-12 h-12 sm:w-16 sm:h-16)
+- **Tipografia Escalonável**: Tamanhos de fonte responsivos (text-xl sm:text-2xl)
+- **Inputs Melhorados**: Campos de texto com altura maior em tablets (py-3 sm:py-4) e tamanho de fonte base
+- **Botões Otimizados**: Alturas e tamanhos de texto adaptáveis para melhor experiência touch
+- **Espaçamento Inteligente**: Margens e paddings reduzidos em smartphones e incrementados em tablets
+- **Quebra de Palavras**: Links do WhatsApp com break-words para melhor exibição em telas pequenas
+
 ### July 20, 2025: Otimizações Completas para Produção em Restaurante
 - **Sistema de Autenticação com Múltiplos Usuários**: Implementado sistema baseado em roles (admin/kitchen)
 - **Redesign Completo do Painel da Cozinha**: Esquema de cores branco e vermelho, layout compacto

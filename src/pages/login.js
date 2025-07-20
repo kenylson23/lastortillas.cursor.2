@@ -59,24 +59,24 @@ export default function Login() {
         />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-br from-mexican-cream to-white flex items-center justify-center py-12 px-4">
-        <div className="max-w-md w-full space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-mexican-cream to-white flex items-center justify-center py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-6 sm:space-y-8">
           {/* Header */}
           <div className="text-center">
-            <Link href="/" className="flex items-center justify-center gap-3 mb-8">
-              <div className="w-16 h-16 bg-accent-orange rounded-full flex items-center justify-center">
-                <span className="text-3xl font-bold">🌮</span>
+            <Link href="/" className="flex items-center justify-center gap-3 mb-6 sm:mb-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-accent-orange rounded-full flex items-center justify-center">
+                <span className="text-2xl sm:text-3xl font-bold">🌮</span>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-mexican-green">Las Tortillas</h1>
-                <p className="text-sm text-gray-600">Mexican Grill</p>
+                <h1 className="text-xl sm:text-2xl font-bold text-mexican-green">Las Tortillas</h1>
+                <p className="text-xs sm:text-sm text-gray-600">Mexican Grill</p>
               </div>
             </Link>
             
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
               {user ? 'Conta Conectada' : 'Acesso Administrativo'}
             </h2>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm sm:text-base text-gray-600 px-2 sm:px-0">
               {user 
                 ? `Logado como ${user.name} (${user.role})`
                 : 'Entre com suas credenciais de administrador'
@@ -86,12 +86,12 @@ export default function Login() {
 
           {/* User Already Logged In */}
           {user ? (
-            <div className="card p-8 text-center">
+            <div className="card p-6 sm:p-8 text-center">
               <div className="mb-6">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-3xl">👤</span>
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <span className="text-2xl sm:text-3xl">👤</span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">
                   Bem-vindo, {user.name}!
                 </h3>
                 <p className="text-sm text-gray-600 mt-2">
@@ -99,22 +99,22 @@ export default function Login() {
                 </p>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <Link 
                   href="/admin" 
-                  className="btn btn-primary w-full py-3"
+                  className="btn btn-primary w-full py-3 text-sm sm:text-base"
                 >
                   Ir para Painel Admin
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="btn btn-outline w-full py-3"
+                  className="btn btn-outline w-full py-3 text-sm sm:text-base"
                 >
                   Sair da Conta
                 </button>
                 <Link 
                   href="/" 
-                  className="btn bg-gray-100 text-gray-700 hover:bg-gray-200 w-full py-3"
+                  className="btn bg-gray-100 text-gray-700 hover:bg-gray-200 w-full py-3 text-sm sm:text-base"
                 >
                   Voltar ao Site
                 </Link>
@@ -122,10 +122,10 @@ export default function Login() {
             </div>
           ) : (
             /* Login Form */
-            <div className="card p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="card p-6 sm:p-8">
+              <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
                 {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 sm:px-4 sm:py-3 rounded-lg text-sm sm:text-base">
                     {error}
                   </div>
                 )}
@@ -141,7 +141,7 @@ export default function Login() {
                     required
                     value={credentials.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mexican-green focus:border-mexican-green"
+                    className="w-full px-3 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mexican-green focus:border-mexican-green text-base"
                     placeholder="admin@lastortillas.com"
                   />
                 </div>
@@ -157,7 +157,7 @@ export default function Login() {
                     required
                     value={credentials.password}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mexican-green focus:border-mexican-green"
+                    className="w-full px-3 py-3 sm:py-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-mexican-green focus:border-mexican-green text-base"
                     placeholder="Digite sua senha"
                   />
                 </div>
@@ -165,7 +165,7 @@ export default function Login() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full btn btn-primary py-3 text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full btn btn-primary py-3 sm:py-4 text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <span className="flex items-center justify-center">
@@ -182,17 +182,17 @@ export default function Login() {
               </form>
 
               {/* Demo Credentials Info */}
-              <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <h4 className="text-sm font-medium text-blue-900 mb-2">
                   Credenciais de Demonstração:
                 </h4>
-                <p className="text-xs text-blue-700">
+                <p className="text-xs sm:text-sm text-blue-700">
                   <strong>Email:</strong> admin@lastortillas.com<br />
                   <strong>Senha:</strong> admin123
                 </p>
               </div>
 
-              <div className="mt-6 text-center">
+              <div className="mt-5 sm:mt-6 text-center">
                 <Link 
                   href="/" 
                   className="text-sm text-mexican-green hover:text-accent-orange"
@@ -204,14 +204,14 @@ export default function Login() {
           )}
 
           {/* Help Section */}
-          <div className="text-center">
+          <div className="text-center px-4 sm:px-0">
             <p className="text-sm text-gray-600">
               Problemas para acessar?{' '}
               <a 
                 href="https://wa.me/244949639932" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-mexican-green hover:text-accent-orange"
+                className="text-mexican-green hover:text-accent-orange break-words"
               >
                 Entre em contato via WhatsApp
               </a>
