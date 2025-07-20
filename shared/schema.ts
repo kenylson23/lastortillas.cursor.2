@@ -51,7 +51,6 @@ export const menuItems = pgTable("menu_items", {
   description: text("description").notNull(),
   price: numeric("price", { precision: 10, scale: 2 }).notNull(),
   category: text("category").notNull(),
-  image: text("image"),
   available: boolean("available").default(true),
   preparationTime: integer("preparation_time").default(15), // minutes
   customizations: text("customizations").array(), // ["sem cebola", "extra queijo"]

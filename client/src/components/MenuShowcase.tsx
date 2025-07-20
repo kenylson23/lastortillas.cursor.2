@@ -22,13 +22,6 @@ const MenuItemCard = memo(({ item, index }: { item: typeof MENU_ITEMS[0], index:
       duration={0.6}
     >
       <div className="menu-item bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300">
-        <div className="relative overflow-hidden">
-          <LazyImage
-            src={item.image}
-            alt={item.name}
-            className="w-full h-40 sm:h-48 transition-transform duration-300 hover:scale-110"
-          />
-        </div>
         <div className="p-4 sm:p-6">
           <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
           <p className="text-sm sm:text-base text-gray-600 mb-4 line-clamp-2">{item.description}</p>

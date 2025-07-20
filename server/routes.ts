@@ -3,9 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertReservationSchema, insertContactSchema, insertOrderSchema, insertOrderItemSchema, insertMenuItemSchema, insertTableSchema } from "../shared/schema";
 import { z } from "zod";
-import multer from "multer";
 import path from "path";
-import fs from "fs";
 import { auth, adminAuth } from "../shared/auth";
 import { generateTableQRCode, generateQRCodeSVG } from './qr-generator';
 
@@ -39,35 +37,7 @@ function cleanExpiredCache() {
 // Executar limpeza do cache a cada 30 segundos
 setInterval(cleanExpiredCache, 30 * 1000);
 
-// Configurar multer para upload de arquivos
-const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
 
-const storage_multer = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, 'menu-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
-
-const upload = multer({
-  storage: storage_multer,
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, true);
-    } else {
-      cb(new Error('Apenas arquivos de imagem são permitidos'));
-    }
-  }
-});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -422,20 +392,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Upload de imagens
-  app.post('/api/upload-image', upload.single('image'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'Nenhuma imagem foi enviada' });
-      }
-      
-      const imageUrl = `/uploads/${req.file.filename}`;
-      res.json({ imageUrl });
-    } catch (error) {
-      console.error('Erro no upload:', error);
-      res.status(500).json({ error: 'Erro ao processar upload da imagem' });
-    }
-  });
+
 
   // Tables routes
   
@@ -655,61 +612,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // =================== LOCAL FILE STORAGE ENDPOINTS ===================
 
-  // Upload file
-  app.post("/api/storage/upload", upload.single('file'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "Nenhum arquivo enviado" });
-      }
-      
-      const publicUrl = `/uploads/${req.file.filename}`;
-      
-      res.json({ 
-        data: { path: req.file.filename }, 
-        publicUrl,
-        message: "Arquivo enviado com sucesso" 
-      });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Get file URL
-  app.get("/api/storage/url/:bucket/:path", async (req, res) => {
-    try {
-      const { bucket, path } = req.params;
-      const publicUrl = `/uploads/${bucket}/${path}`;
-      
-      res.json({ publicUrl });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
-
-  // List files
-  app.get("/api/storage/files/:bucket", async (req, res) => {
-    try {
-      const { bucket } = req.params;
-      
-      // List files from local uploads directory
-      const uploadsPath = path.join(process.cwd(), 'public', 'uploads', bucket);
-      
-      if (!fs.existsSync(uploadsPath)) {
-        return res.json({ files: [] });
-      }
-      
-      const files = fs.readdirSync(uploadsPath).map(file => ({
-        name: file,
-        created_at: fs.statSync(path.join(uploadsPath, file)).birthtime
-      }));
-      
-      res.json({ files });
-    } catch (error: any) {
-      res.status(500).json({ error: error.message });
-    }
-  });
 
   // =================== ADMIN ENDPOINTS ===================
 

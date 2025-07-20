@@ -3,7 +3,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../hooks/use-toast';
 import { MenuItem, InsertMenuItem } from '../../shared/schema';
 import { apiRequest } from '../lib/queryClient';
-import ImageUpload from './ImageUpload';
 
 export default function MenuManagement() {
   const [isAddingItem, setIsAddingItem] = useState(false);
@@ -14,7 +13,6 @@ export default function MenuManagement() {
     description: '',
     price: '0',
     category: '',
-    image: '',
     available: true
   });
   
@@ -51,7 +49,6 @@ export default function MenuManagement() {
         description: '',
         price: '0',
         category: '',
-        image: '',
         available: true
       });
     },
@@ -215,13 +212,7 @@ export default function MenuManagement() {
                   step="0.01"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Imagem</label>
-                <ImageUpload
-                  onImageUploaded={(imageUrl) => setNewItem({...newItem, image: imageUrl})}
-                  currentImage={newItem.image}
-                />
-              </div>
+
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
@@ -271,13 +262,6 @@ export default function MenuManagement() {
               .map(item => (
                 <div key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg space-y-3 sm:space-y-0">
                   <div className="flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto">
-                    {item.image && (
-                      <img 
-                        src={item.image} 
-                        alt={item.name}
-                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-lg flex-shrink-0"
-                      />
-                    )}
                     <div className="min-w-0 flex-1 sm:flex-initial">
                       <h4 className="font-medium text-gray-900 text-sm sm:text-base truncate">{item.name}</h4>
                       <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{item.description}</p>
@@ -354,13 +338,7 @@ export default function MenuManagement() {
                     step="0.01"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Imagem</label>
-                  <ImageUpload
-                    onImageUploaded={(imageUrl) => setEditingItem({...editingItem, image: imageUrl})}
-                    currentImage={editingItem.image || ''}
-                  />
-                </div>
+
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>

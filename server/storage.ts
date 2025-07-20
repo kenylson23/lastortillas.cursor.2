@@ -75,7 +75,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Tacos tradicionais com carne de porco marinada, abacaxi e coentro',
             price: '2500',
             category: 'Tacos',
-            image: '/api/placeholder/400/300',
             available: true
           },
           {
@@ -83,7 +82,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Burrito gigante com carne, feijão, arroz, queijo e molho especial',
             price: '3200',
             category: 'Burritos',
-            image: '/api/placeholder/400/300',
             available: true
           },
           {
@@ -91,7 +89,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Tortilla crocante recheada com queijo derretido e temperos',
             price: '2000',
             category: 'Quesadillas',
-            image: '/api/placeholder/400/300',
             available: true
           },
           {
@@ -99,7 +96,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Chips de tortilla com queijo derretido, guacamole e molho picante',
             price: '2800',
             category: 'Aperitivos',
-            image: '/api/placeholder/400/300',
             available: true
           },
           {
@@ -107,7 +103,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Tortillas recheadas com frango e cobertas com molho verde',
             price: '3000',
             category: 'Enchiladas',
-            image: '/api/placeholder/400/300',
             available: true
           },
           {
@@ -115,7 +110,6 @@ export class DatabaseStorage implements IStorage {
             description: 'Frango grelhado com pimentos e cebolas, servido com tortillas',
             price: '3500',
             category: 'Fajitas',
-            image: '/api/placeholder/400/300',
             available: true
           }
         ];

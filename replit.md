@@ -408,7 +408,17 @@ Preferred communication style: Simple, everyday language.
   - Fixed OrderManagement component to use correct table field names (tableNumber, seats)
   - All API endpoints now working correctly (tables, orders, menu-items)
   - Database tables properly created and sample data initialized
-  - Admin panel now loads without errors and all functionality restoredations from shared/supabase.ts
+  - Admin panel now loads without errors and all functionality restored
+- July 20, 2025: Removed image support from menu items completely
+  - Removed 'image' column from menu_items database table schema
+  - Updated MenuManagement component to remove all image upload functionality
+  - Removed ImageUpload component and all related dependencies
+  - Cleaned up MenuShowcase component to remove image display sections
+  - Removed all multer and file upload endpoints from server routes
+  - Uninstalled multer and @types/multer packages to reduce project size
+  - Updated sample menu data to exclude image references
+  - All menu item functionality now works without image support
+  - System performance improved with reduced complexityations from shared/supabase.ts
   - Updated database configuration to use PostgreSQL directly
   - Replaced Supabase storage endpoints with local file storage
   - Updated authentication endpoints to use local implementation
