@@ -7,7 +7,10 @@ class WebSocketManager {
   private listeners = new Map<string, Set<(data: any) => void>>();
 
   constructor() {
-    this.connect();
+    // Only connect in production to avoid conflicts with Vite WebSocket in development
+    if (import.meta.env.PROD) {
+      this.connect();
+    }
   }
 
   private connect() {
@@ -85,6 +88,10 @@ class WebSocketManager {
 
   // Check if WebSocket is connected
   isConnected() {
+    // In development, always return false to avoid conflicts with Vite
+    if (import.meta.env.DEV) {
+      return false;
+    }
     return this.ws?.readyState === WebSocket.OPEN;
   }
 }

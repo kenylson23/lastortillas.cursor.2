@@ -52,28 +52,45 @@ app.use((req, res, next) => {
   // Create HTTP server
   const server = createServer(app);
   
-  // Setup WebSocket server for real-time updates
-  const wss = new WebSocketServer({ server });
-  
-  // Store connected clients
+  // Setup WebSocket server for real-time updates (only if not in development)
+  let wss: any = null;
   const clients = new Set<any>();
   
-  wss.on('connection', (ws) => {
-    clients.add(ws);
-    log('New WebSocket client connected');
+  if (process.env.NODE_ENV !== 'development') {
+    wss = new WebSocketServer({ server });
     
-    ws.on('close', () => {
-      clients.delete(ws);
-      log('WebSocket client disconnected');
+    wss.on('connection', (ws: any) => {
+      clients.add(ws);
+      log('New WebSocket client connected');
+      
+      ws.on('close', () => {
+        clients.delete(ws);
+        log('WebSocket client disconnected');
+      });
+      
+      ws.on('error', (error: any) => {
+        log(`WebSocket client error: ${error.message}`);
+        clients.delete(ws);
+      });
     });
-  });
+  }
   
   // Function to broadcast updates to all connected clients
   global.broadcastUpdate = (type: string, data: any) => {
+    if (process.env.NODE_ENV === 'development') {
+      // In development, skip WebSocket broadcasting to avoid conflicts with Vite
+      return;
+    }
+    
     const message = JSON.stringify({ type, data, timestamp: Date.now() });
     clients.forEach(client => {
       if (client.readyState === 1) { // WebSocket.OPEN
-        client.send(message);
+        try {
+          client.send(message);
+        } catch (error) {
+          log(`Error sending WebSocket message: ${error}`);
+          clients.delete(client);
+        }
       }
     });
   };

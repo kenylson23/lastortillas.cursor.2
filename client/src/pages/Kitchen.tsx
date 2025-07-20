@@ -88,8 +88,8 @@ export default function Kitchen() {
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ['/api/orders'],
-    // Remove auto-refresh - use WebSocket for real-time updates
-    refetchInterval: false,
+    // Use polling in development, WebSocket in production
+    refetchInterval: import.meta.env.DEV ? 3000 : false, // Poll every 3 seconds in dev
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
     gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
