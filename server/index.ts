@@ -2,8 +2,6 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
-import { createServer } from "http";
-import { WebSocketServer } from "ws";
 
 const app = express();
 app.use(express.json());
@@ -49,53 +47,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  // Create HTTP server
-  const server = createServer(app);
-  
-  // Setup WebSocket server for real-time updates (only if not in development)
-  let wss: any = null;
-  const clients = new Set<any>();
-  
-  if (process.env.NODE_ENV !== 'development') {
-    wss = new WebSocketServer({ server });
-    
-    wss.on('connection', (ws: any) => {
-      clients.add(ws);
-      log('New WebSocket client connected');
-      
-      ws.on('close', () => {
-        clients.delete(ws);
-        log('WebSocket client disconnected');
-      });
-      
-      ws.on('error', (error: any) => {
-        log(`WebSocket client error: ${error.message}`);
-        clients.delete(ws);
-      });
-    });
-  }
-  
-  // Function to broadcast updates to all connected clients
-  global.broadcastUpdate = (type: string, data: any) => {
-    if (process.env.NODE_ENV === 'development') {
-      // In development, skip WebSocket broadcasting to avoid conflicts with Vite
-      return;
-    }
-    
-    const message = JSON.stringify({ type, data, timestamp: Date.now() });
-    clients.forEach(client => {
-      if (client.readyState === 1) { // WebSocket.OPEN
-        try {
-          client.send(message);
-        } catch (error) {
-          log(`Error sending WebSocket message: ${error}`);
-          clients.delete(client);
-        }
-      }
-    });
-  };
-  
-  await registerRoutes(app);
+  const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
