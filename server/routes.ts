@@ -304,6 +304,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const result = await storage.createOrder(validatedOrder, validatedItems);
       
+      // Broadcast new order to all connected clients
+      if (global.broadcastUpdate) {
+        global.broadcastUpdate('orders', result);
+      }
+      
       // Send WhatsApp notification (optional - can be implemented later)
       // await sendWhatsAppNotification(result);
       
@@ -325,6 +330,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const updatedOrder = await storage.updateOrderStatus(id, status);
+      
+      // Broadcast order status update to all connected clients
+      if (global.broadcastUpdate) {
+        global.broadcastUpdate('order-status', { id, status, order: updatedOrder });
+      }
       
       // Send WhatsApp notification about status change (optional)
       // await sendStatusUpdateNotification(updatedOrder);
@@ -384,6 +394,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Remove order and associated items
       await storage.deleteOrder(id);
+      
+      // Broadcast order deletion to all connected clients
+      if (global.broadcastUpdate) {
+        global.broadcastUpdate('orders', { deleted: id });
+      }
       
       res.json({ message: "Pedido removido com sucesso" });
     } catch (error: any) {

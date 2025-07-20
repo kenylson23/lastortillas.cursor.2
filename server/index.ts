@@ -2,6 +2,8 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import path from "path";
+import { createServer } from "http";
+import { WebSocketServer } from "ws";
 
 const app = express();
 app.use(express.json());
@@ -47,7 +49,36 @@ app.use((req, res, next) => {
 });
 
 (async () => {
-  const server = await registerRoutes(app);
+  // Create HTTP server
+  const server = createServer(app);
+  
+  // Setup WebSocket server for real-time updates
+  const wss = new WebSocketServer({ server });
+  
+  // Store connected clients
+  const clients = new Set<any>();
+  
+  wss.on('connection', (ws) => {
+    clients.add(ws);
+    log('New WebSocket client connected');
+    
+    ws.on('close', () => {
+      clients.delete(ws);
+      log('WebSocket client disconnected');
+    });
+  });
+  
+  // Function to broadcast updates to all connected clients
+  global.broadcastUpdate = (type: string, data: any) => {
+    const message = JSON.stringify({ type, data, timestamp: Date.now() });
+    clients.forEach(client => {
+      if (client.readyState === 1) { // WebSocket.OPEN
+        client.send(message);
+      }
+    });
+  };
+  
+  await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

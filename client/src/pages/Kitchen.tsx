@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '../hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Clock, CheckCircle, AlertCircle, RefreshCw, ArrowLeft, Timer, Bell, Users, MapPin, Phone, Flame, Pause, Play, Star, ChefHat, TrendingUp } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, RefreshCw, ArrowLeft, Timer, Bell, Users, MapPin, Phone, Flame, Pause, Play, Star, ChefHat, TrendingUp, Wifi, WifiOff } from 'lucide-react';
+import { useRealTimeUpdates, wsManager } from '../lib/websocket';
 
 interface Order {
   id: number;
@@ -35,9 +36,29 @@ export default function Kitchen() {
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [showStats, setShowStats] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [isConnected, setIsConnected] = useState(false);
 
   const queryClient = useQueryClient();
+
+  // Check WebSocket connection status
+  useEffect(() => {
+    const checkConnection = () => {
+      setIsConnected(wsManager.isConnected());
+    };
+    
+    checkConnection();
+    const interval = setInterval(checkConnection, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Real-time updates using WebSocket
+  const invalidateOrders = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+  }, [queryClient]);
+
+  useRealTimeUpdates('orders', invalidateOrders);
+  useRealTimeUpdates('order-status', invalidateOrders);
 
   useEffect(() => {
     if (!isLoading && (!isAuthenticated || (userRole !== 'kitchen' && userRole !== 'admin'))) {
@@ -67,7 +88,10 @@ export default function Kitchen() {
 
   const { data: orders = [], isLoading: ordersLoading } = useQuery<Order[]>({
     queryKey: ['/api/orders'],
-    refetchInterval: autoRefresh ? 3000 : false,
+    // Remove auto-refresh - use WebSocket for real-time updates
+    refetchInterval: false,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
   });
 
   if (isLoading) {
@@ -111,9 +135,31 @@ export default function Kitchen() {
           
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-600">Online</span>
+              {isConnected ? (
+                <>
+                  <Wifi className="w-4 h-4 text-green-600" />
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-sm text-green-600 font-medium">Tempo Real</span>
+                </>
+              ) : (
+                <>
+                  <WifiOff className="w-4 h-4 text-orange-600" />
+                  <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                  <span className="text-sm text-orange-600 font-medium">Reconectando...</span>
+                </>
+              )}
             </div>
+            <button
+              onClick={() => {
+                queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
+                queryClient.refetchQueries({ queryKey: ['/api/orders'] });
+              }}
+              className="flex items-center gap-1 px-2 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-md transition-colors"
+              title="Atualizar manualmente"
+            >
+              <RefreshCw className="w-4 h-4" />
+              <span className="hidden sm:inline">Atualizar</span>
+            </button>
           </div>
         </div>
       </div>
@@ -144,16 +190,20 @@ export default function Kitchen() {
             ))}
           </div>
 
-          {/* Auto-refresh toggle */}
-          <button
-            onClick={() => setAutoRefresh(!autoRefresh)}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors ${
-              autoRefresh ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
-            }`}
-          >
-            <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} />
-            Auto-refresh
-          </button>
+          {/* Connection Status */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full text-sm bg-gray-100">
+            {isConnected ? (
+              <>
+                <Wifi className="w-4 h-4 text-green-600" />
+                <span className="text-green-700 font-medium">Atualizações Automáticas</span>
+              </>
+            ) : (
+              <>
+                <WifiOff className="w-4 h-4 text-orange-600" />
+                <span className="text-orange-700 font-medium">Modo Offline</span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
