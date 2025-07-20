@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X, Copy, Zap, Grid } from 'lucide-react';
+import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X, Copy, Zap, Grid, QrCode } from 'lucide-react';
 import { Table, InsertTable } from '@shared/schema';
+import QRCodeModal from './QRCodeModal';
 
 interface TableModalProps {
   isOpen: boolean;
@@ -415,6 +416,8 @@ export default function TableManagement() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTable, setSelectedTable] = useState<Table | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'info' } | null>(null);
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [qrSelectedTable, setQrSelectedTable] = useState<Table | null>(null);
   const queryClient = useQueryClient();
 
   // Função centralizada para invalidar cache de mesas
@@ -783,6 +786,16 @@ export default function TableManagement() {
                 </div>
                 <div className="flex space-x-1">
                   <button
+                    onClick={() => {
+                      setQrSelectedTable(table);
+                      setQrModalOpen(true);
+                    }}
+                    className="p-1.5 text-purple-600 hover:bg-purple-50 rounded-md transition-colors"
+                    title="QR Code da mesa"
+                  >
+                    <QrCode className="w-4 h-4" />
+                  </button>
+                  <button
                     onClick={() => handleEditTable(table)}
                     className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                     title="Editar mesa"
@@ -858,6 +871,15 @@ export default function TableManagement() {
         onSave={handleSaveTable}
         allTables={tables || []}
       />
+
+      {/* QR Code Modal */}
+      {qrSelectedTable && (
+        <QRCodeModal
+          isOpen={qrModalOpen}
+          onClose={() => setQrModalOpen(false)}
+          table={qrSelectedTable}
+        />
+      )}
 
       {/* Toast de notificação */}
       {toast && (

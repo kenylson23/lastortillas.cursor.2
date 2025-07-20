@@ -92,6 +92,8 @@ export const tables = pgTable("tables", {
   tableNumber: integer("table_number").notNull(),
   seats: integer("seats").notNull(),
   status: text("status").notNull().default("available"), // "available", "occupied", "reserved", "maintenance"
+  qrCode: text("qr_code").unique(), // Código QR único para a mesa
+  qrCodeUrl: text("qr_code_url"), // URL completa do QR code 
   createdAt: timestamp("created_at").defaultNow(),
 });
 

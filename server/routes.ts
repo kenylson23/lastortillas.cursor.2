@@ -7,6 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { auth, adminAuth } from "../shared/auth";
+import { generateTableQRCode, generateQRCodeSVG } from './qr-generator';
 
 // Cache otimizado para verificação de disponibilidade
 const availabilityCache = new Map<string, { available: boolean; timestamp: number }>();
@@ -513,6 +514,67 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const table = await storage.updateTableStatus(id, status);
       res.json(table);
     } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Generate QR Code for table
+  app.post("/api/tables/:id/qr-code", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const table = await storage.getTable(id);
+      
+      if (!table) {
+        return res.status(404).json({ error: "Mesa não encontrada" });
+      }
+      
+      const baseUrl = req.headers.origin || req.protocol + '://' + req.get('host');
+      const { qrCodeUrl, qrCode } = await generateTableQRCode(
+        table.id,
+        table.locationId,
+        table.tableNumber,
+        baseUrl
+      );
+      
+      // Atualizar a mesa com o QR code
+      const updatedTable = await storage.updateTable(id, { 
+        qrCode,
+        qrCodeUrl 
+      });
+      
+      res.json({
+        table: updatedTable,
+        qrCodeUrl,
+        qrCode
+      });
+    } catch (error: any) {
+      console.error('Erro ao gerar QR code:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // Get QR Code SVG for table
+  app.get("/api/tables/:id/qr-code.svg", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const table = await storage.getTable(id);
+      
+      if (!table) {
+        return res.status(404).json({ error: "Mesa não encontrada" });
+      }
+      
+      const baseUrl = req.headers.origin || req.protocol + '://' + req.get('host');
+      const svgQR = await generateQRCodeSVG(
+        table.id,
+        table.locationId,
+        table.tableNumber,
+        baseUrl
+      );
+      
+      res.setHeader('Content-Type', 'image/svg+xml');
+      res.send(svgQR);
+    } catch (error: any) {
+      console.error('Erro ao gerar QR SVG:', error);
       res.status(500).json({ error: error.message });
     }
   });
