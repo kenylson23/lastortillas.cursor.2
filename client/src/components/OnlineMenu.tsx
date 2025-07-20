@@ -15,6 +15,9 @@ interface CartItem extends MenuItem {
 
 interface OnlineMenuProps {
   locationId: string;
+  tableId?: number;
+  tableNumber?: number;
+  qrCode?: string;
   onOrderCreated?: (order: Order) => void;
   onLocationChange?: (locationId: string) => void;
   onBackToSite?: () => void;
@@ -22,6 +25,9 @@ interface OnlineMenuProps {
 
 export default function OnlineMenu({ 
   locationId, 
+  tableId,
+  tableNumber,
+  qrCode,
   onOrderCreated, 
   onLocationChange = () => {}, 
   onBackToSite = () => {} 
@@ -81,6 +87,21 @@ export default function OnlineMenu({
       localStorage.setItem(`customerInfo_${locationId}`, JSON.stringify(customerInfo));
     }
   }, [customerInfo, locationId]);
+
+  // Atualizar informações da mesa quando QR code é escaneado
+  useEffect(() => {
+    if (tableId && tableNumber) {
+      setCustomerInfo(prev => ({
+        ...prev,
+        tableId: tableId,
+        orderType: 'dine-in', // Automaticamente configurar como "comer no local"
+        address: '' // Limpar endereço já que é mesa no restaurante
+      }));
+      
+      // Mostrar notificação visual que a mesa foi identificada
+      console.log(`Mesa ${tableNumber} identificada automaticamente via QR Code`);
+    }
+  }, [tableId, tableNumber]);
 
   // Keyboard shortcuts for better navigation
   useEffect(() => {
@@ -403,6 +424,20 @@ export default function OnlineMenu({
             <div className="flex items-center space-x-3">
               <div className="text-2xl">🌮</div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
+              
+              {/* QR Code Table Indicator */}
+              {tableId && tableNumber && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ml-2"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Mesa {tableNumber}</span>
+                </motion.div>
+              )}
             </div>
 
             {/* Right Section */}
