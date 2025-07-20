@@ -39,6 +39,10 @@ export default function Kitchen() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, isLoading, userRole } = useAuth();
 
+  // Estados para controles
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  
   // Sistema de notificação sonora para novos pedidos
   const [lastOrderCount, setLastOrderCount] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -63,10 +67,6 @@ export default function Kitchen() {
     oscillator.start(audioContext.currentTime);
     oscillator.stop(audioContext.currentTime + 0.2);
   };
-
-  // Estados para controles
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(true);
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
