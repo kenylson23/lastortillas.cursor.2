@@ -58,7 +58,7 @@ interface KitchenStats {
 
 export default function Kitchen() {
   const [, setLocation] = useLocation();
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, userRole } = useAuth();
 
   // Apply dark theme styles
   useEffect(() => {
@@ -85,10 +85,10 @@ export default function Kitchen() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && (!isAuthenticated || (userRole !== 'kitchen' && userRole !== 'admin'))) {
       setLocation('/login');
     }
-  }, [isAuthenticated, isLoading, setLocation]);
+  }, [isAuthenticated, isLoading, userRole, setLocation]);
 
   // Mutation for updating order status
   const updateStatusMutation = useMutation({

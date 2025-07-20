@@ -10,13 +10,13 @@ import { RefreshCw } from 'lucide-react';
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('orders');
-  const { isAuthenticated, isLoading, logout } = useAuth();
+  const { isAuthenticated, isLoading, userRole, logout } = useAuth();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && (!isAuthenticated || userRole !== 'admin')) {
       setLocation('/login');
     }
-  }, [isAuthenticated, isLoading, setLocation]);
+  }, [isAuthenticated, isLoading, userRole, setLocation]);
 
   if (isLoading) {
     return (

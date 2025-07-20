@@ -118,6 +118,19 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### July 20, 2025: Sistema de Autenticação com Múltiplos Usuários
+- Implementado sistema de autenticação baseado em roles para diferentes tipos de usuários
+- Criadas credenciais específicas para painel da cozinha separadas do administrador
+- Adicionado controle de acesso baseado em roles (admin e kitchen)
+- Interface de login atualizada com duas opções de credenciais claramente identificadas
+- Sistema de redirecionamento baseado no tipo de usuário logado
+- Painel administrativo restrito apenas para usuários com role 'admin'
+- Painel da cozinha acessível para usuários 'kitchen' e 'admin'
+
+**Credenciais de Acesso:**
+- **Administrador**: usuário `administrador`, senha `lasTortillas2025!`
+- **Cozinha**: usuário `cozinha`, senha `lasTortillas2025Cozinha!`
+
 ### July 19, 2025: Enhanced Table Management System
 - Fixed PostgreSQL database connection issues by creating new database instance
 - Implemented comprehensive table creation improvements with bulk creation mode

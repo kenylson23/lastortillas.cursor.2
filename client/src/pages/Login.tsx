@@ -17,14 +17,27 @@ export default function Login() {
     // Simple authentication - in production, this would be handled by the backend
     if (credentials.username === 'administrador' && credentials.password === 'lasTortillas2025!') {
       localStorage.setItem('isAuthenticated', 'true');
-      console.log('Login bem-sucedido');
+      localStorage.setItem('userRole', 'admin');
+      console.log('Login bem-sucedido - Administrador');
       toast({
         title: "Login realizado com sucesso",
-        description: "Redirecionando para o painel de gestão...",
+        description: "Redirecionando para o painel administrativo...",
         variant: "success",
       });
       setTimeout(() => {
         setLocation('/admin');
+      }, 1000);
+    } else if (credentials.username === 'cozinha' && credentials.password === 'lasTortillas2025Cozinha!') {
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('userRole', 'kitchen');
+      console.log('Login bem-sucedido - Cozinha');
+      toast({
+        title: "Login realizado com sucesso",
+        description: "Redirecionando para o painel da cozinha...",
+        variant: "success",
+      });
+      setTimeout(() => {
+        setLocation('/kitchen');
       }, 1000);
     } else {
       console.log('Credenciais inválidas:', credentials);
@@ -121,9 +134,19 @@ export default function Login() {
 
             <div className="text-center space-y-3">
               <div className="text-xs sm:text-sm text-gray-500 bg-gray-50 p-3 rounded-lg border">
-                <div className="font-medium text-gray-700 mb-1">Credenciais de acesso:</div>
-                <div>👤 Usuário: <span className="font-mono">administrador</span></div>
-                <div>🔑 Senha: <span className="font-mono">lasTortillas2025!</span></div>
+                <div className="font-medium text-gray-700 mb-2">Credenciais de acesso:</div>
+                <div className="space-y-2">
+                  <div className="bg-blue-50 p-2 rounded border-l-4 border-blue-400">
+                    <div className="font-medium text-blue-800 mb-1">🔧 Administrador:</div>
+                    <div className="text-blue-700">👤 Usuário: <span className="font-mono">administrador</span></div>
+                    <div className="text-blue-700">🔑 Senha: <span className="font-mono">lasTortillas2025!</span></div>
+                  </div>
+                  <div className="bg-orange-50 p-2 rounded border-l-4 border-orange-400">
+                    <div className="font-medium text-orange-800 mb-1">👨‍🍳 Cozinha:</div>
+                    <div className="text-orange-700">👤 Usuário: <span className="font-mono">cozinha</span></div>
+                    <div className="text-orange-700">🔑 Senha: <span className="font-mono">lasTortillas2025Cozinha!</span></div>
+                  </div>
+                </div>
               </div>
               <button
                 type="button"
