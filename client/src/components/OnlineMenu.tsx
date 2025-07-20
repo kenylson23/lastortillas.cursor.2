@@ -509,8 +509,20 @@ export default function OnlineMenu({
       <div className="bg-white shadow-sm text-gray-800 sticky top-0 z-40 border-b border-gray-200">
         <div className="px-2 py-2 sm:px-4 sm:py-3 lg:px-6 lg:py-4">
           <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
-            {/* Logo */}
+            {/* Left Section with Back Button and Logo */}
             <div className="flex items-center space-x-2 sm:space-x-3">
+              {/* Back to Site Button */}
+              <button
+                onClick={() => window.location.href = '/'}
+                className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-1.5 sm:py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 text-xs sm:text-sm font-medium"
+              >
+                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span className="hidden sm:inline">Voltar ao Site</span>
+                <span className="sm:hidden">Voltar</span>
+              </button>
+              
               <div className="text-xl sm:text-2xl">🌮</div>
               <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold tracking-wide text-gray-800">Las Tortillas</h1>
               

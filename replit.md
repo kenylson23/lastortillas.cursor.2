@@ -130,6 +130,17 @@ Preferred communication style: Simple, everyday language.
 - **Tipografia Escalonável**: text-xs sm:text-sm para melhor legibilidade em diferentes telas
 - **Espaçamento Otimizado**: p-2 sm:p-4 e gap-2 sm:gap-4 para uso eficiente do espaço
 
+### July 20, 2025: Sistema de Pedidos Online Totalmente Responsivo para Mobile
+- **Header Adaptável**: Layout flex-col em mobile, flex-row em desktop com logo e botão "Voltar ao Site"
+- **Navegação Responsiva**: Abas com texto adaptável (Menu/Rastrear abreviado em mobile)
+- **Busca Otimizada**: Barra de busca com placeholder reduzido e padding responsivo
+- **Categorias Touch-Friendly**: Scroll horizontal suave com texto truncado para telas pequenas
+- **Cards de Menu Responsivos**: Altura de imagem adaptável (h-40 sm:h-48 lg:h-56) e badges otimizadas
+- **Botões de Ação**: Texto adaptável ("Adicionar" em mobile, "Adicionar ao Carrinho" em desktop)
+- **Grid Responsivo**: 1 coluna mobile, 2 tablet, 3-4 desktop com gaps otimizados
+- **Scroll Sem Barra**: Classes scrollbar-hide para melhor experiência visual
+- **Breadcrumbs Inteligentes**: Navegação com texto truncado e overflow hidden
+
 ### July 20, 2025: Página de Login Otimizada para Smartphones e Tablets
 - **Responsividade Aprimorada**: Layout otimizado para dispositivos móveis
 - **Breakpoints Inteligentes**: Classes responsivas sm: e lg: para diferentes tamanhos de tela
