@@ -2,7 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '../hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { BarChart3, TrendingUp, Clock, CheckCircle, ArrowLeft, RefreshCw, Bell, BellOff, Users, MapPin, Phone, Timer, AlertCircle } from 'lucide-react';
+import { 
+  ArrowLeft, RefreshCw, Bell, BellOff, BarChart3, 
+  Clock, CheckCircle, Users, MapPin, Phone, Timer, 
+  AlertCircle, ChefHat, Package, TrendingUp 
+} from 'lucide-react';
+
+interface OrderItem {
+  id?: number;
+  menuItemId: number;
+  name?: string;
+  quantity: number;
+  unitPrice: string;
+  customizations?: string[];
+  preparationTime?: number;
+}
 
 interface Order {
   id: number;
@@ -12,13 +26,7 @@ interface Order {
   status: string;
   totalAmount: string;
   notes?: string;
-  items: Array<{
-    id: number;
-    name: string;
-    quantity: number;
-    customizations?: string[];
-    preparationTime?: number;
-  }>;
+  items: OrderItem[];
   createdAt: string;
   estimatedDeliveryTime?: string;
   locationId: string;
@@ -26,19 +34,13 @@ interface Order {
   priority?: 'low' | 'normal' | 'high' | 'urgent';
 }
 
-interface KitchenFilters {
-  status: string;
-  location: string;
-  sortBy: 'time' | 'priority' | 'type';
-  orderType?: string;
-}
-
-interface KitchenStats {
-  totalOrders: number;
-  activeOrders: number;
-  completedToday: number;
-  averageTime: number;
-  delayedOrders: number;
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  preparationTime?: number;
 }
 
 export default function Kitchen() {
@@ -46,7 +48,26 @@ export default function Kitchen() {
   const { isAuthenticated, isLoading, userRole } = useAuth();
   const queryClient = useQueryClient();
 
-  // Apply white theme styles for kitchen
+  // Estados de controle
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [showStats, setShowStats] = useState(true);
+  const [selectedStatus, setSelectedStatus] = useState('all');
+  const [selectedLocation, setSelectedLocation] = useState('all');
+  const [sortBy, setSortBy] = useState<'time' | 'priority' | 'status'>('time');
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+
+  // Sistema de som
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+
+  // Verificação de autenticação
+  useEffect(() => {
+    if (!isLoading && (!isAuthenticated || (userRole !== 'kitchen' && userRole !== 'admin'))) {
+      setLocation('/login');
+    }
+  }, [isAuthenticated, isLoading, userRole, setLocation]);
+
+  // Configuração do tema
   useEffect(() => {
     document.body.style.backgroundColor = '#ffffff';
     document.body.style.color = '#1f2937';
@@ -57,28 +78,27 @@ export default function Kitchen() {
     };
   }, []);
 
-  // Estados para controles
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const [showStats, setShowStats] = useState(true);
-  const [lastOrderCount, setLastOrderCount] = useState(0);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  
-  // Filtros da cozinha
-  const [filters, setFilters] = useState<KitchenFilters>({
-    status: 'all',
-    location: 'all',
-    sortBy: 'time'
-  });
+  // Inicializar AudioContext
+  useEffect(() => {
+    if (soundEnabled && !audioContext) {
+      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(context);
+    }
+  }, [soundEnabled, audioContext]);
 
-  // Query para buscar pedidos
-  const { data: orders = [], isLoading: ordersLoading, refetch } = useQuery<Order[]>({
+  // Queries
+  const { data: orders = [], isLoading: ordersLoading, refetch: refetchOrders } = useQuery<Order[]>({
     queryKey: ['/api/orders'],
     refetchInterval: autoRefresh ? 3000 : false,
     refetchIntervalInBackground: true,
   });
 
-  // Mutation para atualizar status do pedido
+  const { data: menuItems = [] } = useQuery<MenuItem[]>({
+    queryKey: ['/api/menu-items'],
+    staleTime: 5 * 60 * 1000, // 5 minutos
+  });
+
+  // Mutation para atualizar status
   const updateStatusMutation = useMutation({
     mutationFn: async ({ orderId, status }: { orderId: number; status: string }) => {
       const response = await fetch(`/api/orders/${orderId}/status`, {
@@ -88,7 +108,7 @@ export default function Kitchen() {
       });
       
       if (!response.ok) {
-        throw new Error('Failed to update order status');
+        throw new Error('Falha ao atualizar status do pedido');
       }
       
       return response.json();
@@ -98,15 +118,7 @@ export default function Kitchen() {
     },
   });
 
-  // Inicializar AudioContext
-  useEffect(() => {
-    if (soundEnabled && !audioContext) {
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-      setAudioContext(context);
-    }
-  }, [soundEnabled, audioContext]);
-
-  // Função para tocar som
+  // Sistema de notificação sonora
   const playNotificationSound = () => {
     if (!soundEnabled || !audioContext) return;
 
@@ -131,120 +143,136 @@ export default function Kitchen() {
     }
   };
 
-  // Verificação de autenticação
+  // Detectar novos pedidos
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || (userRole !== 'kitchen' && userRole !== 'admin'))) {
-      setLocation('/login');
-    }
-  }, [isAuthenticated, isLoading, userRole, setLocation]);
-
-  // Detectar novos pedidos e tocar som
-  useEffect(() => {
-    if (orders && orders.length > lastOrderCount && lastOrderCount > 0) {
+    if (orders.length > lastOrderCount && lastOrderCount > 0) {
       playNotificationSound();
     }
-    if (orders) {
-      setLastOrderCount(orders.length);
-    }
-  }, [orders?.length, lastOrderCount, soundEnabled, audioContext]);
+    setLastOrderCount(orders.length);
+  }, [orders.length, lastOrderCount, soundEnabled]);
 
-  // Funções auxiliares para estatísticas
-  const isToday = (dateString: string): boolean => {
-    const date = new Date(dateString);
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
+  // Funções auxiliares
+  const getMenuItemName = (menuItemId: number): string => {
+    const item = menuItems.find(m => m.id === menuItemId);
+    return item?.name || `Item #${menuItemId}`;
   };
 
-  const calculateAverageTime = (orders: Order[]): number => {
-    const completedOrders = orders.filter(o => o.status === 'delivered');
-    if (completedOrders.length === 0) return 0;
-    
-    const totalTime = completedOrders.reduce((sum, order) => {
-      const start = new Date(order.createdAt);
-      const now = new Date();
-      return sum + (now.getTime() - start.getTime()) / (1000 * 60);
-    }, 0);
-    
-    return Math.round(totalTime / completedOrders.length);
-  };
-
-  const isOrderDelayed = (order: Order): boolean => {
-    const orderTime = new Date(order.createdAt);
+  const getOrderDuration = (createdAt: string): string => {
     const now = new Date();
-    const timeDiff = now.getTime() - orderTime.getTime();
-    const minutesDiff = timeDiff / (1000 * 60);
+    const orderTime = new Date(createdAt);
+    const diffMinutes = Math.floor((now.getTime() - orderTime.getTime()) / (1000 * 60));
     
-    return minutesDiff > 30 && ['received', 'preparing'].includes(order.status);
+    if (diffMinutes < 60) return `${diffMinutes}min`;
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+    return `${hours}h ${minutes}min`;
   };
 
-  // Calcular estatísticas da cozinha
-  const kitchenStats: KitchenStats = {
-    totalOrders: orders.length,
-    activeOrders: orders.filter(o => ['received', 'preparing'].includes(o.status)).length,
-    completedToday: orders.filter(o => o.status === 'delivered' && isToday(o.createdAt)).length,
-    averageTime: calculateAverageTime(orders),
-    delayedOrders: orders.filter(o => isOrderDelayed(o)).length
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'received': return 'border-blue-500 bg-blue-50 text-blue-900';
+      case 'preparing': return 'border-yellow-500 bg-yellow-50 text-yellow-900';
+      case 'ready': return 'border-green-500 bg-green-50 text-green-900';
+      case 'delivered': return 'border-gray-500 bg-gray-50 text-gray-900';
+      case 'cancelled': return 'border-red-500 bg-red-50 text-red-900';
+      default: return 'border-gray-300 bg-white text-gray-900';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'received': return 'Recebido';
+      case 'preparing': return 'Preparando';
+      case 'ready': return 'Pronto';
+      case 'delivered': return 'Entregue';
+      case 'cancelled': return 'Cancelado';
+      default: return status;
+    }
+  };
+
+  const getLocationName = (locationId: string) => {
+    switch (locationId) {
+      case 'talatona': return 'Talatona';
+      case 'ilha': return 'Ilha';
+      case 'movel': return 'Móvel';
+      default: return locationId;
+    }
+  };
+
+  const getOrderTypeIcon = (type: string) => {
+    switch (type) {
+      case 'delivery': return '🚚';
+      case 'takeaway': return '🥡';
+      case 'dine-in': return '🍽️';
+      default: return '📦';
+    }
+  };
+
+  const getNextStatus = (currentStatus: string) => {
+    switch (currentStatus) {
+      case 'received': return 'preparing';
+      case 'preparing': return 'ready';
+      case 'ready': return 'delivered';
+      default: return null;
+    }
+  };
+
+  const getNextStatusText = (currentStatus: string) => {
+    switch (currentStatus) {
+      case 'received': return 'Iniciar Preparo';
+      case 'preparing': return 'Marcar Pronto';
+      case 'ready': return 'Marcar Entregue';
+      default: return null;
+    }
   };
 
   // Filtrar e ordenar pedidos
   const filteredOrders = orders
     .filter(order => {
-      if (filters.status !== 'all' && order.status !== filters.status) return false;
-      if (filters.location !== 'all' && order.locationId !== filters.location) return false;
+      if (selectedStatus !== 'all' && order.status !== selectedStatus) return false;
+      if (selectedLocation !== 'all' && order.locationId !== selectedLocation) return false;
       return true;
     })
     .sort((a, b) => {
-      switch (filters.sortBy) {
+      switch (sortBy) {
         case 'time':
           return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         case 'priority':
           const priorityOrder = { urgent: 0, high: 1, normal: 2, low: 3 };
           return (priorityOrder[a.priority || 'normal'] || 2) - (priorityOrder[b.priority || 'normal'] || 2);
-        case 'type':
-          return a.orderType.localeCompare(b.orderType);
+        case 'status':
+          const statusOrder = { received: 0, preparing: 1, ready: 2, delivered: 3, cancelled: 4 };
+          return (statusOrder[a.status as keyof typeof statusOrder] || 0) - (statusOrder[b.status as keyof typeof statusOrder] || 0);
         default:
           return 0;
       }
     });
 
-  // Handlers para eventos
-  const handleFiltersChange = (newFilters: Partial<KitchenFilters>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+  // Calcular estatísticas
+  const stats = {
+    total: orders.length,
+    active: orders.filter(o => ['received', 'preparing'].includes(o.status)).length,
+    ready: orders.filter(o => o.status === 'ready').length,
+    completed: orders.filter(o => o.status === 'delivered').length,
+    delayed: orders.filter(o => {
+      const orderTime = new Date(o.createdAt);
+      const now = new Date();
+      const diffMinutes = (now.getTime() - orderTime.getTime()) / (1000 * 60);
+      return diffMinutes > 30 && ['received', 'preparing'].includes(o.status);
+    }).length
   };
 
-  const handleSoundToggle = () => {
-    setSoundEnabled(!soundEnabled);
-  };
-
-  const handleAutoRefreshToggle = () => {
-    setAutoRefresh(!autoRefresh);
-  };
-
-  const handleStatsToggle = () => {
-    setShowStats(!showStats);
-  };
-
-  const handleRefresh = () => {
-    refetch();
-  };
-
-  const handleStatusUpdate = (orderId: number, status: string) => {
-    updateStatusMutation.mutate({ orderId, status });
-  };
-
-  // Loading state
   if (isLoading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando painel da cozinha...</p>
+          <ChefHat className="mx-auto h-12 w-12 text-red-500 animate-pulse mb-4" />
+          <p className="text-gray-600">Carregando painel da cozinha...</p>
         </div>
       </div>
     );
   }
 
-  // Redirect if not authenticated
   if (!isAuthenticated) {
     return null;
   }
@@ -252,136 +280,134 @@ export default function Kitchen() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setLocation('/admin')}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-            >
-              <ArrowLeft size={20} />
-              <span className="hidden sm:block">Voltar</span>
-            </button>
-            
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Painel da Cozinha</h1>
-              <p className="text-sm text-gray-500">Gestão de pedidos em tempo real</p>
+      <div className="bg-white shadow-sm border-b">
+        <div className="px-4 py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setLocation('/admin')}
+                className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+              >
+                <ArrowLeft size={20} />
+                <span className="hidden sm:block">Voltar</span>
+              </button>
+              
+              <div className="flex items-center space-x-3">
+                <ChefHat className="h-8 w-8 text-red-600" />
+                <div>
+                  <h1 className="text-xl font-bold text-gray-900">Painel da Cozinha</h1>
+                  <p className="text-sm text-gray-500">Las Tortillas Mexican Grill</p>
+                </div>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleStatsToggle}
-              className={`p-2 rounded-lg transition-colors ${
-                showStats 
-                  ? 'bg-red-100 text-red-600' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              title={showStats ? 'Ocultar estatísticas' : 'Mostrar estatísticas'}
-            >
-              <BarChart3 size={20} />
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowStats(!showStats)}
+                className={`p-2 rounded-lg transition-colors ${
+                  showStats ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                title={showStats ? 'Ocultar estatísticas' : 'Mostrar estatísticas'}
+              >
+                <BarChart3 size={20} />
+              </button>
 
-            <button
-              onClick={handleSoundToggle}
-              className={`p-2 rounded-lg transition-colors ${
-                soundEnabled 
-                  ? 'bg-green-100 text-green-600' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              title={soundEnabled ? 'Desativar som' : 'Ativar som'}
-            >
-              {soundEnabled ? <Bell size={20} /> : <BellOff size={20} />}
-            </button>
+              <button
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className={`p-2 rounded-lg transition-colors ${
+                  soundEnabled ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                title={soundEnabled ? 'Desativar som' : 'Ativar som'}
+              >
+                {soundEnabled ? <Bell size={20} /> : <BellOff size={20} />}
+              </button>
 
-            <button
-              onClick={handleAutoRefreshToggle}
-              className={`p-2 rounded-lg transition-colors ${
-                autoRefresh 
-                  ? 'bg-blue-100 text-blue-600' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              title={autoRefresh ? 'Desativar atualização automática' : 'Ativar atualização automática'}
-            >
-              <RefreshCw size={20} className={autoRefresh ? 'animate-spin' : ''} />
-            </button>
+              <button
+                onClick={() => setAutoRefresh(!autoRefresh)}
+                className={`p-2 rounded-lg transition-colors ${
+                  autoRefresh ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                title={autoRefresh ? 'Desativar atualização automática' : 'Ativar atualização automática'}
+              >
+                <RefreshCw size={20} className={autoRefresh ? 'animate-spin' : ''} />
+              </button>
 
-            <button
-              onClick={handleRefresh}
-              className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
-              title="Atualizar agora"
-            >
-              <RefreshCw size={20} />
-            </button>
+              <button
+                onClick={() => refetchOrders()}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+              >
+                <RefreshCw size={16} className="inline mr-2" />
+                Atualizar
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Estatísticas */}
       {showStats && (
-        <div className="bg-white border-b border-gray-200 p-4">
+        <div className="bg-white border-b p-4">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-blue-50 rounded-lg p-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <BarChart3 size={16} className="text-blue-600" />
+            <div className="bg-blue-50 rounded-lg p-3 text-center border border-blue-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
+                <Package size={16} className="text-blue-600" />
                 <span className="text-sm font-medium text-blue-800">Total</span>
               </div>
-              <div className="text-xl font-bold text-blue-900">{kitchenStats.totalOrders}</div>
+              <div className="text-2xl font-bold text-blue-900">{stats.total}</div>
             </div>
             
-            <div className="bg-yellow-50 rounded-lg p-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <Clock size={16} className="text-yellow-600" />
+            <div className="bg-yellow-50 rounded-lg p-3 text-center border border-yellow-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
+                <Timer size={16} className="text-yellow-600" />
                 <span className="text-sm font-medium text-yellow-800">Ativos</span>
               </div>
-              <div className="text-xl font-bold text-yellow-900">{kitchenStats.activeOrders}</div>
+              <div className="text-2xl font-bold text-yellow-900">{stats.active}</div>
             </div>
             
-            <div className="bg-green-50 rounded-lg p-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="bg-green-50 rounded-lg p-3 text-center border border-green-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
                 <CheckCircle size={16} className="text-green-600" />
-                <span className="text-sm font-medium text-green-800">Hoje</span>
+                <span className="text-sm font-medium text-green-800">Prontos</span>
               </div>
-              <div className="text-xl font-bold text-green-900">{kitchenStats.completedToday}</div>
+              <div className="text-2xl font-bold text-green-900">{stats.ready}</div>
             </div>
             
-            <div className="bg-purple-50 rounded-lg p-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="bg-purple-50 rounded-lg p-3 text-center border border-purple-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
                 <TrendingUp size={16} className="text-purple-600" />
-                <span className="text-sm font-medium text-purple-800">Tempo Médio</span>
+                <span className="text-sm font-medium text-purple-800">Entregues</span>
               </div>
-              <div className="text-xl font-bold text-purple-900">{kitchenStats.averageTime}min</div>
+              <div className="text-2xl font-bold text-purple-900">{stats.completed}</div>
             </div>
             
-            <div className="bg-red-50 rounded-lg p-3 text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                <Clock size={16} className="text-red-600" />
+            <div className="bg-red-50 rounded-lg p-3 text-center border border-red-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
+                <AlertCircle size={16} className="text-red-600" />
                 <span className="text-sm font-medium text-red-800">Atrasados</span>
               </div>
-              <div className="text-xl font-bold text-red-900">{kitchenStats.delayedOrders}</div>
+              <div className="text-2xl font-bold text-red-900">{stats.delayed}</div>
             </div>
           </div>
         </div>
       )}
 
       {/* Filtros */}
-      <div className="bg-white border-b border-gray-200 p-4">
+      <div className="bg-white border-b p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Status do Pedido</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
             <div className="flex flex-wrap gap-2">
               {[
                 { value: 'all', label: 'Todos', color: 'bg-gray-100 text-gray-800' },
                 { value: 'received', label: 'Recebidos', color: 'bg-blue-100 text-blue-800' },
                 { value: 'preparing', label: 'Preparando', color: 'bg-yellow-100 text-yellow-800' },
                 { value: 'ready', label: 'Prontos', color: 'bg-green-100 text-green-800' },
-                { value: 'delivered', label: 'Entregues', color: 'bg-gray-100 text-gray-800' }
               ].map(option => (
                 <button
                   key={option.value}
-                  onClick={() => handleFiltersChange({ status: option.value })}
+                  onClick={() => setSelectedStatus(option.value)}
                   className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                    filters.status === option.value
+                    selectedStatus === option.value
                       ? 'bg-red-600 text-white'
                       : option.color + ' hover:bg-opacity-80'
                   }`}
@@ -395,8 +421,8 @@ export default function Kitchen() {
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Localização</label>
             <select
-              value={filters.location}
-              onChange={(e) => handleFiltersChange({ location: e.target.value })}
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             >
               <option value="all">Todas as Localidades</option>
@@ -407,15 +433,15 @@ export default function Kitchen() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ordenar Por</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Ordenação</label>
             <select
-              value={filters.sortBy}
-              onChange={(e) => handleFiltersChange({ sortBy: e.target.value as 'time' | 'priority' | 'type' })}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'status')}
               className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
             >
               <option value="time">Por Tempo</option>
               <option value="priority">Por Prioridade</option>
-              <option value="type">Por Tipo</option>
+              <option value="status">Por Status</option>
             </select>
           </div>
         </div>
@@ -424,9 +450,9 @@ export default function Kitchen() {
       {/* Lista de Pedidos */}
       <div className="p-4">
         {ordersLoading ? (
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Carregando pedidos...</p>
+          <div className="text-center py-12">
+            <ChefHat className="mx-auto h-12 w-12 text-red-500 animate-pulse mb-4" />
+            <p className="text-gray-600">Carregando pedidos...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
@@ -435,127 +461,48 @@ export default function Kitchen() {
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum pedido encontrado</h3>
             <p className="text-gray-500">
-              {filters.status === 'all' 
+              {selectedStatus === 'all' 
                 ? 'Não há pedidos no momento.'
-                : `Não há pedidos com status "${filters.status}".`
+                : `Não há pedidos com status "${getStatusText(selectedStatus)}".`
               }
             </p>
           </div>
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {filteredOrders.map((order) => {
-              const getStatusColor = (status: string) => {
-                switch (status) {
-                  case 'received': return 'border-blue-500 bg-blue-50';
-                  case 'preparing': return 'border-yellow-500 bg-yellow-50';
-                  case 'ready': return 'border-green-500 bg-green-50';
-                  case 'delivered': return 'border-gray-500 bg-gray-50';
-                  case 'cancelled': return 'border-red-500 bg-red-50';
-                  default: return 'border-gray-300 bg-white';
-                }
-              };
-
-              const getStatusText = (status: string) => {
-                switch (status) {
-                  case 'received': return 'Recebido';
-                  case 'preparing': return 'Preparando';
-                  case 'ready': return 'Pronto';
-                  case 'delivered': return 'Entregue';
-                  case 'cancelled': return 'Cancelado';
-                  default: return status;
-                }
-              };
-
-              const getPriorityColor = (priority: string) => {
-                switch (priority) {
-                  case 'urgent': return 'text-red-600 bg-red-100';
-                  case 'high': return 'text-orange-600 bg-orange-100';
-                  case 'normal': return 'text-blue-600 bg-blue-100';
-                  case 'low': return 'text-gray-600 bg-gray-100';
-                  default: return 'text-blue-600 bg-blue-100';
-                }
-              };
-
-              const getOrderTypeIcon = (type: string) => {
-                switch (type) {
-                  case 'delivery': return '🚚';
-                  case 'takeaway': return '🥡';
-                  case 'dine-in': return '🍽️';
-                  default: return '📦';
-                }
-              };
-
-              const getLocationName = (locationId: string) => {
-                switch (locationId) {
-                  case 'talatona': return 'Talatona';
-                  case 'ilha': return 'Ilha';
-                  case 'movel': return 'Móvel';
-                  default: return locationId;
-                }
-              };
-
-              const getNextStatus = (currentStatus: string) => {
-                switch (currentStatus) {
-                  case 'received': return 'preparing';
-                  case 'preparing': return 'ready';
-                  case 'ready': return 'delivered';
-                  default: return null;
-                }
-              };
-
-              const getNextStatusText = (currentStatus: string) => {
-                switch (currentStatus) {
-                  case 'received': return 'Iniciar Preparo';
-                  case 'preparing': return 'Marcar Pronto';
-                  case 'ready': return 'Marcar Entregue';
-                  default: return null;
-                }
-              };
-
-              const timeSinceOrder = () => {
-                const now = new Date();
-                const orderTime = new Date(order.createdAt);
-                const diffMinutes = Math.floor((now.getTime() - orderTime.getTime()) / (1000 * 60));
-                
-                if (diffMinutes < 60) return `${diffMinutes}min`;
-                const hours = Math.floor(diffMinutes / 60);
-                const minutes = diffMinutes % 60;
-                return `${hours}h ${minutes}min`;
-              };
-
               const nextStatus = getNextStatus(order.status);
               const nextStatusText = getNextStatusText(order.status);
 
               return (
-                <div key={order.id} className={`border-2 rounded-lg p-4 ${getStatusColor(order.status)} transition-all hover:shadow-md`}>
+                <div key={order.id} className={`border-2 rounded-xl p-4 ${getStatusColor(order.status)} transition-all hover:shadow-lg`}>
                   {/* Header do Card */}
                   <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">#{order.id}</span>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getPriorityColor(order.priority || 'normal')}`}>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold">#{order.id}</span>
+                      <span className="px-2 py-1 bg-white bg-opacity-50 rounded-full text-xs font-medium">
                         {order.priority?.toUpperCase() || 'NORMAL'}
                       </span>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
                       <Timer size={16} />
-                      <span>{timeSinceOrder()}</span>
+                      <span className="font-medium">{getOrderDuration(order.createdAt)}</span>
                     </div>
                   </div>
 
                   {/* Informações do Cliente */}
-                  <div className="mb-3">
-                    <div className="flex items-center gap-2 mb-1">
+                  <div className="mb-3 space-y-2">
+                    <div className="flex items-center space-x-2">
                       <Users size={16} className="text-gray-600" />
-                      <span className="font-medium text-gray-900">{order.customerName}</span>
+                      <span className="font-medium">{order.customerName}</span>
                     </div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center space-x-2">
                       <Phone size={16} className="text-gray-600" />
-                      <span className="text-sm text-gray-700">{order.customerPhone}</span>
+                      <span className="text-sm">{order.customerPhone}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center space-x-2">
                       <MapPin size={16} className="text-gray-600" />
-                      <span className="text-sm text-gray-700">
+                      <span className="text-sm">
                         {getOrderTypeIcon(order.orderType)} {getLocationName(order.locationId)}
                         {order.tableId && ` - Mesa ${order.tableId}`}
                       </span>
@@ -564,24 +511,18 @@ export default function Kitchen() {
 
                   {/* Itens do Pedido */}
                   <div className="mb-3">
-                    <h4 className="font-medium text-gray-900 mb-2">Itens:</h4>
+                    <h4 className="font-medium mb-2">Itens:</h4>
                     <div className="space-y-1">
                       {order.items.map((item, index) => (
                         <div key={index} className="flex justify-between items-center text-sm">
-                          <span className="text-gray-700">
-                            {item.quantity}x {item.name}
+                          <span>
+                            <strong>{item.quantity}x</strong> {getMenuItemName(item.menuItemId)}
                             {item.customizations && item.customizations.length > 0 && (
-                              <span className="text-gray-500 ml-1">
-                                ({item.customizations.join(', ')})
+                              <span className="text-gray-600 block text-xs">
+                                • {item.customizations.join(', ')}
                               </span>
                             )}
                           </span>
-                          {item.preparationTime && (
-                            <span className="text-gray-500 flex items-center gap-1">
-                              <Clock size={12} />
-                              {item.preparationTime}min
-                            </span>
-                          )}
                         </div>
                       ))}
                     </div>
@@ -590,8 +531,8 @@ export default function Kitchen() {
                   {/* Notas */}
                   {order.notes && (
                     <div className="mb-3 p-2 bg-white bg-opacity-50 rounded border-l-4 border-yellow-400">
-                      <div className="flex items-start gap-2">
-                        <AlertCircle size={16} className="text-yellow-600 mt-0.5" />
+                      <div className="flex items-start space-x-2">
+                        <AlertCircle size={16} className="text-yellow-600 mt-0.5 flex-shrink-0" />
                         <div>
                           <span className="text-sm font-medium text-yellow-800">Observações:</span>
                           <p className="text-sm text-yellow-700">{order.notes}</p>
@@ -602,17 +543,17 @@ export default function Kitchen() {
 
                   {/* Footer com Status e Ações */}
                   <div className="flex items-center justify-between pt-3 border-t border-white border-opacity-50">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium text-gray-700">Status:</span>
-                      <span className="text-sm font-semibold text-gray-900">{getStatusText(order.status)}</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">Status:</span>
+                      <span className="text-sm font-bold">{getStatusText(order.status)}</span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900">{order.totalAmount} AOA</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-lg font-bold">{order.totalAmount} AOA</span>
                       
                       {nextStatus && (
                         <button
-                          onClick={() => handleStatusUpdate(order.id, nextStatus)}
+                          onClick={() => updateStatusMutation.mutate({ orderId: order.id, status: nextStatus })}
                           disabled={updateStatusMutation.isPending}
                           className="px-3 py-1 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
