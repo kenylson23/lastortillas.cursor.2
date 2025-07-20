@@ -4,28 +4,6 @@ import { useAuth } from '../hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Clock, CheckCircle, AlertCircle, RefreshCw, ArrowLeft, Timer, Bell, Users, MapPin, Phone, Flame, Pause, Play, Star, ChefHat, TrendingUp } from 'lucide-react';
 
-// Force dark theme styles
-const darkThemeStyles = `
-  .kitchen-container * {
-    background-color: inherit !important;
-    color: inherit !important;
-  }
-  .kitchen-container {
-    background-color: #111827 !important;
-    color: #ffffff !important;
-  }
-  .kitchen-header {
-    background-color: #1f2937 !important;
-  }
-  .kitchen-controls {
-    background-color: #374151 !important;
-  }
-  .kitchen-card {
-    background-color: #1f2937 !important;
-    color: #ffffff !important;
-  }
-`;
-
 interface Order {
   id: number;
   customerName: string;
@@ -48,80 +26,17 @@ interface Order {
   priority?: 'low' | 'normal' | 'high' | 'urgent';
 }
 
-interface KitchenStats {
-  totalOrders: number;
-  activeOrders: number;
-  completedToday: number;
-  averageTime: number;
-  delayedOrders: number;
-}
-
 export default function Kitchen() {
   const [, setLocation] = useLocation();
   const { isAuthenticated, isLoading, userRole } = useAuth();
-
-  // Apply red and white theme styles
-  useEffect(() => {
-    // Force body background to white
-    document.body.style.backgroundColor = '#ffffff';
-    document.body.style.color = '#1f2937';
-    
-    return () => {
-      document.body.style.backgroundColor = '';
-      document.body.style.color = '';
-    };
-  }, []);
-
-  // Sistema de notificação sonora para novos pedidos
-  const [lastOrderCount, setLastOrderCount] = useState(0);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-
-  // Função para criar som de notificação
-  const playNotificationSound = () => {
-    if (!soundEnabled || !audioContext) return;
-
-    // Som de notificação simples usando Web Audio API
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    // Configurar som (frequência de 800Hz por 200ms)
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.type = 'sine';
-    
-    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.2);
-  };
-
-  // Inicializar AudioContext quando som é ativado
-  useEffect(() => {
-    if (soundEnabled && !audioContext) {
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-      setAudioContext(context);
-    }
-  }, [soundEnabled, audioContext]);
-
-  // Estados para controles
-  const [soundEnabled, setSoundEnabled] = useState(true);
-  const [autoRefresh, setAutoRefresh] = useState(true);
-
-  // Detectar novos pedidos e tocar som
-  useEffect(() => {
-    if (orders.length > lastOrderCount && lastOrderCount > 0) {
-      playNotificationSound();
-    }
-    setLastOrderCount(orders.length);
-  }, [orders.length, lastOrderCount, soundEnabled, audioContext]);
+  
+  // Basic states
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
   const [showStats, setShowStats] = useState(true);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -155,23 +70,12 @@ export default function Kitchen() {
     refetchInterval: autoRefresh ? 3000 : false,
   });
 
-  // Sound notification for new orders
-  useEffect(() => {
-    if (soundEnabled && orders.length > 0) {
-      const newOrders = orders.filter(o => o.status === 'received');
-      if (newOrders.length > 0) {
-        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+j');
-        audio.play().catch(() => {});
-      }
-    }
-  }, [orders.length, soundEnabled]);
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto"></div>
-          <p className="mt-4 text-gray-300">Carregando...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Carregando...</p>
         </div>
       </div>
     );
@@ -181,574 +85,195 @@ export default function Kitchen() {
     return null;
   }
 
-  // Helper functions
-  function isOrderUrgent(order: Order): boolean {
-    const orderTime = new Date(order.createdAt);
-    const now = new Date();
-    const timeDiff = now.getTime() - orderTime.getTime();
-    const minutesDiff = timeDiff / (1000 * 60);
-    
-    return minutesDiff > 20 || order.priority === 'urgent' || order.priority === 'high';
-  }
-
-  function isOrderDelayed(order: Order): boolean {
-    const orderTime = new Date(order.createdAt);
-    const now = new Date();
-    const timeDiff = now.getTime() - orderTime.getTime();
-    const minutesDiff = timeDiff / (1000 * 60);
-    
-    return minutesDiff > 30 && ['received', 'preparing'].includes(order.status);
-  }
-
-  function isToday(dateString: string): boolean {
-    const date = new Date(dateString);
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  }
-
-  function calculateAverageTime(orders: Order[]): number {
-    const completedOrders = orders.filter(o => o.status === 'delivered');
-    if (completedOrders.length === 0) return 0;
-    
-    const totalTime = completedOrders.reduce((sum, order) => {
-      const start = new Date(order.createdAt);
-      const now = new Date();
-      return sum + (now.getTime() - start.getTime()) / (1000 * 60);
-    }, 0);
-    
-    return Math.round(totalTime / completedOrders.length);
-  }
-
-  function getOrderDuration(order: Order): string {
-    const start = new Date(order.createdAt);
-    const now = new Date();
-    const diffMinutes = Math.floor((now.getTime() - start.getTime()) / (1000 * 60));
-    
-    if (diffMinutes < 60) return `${diffMinutes}min`;
-    const hours = Math.floor(diffMinutes / 60);
-    const minutes = diffMinutes % 60;
-    return `${hours}h ${minutes}min`;
-  }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'received': return 'bg-blue-500';
-      case 'preparing': return 'bg-yellow-500';
-      case 'ready': return 'bg-green-500';
-      case 'delivered': return 'bg-gray-500';
-      default: return 'bg-gray-400';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'received': return 'Recebido';
-      case 'preparing': return 'Preparando';
-      case 'ready': return 'Pronto';
-      case 'delivered': return 'Entregue';
-      default: return status;
-    }
-  };
-
-  const updateOrderStatus = (orderId: number, newStatus: string) => {
-    updateStatusMutation.mutate({ orderId, status: newStatus });
-  };
-
-  // Enhanced filtering and sorting
-  const filteredOrders = orders
-    .filter(order => {
-      let statusMatch = true;
-      if (filter === 'active') statusMatch = ['received', 'preparing'].includes(order.status);
-      else if (filter === 'ready') statusMatch = order.status === 'ready';
-      else if (filter === 'urgent') statusMatch = ['received', 'preparing'].includes(order.status) && isOrderUrgent(order);
-      
-      const locationMatch = selectedLocation === 'all' || order.locationId === selectedLocation;
-      
-      return statusMatch && locationMatch;
-    })
-    .sort((a, b) => {
-      if (sortBy === 'priority') {
-        const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 };
-        return (priorityOrder[b.priority || 'normal'] || 2) - (priorityOrder[a.priority || 'normal'] || 2);
-      } else if (sortBy === 'type') {
-        return a.orderType.localeCompare(b.orderType);
-      } else {
-        return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-      }
-    });
-
-  // Calculate kitchen statistics
-  const kitchenStats: KitchenStats = {
-    totalOrders: orders.length,
-    activeOrders: orders.filter(o => ['received', 'preparing'].includes(o.status)).length,
-    completedToday: orders.filter(o => o.status === 'delivered' && isToday(o.createdAt)).length,
-    averageTime: calculateAverageTime(orders),
-    delayedOrders: orders.filter(o => isOrderDelayed(o)).length,
-  };
+  // Filter and sort orders
+  const filteredOrders = orders.filter(order => {
+    if (filter === 'all') return true;
+    if (filter === 'active') return ['received', 'preparing'].includes(order.status);
+    return order.status === filter;
+  });
 
   return (
-    <div className="kitchen-container min-h-screen bg-white text-gray-900" style={{ backgroundColor: '#ffffff !important', color: '#1f2937 !important' }}>
-      {/* Compact Modern Header */}
-      <div className="bg-red-600 border-b border-red-700 shadow-lg" style={{ backgroundColor: '#dc2626 !important' }}>
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            {/* Left Section - Navigation & Title */}
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setLocation('/admin')}
-                className="flex items-center gap-2 text-red-100 hover:text-white px-2 py-1 rounded-md hover:bg-red-700 transition-colors"
-                title="Voltar ao Admin"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span className="text-sm">Admin</span>
-              </button>
-              
-              <div className="flex items-center gap-3">
-                <div className="bg-white/20 p-2 rounded-lg">
-                  <ChefHat className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-bold text-white">Central da Cozinha</h1>
-                  <p className="text-red-100 text-xs">Las Tortillas Mexican Grill</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Center - Key Metrics */}
-            <div className="hidden md:flex items-center gap-4">
-              <div className="bg-white/20 border border-white/40 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-white">{kitchenStats.activeOrders}</div>
-                <div className="text-xs text-red-100">Ativos</div>
-              </div>
-              <div className="bg-white/20 border border-white/40 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-white">{orders.filter(o => o.status === 'ready').length}</div>
-                <div className="text-xs text-red-100">Prontos</div>
-              </div>
-              <div className="bg-red-800/50 border border-red-800/60 rounded-lg px-3 py-2 text-center">
-                <div className="text-xl font-bold text-white">{kitchenStats.delayedOrders}</div>
-                <div className="text-xs text-red-100">Urgentes</div>
-              </div>
-            </div>
-            
-            {/* Right Section - Controls */}
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 px-4 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setLocation('/admin')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Voltar ao Admin</span>
+            </button>
+            <div className="h-6 w-px bg-gray-300"></div>
+            <h1 className="text-2xl font-bold text-gray-900">🍳 Painel da Cozinha</h1>
+          </div>
+          
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <button
-                onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`p-2 rounded-md transition-colors ${
-                  autoRefresh 
-                    ? 'bg-white text-red-600' 
-                    : 'bg-red-800 text-red-100 hover:bg-red-700'
-                }`}
-                title={autoRefresh ? 'Pausar Auto-refresh' : 'Ativar Auto-refresh'}
-              >
-                {autoRefresh ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-              </button>
-              
-              <button
-                onClick={() => {
-                  setSoundEnabled(!soundEnabled);
-                  // Testar som quando ativado
-                  if (!soundEnabled) {
-                    setTimeout(() => {
-                      playNotificationSound();
-                    }, 100);
-                  }
-                }}
-                className={`p-2 rounded-md transition-colors ${
-                  soundEnabled 
-                    ? 'bg-white text-red-600' 
-                    : 'bg-red-800 text-red-100 hover:bg-red-700'
-                }`}
-                title={soundEnabled ? 'Desativar Som (🔊 Ativo)' : 'Ativar Som'}
-              >
-                <Bell className="w-4 h-4" />
-              </button>
-              
-              <button
-                onClick={() => setShowStats(!showStats)}
-                className={`p-2 rounded-md transition-colors ${
-                  showStats 
-                    ? 'bg-white text-red-600' 
-                    : 'bg-red-800 text-red-100 hover:bg-red-700'
-                }`}
-                title={showStats ? 'Ocultar Stats' : 'Mostrar Stats'}
-              >
-                <TrendingUp className="w-4 h-4" />
-              </button>
-              
-              <div className="flex items-center gap-2 bg-red-800 rounded-md px-2 py-1">
-                <div className={`w-2 h-2 rounded-full ${
-                  kitchenStats.delayedOrders === 0 ? 'bg-green-400' : 
-                  kitchenStats.delayedOrders < 3 ? 'bg-yellow-400' : 'bg-red-300'
-                }`}></div>
-                <span className="text-xs text-red-100">
-                  {kitchenStats.delayedOrders === 0 ? 'OK' : 
-                   kitchenStats.delayedOrders < 3 ? 'Alerta' : 'Crítico'}
-                </span>
-              </div>
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-600">Online</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Compact Stats Dashboard */}
-      {showStats && (
-        <div className="bg-red-50 border-b border-red-200" style={{ backgroundColor: '#fef2f2' }}>
-          <div className="max-w-7xl mx-auto px-4 py-4">
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="text-lg font-bold text-red-600">{kitchenStats.totalOrders}</div>
-                <div className="text-xs text-red-500">Total</div>
-              </div>
-              
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="text-lg font-bold text-red-600">{kitchenStats.completedToday}</div>
-                <div className="text-xs text-red-500">Concluídos</div>
-              </div>
-              
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="text-lg font-bold text-red-600">{kitchenStats.averageTime}min</div>
-                <div className="text-xs text-red-500">Tempo Médio</div>
-              </div>
-              
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="text-lg font-bold text-red-600">
-                  {kitchenStats.totalOrders > 0 ? Math.round((kitchenStats.completedToday / kitchenStats.totalOrders) * 100) : 0}%
-                </div>
-                <div className="text-xs text-red-500">Eficiência</div>
-              </div>
-              
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="flex items-center justify-center gap-1">
-                  <RefreshCw className={`w-3 h-3 ${autoRefresh ? 'animate-spin text-red-600' : 'text-gray-400'}`} />
-                  <div className="text-lg font-bold text-red-600">
-                    {autoRefresh ? 'ON' : 'OFF'}
-                  </div>
-                </div>
-                <div className="text-xs text-red-500">Auto-refresh</div>
-              </div>
-              
-              <div className="bg-white border border-red-200 rounded-lg p-3 text-center shadow-sm">
-                <div className="text-xs text-red-600 mb-1">
-                  {new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                </div>
-                <div className="text-xs text-red-500">Última Atualização</div>
-              </div>
-            </div>
+      {/* Controls */}
+      <div className="bg-gray-50 border-b border-gray-200 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-4">
+          {/* Filter buttons */}
+          <div className="flex gap-2">
+            {[
+              { key: 'active', label: 'Ativos', color: 'red' },
+              { key: 'received', label: 'Recebidos', color: 'blue' },
+              { key: 'preparing', label: 'Preparando', color: 'yellow' },
+              { key: 'ready', label: 'Prontos', color: 'green' },
+              { key: 'all', label: 'Todos', color: 'gray' }
+            ].map(({ key, label, color }) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key)}
+                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  filter === key
+                    ? `bg-${color}-500 text-white`
+                    : `bg-white text-${color}-600 border border-${color}-200 hover:bg-${color}-50`
+                }`}
+              >
+                {label} ({filteredOrders.filter(o => key === 'active' ? ['received', 'preparing'].includes(o.status) : key === 'all' ? true : o.status === key).length})
+              </button>
+            ))}
           </div>
-        </div>
-      )}
 
-      {/* Compact Filter Controls */}
-      <div className="bg-white border-b border-red-200" style={{ backgroundColor: '#ffffff !important' }}>
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            {/* Filter Buttons */}
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setFilter('active')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'active'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                }`}
-              >
-                <Flame className="w-4 h-4" />
-                Ativos ({orders.filter(o => ['received', 'preparing'].includes(o.status)).length})
-              </button>
-              
-              <button
-                onClick={() => setFilter('ready')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'ready'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                }`}
-              >
-                <CheckCircle className="w-4 h-4" />
-                Prontos ({orders.filter(o => o.status === 'ready').length})
-              </button>
-              
-              <button
-                onClick={() => setFilter('urgent')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-                  filter === 'urgent'
-                    ? 'bg-red-700 text-white'
-                    : 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200'
-                }`}
-              >
-                <AlertCircle className="w-4 h-4" />
-                Urgentes ({orders.filter(o => ['received', 'preparing'].includes(o.status) && isOrderUrgent(o)).length})
-              </button>
-              
-              <button
-                onClick={() => setFilter('all')}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  filter === 'all'
-                    ? 'bg-red-600 text-white'
-                    : 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200'
-                }`}
-              >
-                Todos ({orders.length})
-              </button>
-            </div>
-
-            {/* Sort & Location Controls */}
-            <div className="flex items-center gap-3">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'type')}
-                className="bg-white text-red-600 px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:outline-none text-sm"
-              >
-                <option value="time">Por Tempo</option>
-                <option value="priority">Por Prioridade</option>
-                <option value="type">Por Tipo</option>
-              </select>
-              
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="bg-white text-red-600 px-3 py-2 rounded-lg border border-red-200 focus:border-red-400 focus:outline-none text-sm"
-              >
-                <option value="all">Todas</option>
-                <option value="ilha">Ilha</option>
-                <option value="talatona">Talatona</option>
-                <option value="movel">Móvel</option>
-              </select>
-            </div>
-          </div>
+          {/* Auto-refresh toggle */}
+          <button
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm transition-colors ${
+              autoRefresh ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${autoRefresh ? 'animate-spin' : ''}`} />
+            Auto-refresh
+          </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6" style={{ backgroundColor: 'transparent' }}>
+      {/* Orders Grid */}
+      <div className="p-4">
         {ordersLoading ? (
-          <div className="text-center py-12">
-            <RefreshCw className="w-8 h-8 animate-spin text-red-600 mx-auto mb-4" />
-            <p className="text-red-600">Carregando pedidos...</p>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Carregando pedidos...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
-            <AlertCircle className="w-16 h-16 text-red-300 mx-auto mb-4" />
-            <p className="text-xl text-red-600 mb-2">Nenhum pedido encontrado</p>
-            <p className="text-red-500">
-              {filter === 'active' && 'Não há pedidos ativos no momento.'}
-              {filter === 'ready' && 'Não há pedidos prontos no momento.'}
-              {filter === 'all' && 'Nenhum pedido foi feito ainda hoje.'}
+            <ChefHat className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum pedido encontrado</h3>
+            <p className="text-gray-600">
+              {filter === 'active' ? 'Não há pedidos ativos no momento.' : `Não há pedidos com status "${filter}".`}
             </p>
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredOrders.map((order) => {
-              const isUrgent = isOrderUrgent(order);
-              const isDelayed = isOrderDelayed(order);
-              const duration = getOrderDuration(order);
-              
-              return (
-                <div key={order.id} className={`rounded-xl border-2 p-4 transition-all duration-300 hover:scale-105 shadow-lg ${
-                  isUrgent ? 'bg-red-50 border-red-600' :
-                  isDelayed ? 'bg-red-25 border-red-400' :
-                  order.status === 'ready' ? 'bg-green-50 border-green-600' :
-                  'bg-white border-red-200'
-                }`} style={{ 
-                  backgroundColor: isUrgent ? '#fef2f2' : 
-                                  isDelayed ? '#fef7f7' : 
-                                  order.status === 'ready' ? '#f0fdf4' : '#ffffff',
-                  color: '#1f2937'
-                }}>
-                  
-                  {/* Header do Pedido */}
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-red-600">#{order.id}</span>
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${getStatusColor(order.status)}`}>
-                        {getStatusText(order.status)}
-                      </span>
-                      {isUrgent && (
-                        <span className="px-2 py-1 bg-red-700 text-white rounded-full text-xs font-bold flex items-center gap-1">
-                          <AlertCircle className="w-3 h-3" />
-                          URGENTE
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm text-red-600">
-                        {new Date(order.createdAt).toLocaleTimeString('pt-BR', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </div>
-                      <div className={`text-xs font-medium ${
-                        isDelayed ? 'text-red-700' : 'text-red-500'
-                      }`}>
-                        {duration}
-                      </div>
-                    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredOrders.map((order) => (
+              <div
+                key={order.id}
+                className={`bg-white rounded-lg border-2 shadow-sm p-4 ${
+                  order.status === 'received' ? 'border-blue-200 bg-blue-50' :
+                  order.status === 'preparing' ? 'border-yellow-200 bg-yellow-50' :
+                  order.status === 'ready' ? 'border-green-200 bg-green-50' :
+                  'border-gray-200'
+                }`}
+              >
+                {/* Order Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-lg">#{order.id}</span>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      order.status === 'received' ? 'bg-blue-100 text-blue-700' :
+                      order.status === 'preparing' ? 'bg-yellow-100 text-yellow-700' :
+                      order.status === 'ready' ? 'bg-green-100 text-green-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {order.status === 'received' ? 'Recebido' :
+                       order.status === 'preparing' ? 'Preparando' :
+                       order.status === 'ready' ? 'Pronto' : order.status}
+                    </span>
                   </div>
+                  <span className="text-sm text-gray-500">
+                    {new Date(order.createdAt).toLocaleTimeString('pt-AO', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </span>
+                </div>
 
-                  {/* Customer & Order Info Card */}
-                  <div className="mb-4 bg-red-50 rounded-lg p-3 border-l-4 border-red-600">
-                    <div className="grid grid-cols-1 gap-2">
-                      <div className="flex items-center gap-2">
-                        <Users className="w-4 h-4 text-red-600 flex-shrink-0" />
-                        <span className="font-semibold text-red-800 truncate">{order.customerName}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="w-4 h-4 text-red-600 flex-shrink-0" />
-                        <span className="text-sm text-red-700">{order.customerPhone}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                        <div className="text-sm text-gray-300">
-                          <span className="capitalize font-medium">{order.orderType}</span>
-                          <span className="mx-1">•</span>
-                          <span className="capitalize">{order.locationId}</span>
-                          {order.tableId && (
-                            <>
-                              <span className="mx-1">•</span>
-                              <span className="text-purple-300 font-medium">Mesa {order.tableId}</span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Items do Pedido - Melhor organização */}
-                  <div className="mb-4">
-                    <div className="bg-gray-700/40 rounded-lg p-3 border border-gray-600/50">
-                      <div className="text-sm font-semibold text-gray-200 mb-3 flex items-center gap-2 border-b border-gray-600 pb-2">
-                        <ChefHat className="w-4 h-4 text-orange-400" />
-                        Itens para Preparar ({order.items?.length || 0})
-                      </div>
-                      <div className="space-y-2">
-                        {order.items?.map((item, index) => (
-                          <div key={index} className="bg-gray-800/60 rounded-md p-3 border-l-3 border-orange-500">
-                            <div className="flex items-start justify-between mb-1">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2">
-                                  <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
-                                    {item.quantity}
-                                  </span>
-                                  <span className="text-white font-medium">{item.name}</span>
-                                </div>
-                              </div>
-                              {item.preparationTime && (
-                                <div className="bg-yellow-600/20 text-yellow-300 text-xs px-2 py-1 rounded-md flex items-center gap-1 flex-shrink-0">
-                                  <Timer className="w-3 h-3" />
-                                  {item.preparationTime}min
-                                </div>
-                              )}
-                            </div>
-                            {item.customizations && item.customizations.length > 0 && (
-                              <div className="mt-2 bg-yellow-900/40 rounded-md p-2 border-l-2 border-yellow-500">
-                                <div className="text-xs text-yellow-300 font-medium mb-1">Customizações:</div>
-                                <div className="text-xs text-yellow-200">
-                                  {item.customizations.join(' • ')}
-                                </div>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Notas especiais */}
-                  {order.notes && (
-                    <div className="mb-4 p-3 bg-yellow-900/40 rounded-lg border-l-4 border-yellow-500">
-                      <div className="text-xs text-yellow-400 font-medium flex items-center gap-2 mb-1">
-                        <Star className="w-3 h-3" />
-                        Observações Especiais:
-                      </div>
-                      <div className="text-sm text-yellow-200">{order.notes}</div>
-                    </div>
-                  )}
-
-                  {/* Ações com design melhorado */}
-                  <div className="space-y-2">
-                    {order.status === 'received' && (
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'preparing')}
-                        disabled={updateStatusMutation.isPending}
-                        className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 disabled:opacity-50 text-white px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <Clock className="w-5 h-5" />
-                        {updateStatusMutation.isPending ? 'Atualizando...' : 'Iniciar Preparo'}
-                      </button>
-                    )}
-                    
-                    {order.status === 'preparing' && (
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'ready')}
-                        disabled={updateStatusMutation.isPending}
-                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50 text-white px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <CheckCircle className="w-5 h-5" />
-                        {updateStatusMutation.isPending ? 'Atualizando...' : 'Marcar como Pronto'}
-                      </button>
-                    )}
-
-                    {order.status === 'ready' && (
-                      <button
-                        onClick={() => updateOrderStatus(order.id, 'delivered')}
-                        disabled={updateStatusMutation.isPending}
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 disabled:opacity-50 text-white px-4 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 shadow-lg"
-                      >
-                        <CheckCircle className="w-5 h-5" />
-                        {updateStatusMutation.isPending ? 'Atualizando...' : 'Marcar como Entregue'}
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Footer - Informações importantes */}
-                  <div className="mt-4 space-y-3">
-                    {/* Valor total e tempo estimado */}
-                    <div className="bg-gray-700/40 rounded-lg p-3 border border-gray-600/50">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <div className="text-xs text-gray-400 uppercase tracking-wide">Valor Total</div>
-                          <div className="text-xl font-bold text-green-400">
-                            AOA {parseFloat(order.totalAmount).toLocaleString('pt-AO')}
-                          </div>
-                        </div>
-                        {order.estimatedDeliveryTime && (
-                          <div className="text-right">
-                            <div className="text-xs text-gray-400 uppercase tracking-wide">Tempo Est.</div>
-                            <div className="text-sm font-medium text-blue-400">
-                              {order.estimatedDeliveryTime}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Prioridade e status */}
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <div className="text-xs text-gray-400">PRIORIDADE:</div>
-                        <div className={`px-2 py-1 rounded-full text-xs font-bold ${
-                          order.priority === 'urgent' ? 'bg-red-600/30 text-red-300 border border-red-500' :
-                          order.priority === 'high' ? 'bg-orange-600/30 text-orange-300 border border-orange-500' :
-                          'bg-gray-600/30 text-gray-300 border border-gray-500'
-                        }`}>
-                          {order.priority ? order.priority.toUpperCase() : 'NORMAL'}
-                        </div>
-                      </div>
-                      
-                      <div className="text-right">
-                        <div className="text-xs text-gray-400">TEMPO DECORRIDO</div>
-                        <div className={`text-sm font-bold ${
-                          isDelayed ? 'text-red-400' : isUrgent ? 'text-yellow-400' : 'text-gray-300'
-                        }`}>
-                          {duration}
-                        </div>
-                      </div>
-                    </div>
+                {/* Customer Info */}
+                <div className="mb-3">
+                  <h3 className="font-medium text-gray-900">{order.customerName}</h3>
+                  <div className="text-sm text-gray-600 flex items-center gap-4">
+                    <span className="flex items-center gap-1">
+                      <Phone className="w-3 h-3" />
+                      {order.customerPhone}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3 h-3" />
+                      {order.orderType === 'delivery' ? 'Entrega' : 
+                       order.orderType === 'takeaway' ? 'Takeaway' : 'Mesa'}
+                    </span>
                   </div>
                 </div>
-              );
-            })}
+
+                {/* Order Items */}
+                <div className="mb-4">
+                  <h4 className="font-medium text-sm text-gray-700 mb-2">Itens:</h4>
+                  <div className="space-y-1">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex justify-between text-sm">
+                        <span>{item.quantity}x {item.name}</span>
+                        {item.customizations && item.customizations.length > 0 && (
+                          <span className="text-gray-500 text-xs">
+                            ({item.customizations.join(', ')})
+                          </span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-2">
+                  {order.status === 'received' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ orderId: order.id, status: 'preparing' })}
+                      className="flex-1 bg-yellow-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-yellow-600 transition-colors"
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <Timer className="w-4 h-4 inline mr-1" />
+                      Iniciar Preparo
+                    </button>
+                  )}
+                  {order.status === 'preparing' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ orderId: order.id, status: 'ready' })}
+                      className="flex-1 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-green-600 transition-colors"
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      <CheckCircle className="w-4 h-4 inline mr-1" />
+                      Marcar Pronto
+                    </button>
+                  )}
+                  {order.status === 'ready' && (
+                    <button
+                      onClick={() => updateStatusMutation.mutate({ orderId: order.id, status: 'completed' })}
+                      className="flex-1 bg-blue-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors"
+                      disabled={updateStatusMutation.isPending}
+                    >
+                      Entregar
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
