@@ -349,7 +349,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orders = await storage.getAllOrders();
       }
       
-      res.json(orders);
+      // Fetch items for each order
+      const ordersWithItems = await Promise.all(
+        orders.map(async (order: any) => {
+          try {
+            const items = await storage.getOrderItems(order.id);
+            return { ...order, items };
+          } catch (error) {
+            // If getting items fails, return order with empty items array
+            return { ...order, items: [] };
+          }
+        })
+      );
+      
+      res.json(ordersWithItems);
     } catch (error: any) {
       res.status(500).json({ error: error.message });
     }

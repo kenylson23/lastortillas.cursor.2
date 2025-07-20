@@ -27,7 +27,7 @@ interface Order {
   status: string;
   totalAmount: string;
   notes?: string;
-  items: OrderItem[];
+  items?: OrderItem[];
   createdAt: string;
   estimatedDeliveryTime?: string;
   locationId: string;
@@ -537,31 +537,37 @@ export default function Kitchen() {
                       Itens do Pedido
                     </h4>
                     <div className="space-y-2">
-                      {order.items.map((item, index) => (
-                        <div key={index} className="flex justify-between items-center py-2 px-3 bg-red-50 rounded-md">
-                          <div>
-                            <span className="font-medium text-gray-900">
-                              {item.quantity}x {item.name || getMenuItemName(item.menuItemId)}
-                            </span>
-                            {item.customizations && item.customizations.length > 0 && (
-                              <p className="text-xs text-gray-600 mt-1">
-                                Obs: {item.customizations.join(', ')}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            {item.preparationTime && (
-                              <span className="flex items-center text-xs text-gray-500">
-                                <Timer className="h-3 w-3 mr-1" />
-                                {item.preparationTime}min
+                      {(order.items && order.items.length > 0) ? (
+                        order.items.map((item, index) => (
+                          <div key={index} className="flex justify-between items-center py-2 px-3 bg-red-50 rounded-md">
+                            <div>
+                              <span className="font-medium text-gray-900">
+                                {item.quantity}x {item.name || getMenuItemName(item.menuItemId)}
                               </span>
-                            )}
-                            <span className="text-sm font-medium text-gray-900">
-                              {parseFloat(item.unitPrice).toFixed(0)} AOA
-                            </span>
+                              {item.customizations && item.customizations.length > 0 && (
+                                <p className="text-xs text-gray-600 mt-1">
+                                  Obs: {item.customizations.join(', ')}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              {item.preparationTime && (
+                                <span className="flex items-center text-xs text-gray-500">
+                                  <Timer className="h-3 w-3 mr-1" />
+                                  {item.preparationTime}min
+                                </span>
+                              )}
+                              <span className="text-sm font-medium text-gray-900">
+                                {parseFloat(item.unitPrice).toFixed(0)} AOA
+                              </span>
+                            </div>
                           </div>
+                        ))
+                      ) : (
+                        <div className="py-3 px-3 bg-gray-50 rounded-md text-center">
+                          <p className="text-sm text-gray-500">Nenhum item encontrado para este pedido</p>
                         </div>
-                      ))}
+                      )}
                     </div>
                   </div>
 
