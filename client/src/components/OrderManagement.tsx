@@ -13,6 +13,7 @@ interface OrderWithItems extends Order {
 export default function OrderManagement() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
+  const [selectedOrderType, setSelectedOrderType] = useState<string>('');
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [adminNotes, setAdminNotes] = useState('');
@@ -21,7 +22,7 @@ export default function OrderManagement() {
   const { toast } = useToast();
 
   const { data: orders = [], isLoading, refetch } = useQuery({
-    queryKey: ['/api/orders', selectedStatus, selectedLocation],
+    queryKey: ['/api/orders', selectedStatus, selectedLocation, selectedOrderType],
     queryFn: async () => {
       let url = '/api/orders';
       const params = new URLSearchParams();
@@ -31,6 +32,9 @@ export default function OrderManagement() {
       }
       if (selectedLocation !== 'all') {
         params.append('location', selectedLocation);
+      }
+      if (selectedOrderType) {
+        params.append('orderType', selectedOrderType);
       }
       
       if (params.toString()) {
@@ -217,10 +221,37 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
 
   const getOrderTypeText = (orderType: string) => {
     switch (orderType) {
-      case 'delivery': return 'Delivery';
-      case 'takeaway': return 'Takeaway';
-      case 'dine-in': return 'Comer no local';
+      case 'delivery': return 'DELIVERY';
+      case 'takeaway': return 'TAKEAWAY';
+      case 'dine-in': return 'COMER NO LOCAL';
       default: return orderType;
+    }
+  };
+
+  const getOrderTypeIcon = (orderType: string) => {
+    switch (orderType) {
+      case 'delivery': return '🚗'; // Carro para delivery
+      case 'takeaway': return '🥡'; // Caixa de comida para levar
+      case 'dine-in': return '🍽️'; // Prato para comer no local
+      default: return '📦';
+    }
+  };
+
+  const getOrderTypeColor = (orderType: string) => {
+    switch (orderType) {
+      case 'delivery': return 'bg-blue-100 text-blue-800 border-l-4 border-blue-500'; // Azul para delivery
+      case 'takeaway': return 'bg-orange-100 text-orange-800 border-l-4 border-orange-500'; // Laranja para takeaway
+      case 'dine-in': return 'bg-green-100 text-green-800 border-l-4 border-green-500'; // Verde para dine-in
+      default: return 'bg-gray-100 text-gray-800 border-l-4 border-gray-500';
+    }
+  };
+
+  const getOrderTypePriority = (orderType: string) => {
+    switch (orderType) {
+      case 'dine-in': return { text: 'ALTA PRIORIDADE', color: 'text-red-600 font-bold', icon: '🔥' }; // Cliente esperando na mesa
+      case 'delivery': return { text: 'PRIORIDADE MÉDIA', color: 'text-yellow-600 font-bold', icon: '⚡' }; // Tem tempo de deslocamento
+      case 'takeaway': return { text: 'PRIORIDADE NORMAL', color: 'text-blue-600 font-bold', icon: '⏰' }; // Cliente vem buscar
+      default: return { text: 'NORMAL', color: 'text-gray-600', icon: '📋' };
     }
   };
 
@@ -257,49 +288,85 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
               <p className="text-green-100 text-sm">Acesso direto às principais funcionalidades</p>
             </div>
             
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2">
               <a
                 href="/menu"
-                className="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-green-50 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+                className="bg-white text-green-600 px-3 py-2 rounded-lg hover:bg-green-50 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
               >
-                <span className="text-lg">🛒</span>
+                <span className="text-sm">🛒</span>
                 Novo Pedido
               </a>
               
               <button
                 onClick={() => {
-                  // Mostrar apenas pedidos pendentes para ação rápida
                   setSelectedStatus('received');
                   setSelectedLocation('all');
+                  setSelectedOrderType('');
                 }}
-                className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+                className="bg-yellow-500 text-white px-3 py-2 rounded-lg hover:bg-yellow-600 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
               >
-                <span className="text-lg">🔔</span>
-                Pendentes
+                <span className="text-sm">🔔</span>
+                Novos
               </button>
               
               <button
                 onClick={() => {
-                  // Mostrar apenas pedidos prontos
+                  setSelectedStatus('all');
+                  setSelectedLocation('all');
+                  setSelectedOrderType('dine-in');
+                }}
+                className="bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
+              >
+                <span className="text-sm">🍽️</span>
+                Mesas
+              </button>
+              
+              <button
+                onClick={() => {
+                  setSelectedStatus('all');
+                  setSelectedLocation('all');
+                  setSelectedOrderType('delivery');
+                }}
+                className="bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
+              >
+                <span className="text-sm">🚗</span>
+                Delivery
+              </button>
+              
+              <button
+                onClick={() => {
+                  setSelectedStatus('all');
+                  setSelectedLocation('all');
+                  setSelectedOrderType('takeaway');
+                }}
+                className="bg-orange-600 text-white px-3 py-2 rounded-lg hover:bg-orange-700 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
+              >
+                <span className="text-sm">🥡</span>
+                Takeaway
+              </button>
+              
+              <button
+                onClick={() => {
                   setSelectedStatus('ready');
                   setSelectedLocation('all');
+                  setSelectedOrderType('');
                 }}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+                className="bg-purple-600 text-white px-3 py-2 rounded-lg hover:bg-purple-700 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
               >
-                <span className="text-lg">✅</span>
+                <span className="text-sm">✅</span>
                 Prontos
               </button>
               
               <button
                 onClick={() => {
-                  // Reset filtros para ver todos
                   setSelectedStatus('all');
                   setSelectedLocation('all');
+                  setSelectedOrderType('');
                 }}
-                className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm font-semibold flex items-center gap-2 shadow-md"
+                className="bg-gray-500 text-white px-3 py-2 rounded-lg hover:bg-gray-600 transition-colors text-xs font-semibold flex items-center gap-1 shadow-md"
               >
-                <span className="text-lg">📊</span>
-                Ver Todos
+                <span className="text-sm">📊</span>
+                Todos
               </button>
             </div>
           </div>
@@ -317,19 +384,19 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
             </button>
           </div>
 
-          {/* Filters */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          {/* Filtros para a Cozinha */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="border rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base w-full"
             >
               <option value="all">Todos os Status</option>
-              <option value="received">Recebido</option>
-              <option value="preparing">Preparando</option>
-              <option value="ready">Pronto</option>
-              <option value="delivered">Entregue</option>
-              <option value="cancelled">Cancelado</option>
+              <option value="received">🔔 Recebido (Novo)</option>
+              <option value="preparing">👨‍🍳 Preparando</option>
+              <option value="ready">✅ Pronto</option>
+              <option value="delivered">📦 Entregue</option>
+              <option value="cancelled">❌ Cancelado</option>
             </select>
 
             <select
@@ -338,10 +405,38 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
               className="border rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base w-full"
             >
               <option value="all">Todas as Localizações</option>
-              <option value="ilha">Las Tortillas Ilha</option>
-              <option value="talatona">Las Tortillas Talatona</option>
-              <option value="movel">Las Tortillas Móvel</option>
+              <option value="ilha">🏖️ Las Tortillas Ilha</option>
+              <option value="talatona">🏢 Las Tortillas Talatona</option>
+              <option value="movel">🚐 Las Tortillas Móvel</option>
             </select>
+
+            {/* Novo filtro por tipo de pedido */}
+            <select
+              value={selectedOrderType || 'all'}
+              onChange={(e) => setSelectedOrderType(e.target.value === 'all' ? '' : e.target.value)}
+              className="border rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base w-full"
+            >
+              <option value="all">Todos os Tipos</option>
+              <option value="dine-in">🍽️ Comer no Local (ALTA PRIORIDADE)</option>
+              <option value="delivery">🚗 Delivery (MÉDIA PRIORIDADE)</option>
+              <option value="takeaway">🥡 Takeaway (NORMAL)</option>
+            </select>
+          </div>
+
+          {/* Dicas para a Cozinha */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+            <div className="bg-green-50 p-2 rounded border-l-4 border-green-500">
+              <div className="font-bold text-green-800">🍽️ COMER NO LOCAL</div>
+              <div className="text-green-700">Cliente na mesa aguardando - máxima prioridade!</div>
+            </div>
+            <div className="bg-blue-50 p-2 rounded border-l-4 border-blue-500">
+              <div className="font-bold text-blue-800">🚗 DELIVERY</div>
+              <div className="text-blue-700">Embalar bem para transporte - prioridade média</div>
+            </div>
+            <div className="bg-orange-50 p-2 rounded border-l-4 border-orange-500">
+              <div className="font-bold text-orange-800">🥡 TAKEAWAY</div>
+              <div className="text-orange-700">Cliente virá buscar - prioridade normal</div>
+            </div>
           </div>
         </div>
 
@@ -371,48 +466,91 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
               key={order.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer"
+              className={`bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow cursor-pointer ${getOrderTypeColor(order.orderType)}`}
               onClick={() => fetchOrderDetails(order.id)}
             >
+              {/* Cabeçalho com tipo de pedido destacado */}
               <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-lg font-semibold">Pedido #{order.id}</h3>
-                  <p className="text-sm text-gray-600">{order.customerName}</p>
-                  <p className="text-sm text-gray-600">{order.customerPhone}</p>
+                <div className="flex items-center gap-3">
+                  <div className="text-4xl">{getOrderTypeIcon(order.orderType)}</div>
+                  <div>
+                    <h3 className="text-lg font-bold">Pedido #{order.id}</h3>
+                    <p className="text-sm font-bold text-gray-900">{order.customerName}</p>
+                    <p className="text-xs text-gray-600">{order.customerPhone}</p>
+                  </div>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
                   {getStatusText(order.status)}
                 </span>
               </div>
 
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Localização:</span>
-                  <span className="text-sm font-medium">{getLocationName(order.locationId)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Tipo:</span>
-                  <span className="text-sm font-medium">{getOrderTypeText(order.orderType)}</span>
-                </div>
-                {order.orderType === 'dine-in' && order.tableId && (
-                  <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Mesa:</span>
-                    <span className="text-sm font-medium text-blue-600">{getTableInfo(order.tableId)}</span>
+              {/* Tipo de pedido e prioridade */}
+              <div className="mb-4 p-3 bg-white bg-opacity-50 rounded-lg">
+                <div className="text-center">
+                  <div className="text-lg font-bold text-gray-900 mb-1">
+                    {getOrderTypeText(order.orderType)}
                   </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Total:</span>
-                  <span className="text-sm font-bold text-red-600">{order.totalAmount} AOA</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-600">Data:</span>
-                  <span className="text-sm">{new Date(order.createdAt!).toLocaleString('pt-AO')}</span>
+                  <div className={`text-sm ${getOrderTypePriority(order.orderType).color} flex items-center justify-center gap-1`}>
+                    <span>{getOrderTypePriority(order.orderType).icon}</span>
+                    {getOrderTypePriority(order.orderType).text}
+                  </div>
                 </div>
               </div>
 
+              <div className="space-y-2 mb-4">
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Local:</span>
+                  <span className="text-sm font-medium">{getLocationName(order.locationId)}</span>
+                </div>
+                
+                {/* Informações específicas do tipo de pedido */}
+                {order.orderType === 'dine-in' && order.tableId && (
+                  <div className="flex justify-between bg-green-50 p-2 rounded">
+                    <span className="text-sm text-green-700 font-medium">🍽️ Mesa:</span>
+                    <span className="text-sm font-bold text-green-800">{getTableInfo(order.tableId)}</span>
+                  </div>
+                )}
+                
+                {order.orderType === 'delivery' && order.deliveryAddress && (
+                  <div className="flex justify-between bg-blue-50 p-2 rounded">
+                    <span className="text-sm text-blue-700 font-medium">🚗 Endereço:</span>
+                    <span className="text-xs text-blue-800 max-w-32 truncate">{order.deliveryAddress}</span>
+                  </div>
+                )}
+                
+                {order.orderType === 'takeaway' && (
+                  <div className="flex justify-between bg-orange-50 p-2 rounded">
+                    <span className="text-sm text-orange-700 font-medium">🥡 Retirada:</span>
+                    <span className="text-sm font-bold text-orange-800">Cliente virá buscar</span>
+                  </div>
+                )}
+
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Total:</span>
+                  <span className="text-lg font-bold text-red-600">{order.totalAmount} AOA</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-sm text-gray-600">Pedido às:</span>
+                  <span className="text-sm font-medium">{new Date(order.createdAt!).toLocaleTimeString('pt-AO', { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
+              </div>
+
+              {/* Instruções para a cozinha baseadas no tipo */}
+              <div className="text-xs bg-gray-50 p-2 rounded mt-3">
+                {order.orderType === 'dine-in' && (
+                  <span className="text-green-700">👨‍🍳 Cliente aguardando na mesa - prioridade máxima!</span>
+                )}
+                {order.orderType === 'delivery' && (
+                  <span className="text-blue-700">🚗 Preparar com cuidado para transporte</span>
+                )}
+                {order.orderType === 'takeaway' && (
+                  <span className="text-orange-700">🥡 Embalar para viagem - cliente virá buscar</span>
+                )}
+              </div>
+
               {/* Clique para ver detalhes */}
-              <div className="text-sm text-gray-500 mt-2">
-                Clique para ver detalhes e gerenciar pedido
+              <div className="text-sm text-gray-500 mt-2 text-center border-t pt-2">
+                👆 Clique para gerenciar pedido e ver itens detalhados
               </div>
             </motion.div>
             ))}
