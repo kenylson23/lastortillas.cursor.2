@@ -27,6 +27,7 @@ export default function OnlineMenu({
   onBackToSite = () => {} 
 }: OnlineMenuProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('Todos');
+  const [searchTerm, setSearchTerm] = useState<string>('');
   // Estados com persistência no localStorage
   const [cart, setCart] = useState<CartItem[]>(() => {
     if (typeof window !== 'undefined') {
@@ -200,9 +201,17 @@ export default function OnlineMenu({
 
   const categories = ['Todos', ...Array.from(new Set(menuItems.map((item: MenuItem) => item.category)))];
 
-  const filteredItems = selectedCategory === 'Todos' 
-    ? menuItems
-    : menuItems.filter((item: MenuItem) => item.category === selectedCategory);
+  // Filtrar por categoria e busca
+  const filteredItems = menuItems.filter((item: MenuItem) => {
+    const matchesCategory = selectedCategory === 'Todos' || item.category === selectedCategory;
+    const matchesSearch = searchTerm === '' || 
+      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // Itens populares (para sugestões rápidas)
+  const popularItems = menuItems.slice(0, 4);
 
   // Debug logs (temporarily enabled for troubleshooting)
   console.log('OnlineMenu - menuItems:', menuItems);
@@ -512,25 +521,80 @@ export default function OnlineMenu({
           </div>
           
           {!showTracking && (
-            <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
-              {categories.map((category, index) => {
-                const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
-                return (
-                  <button
-                    key={category}
-                    onClick={() => setSelectedCategory(category)}
-                    className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
-                      selectedCategory === category
-                        ? 'bg-red-500 text-white shadow-md border-red-500'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
-                    }`}
-                  >
-                    <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
-                    {category}
-                  </button>
-                );
-              })}
-            </div>
+            <>
+              {/* Barra de Busca Rápida */}
+              <div className="mb-4">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="🔍 Buscar pratos... (ex: tacos, burrito)"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full px-4 py-3 pl-12 pr-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-700 placeholder-gray-500 text-sm sm:text-base"
+                  />
+                  <svg className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  {searchTerm && (
+                    <button
+                      onClick={() => setSearchTerm('')}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Sugestões Populares - só aparece quando não há busca */}
+              {!searchTerm && (
+                <div className="mb-4 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border border-red-100">
+                  <h3 className="text-sm font-bold text-red-700 mb-2 flex items-center">
+                    <span className="mr-2">⭐</span>
+                    Mais Populares - Adição Rápida
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {popularItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => addToCart(item)}
+                        className="bg-white text-red-600 px-3 py-2 rounded-lg text-xs font-semibold hover:bg-red-500 hover:text-white transition-all duration-200 border border-red-200 flex items-center gap-1"
+                      >
+                        <span>➕</span>
+                        {item.name}
+                        <span className="text-xs font-bold">({parseInt(item.price).toLocaleString()} AOA)</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Categorias */}
+              <div className="flex overflow-x-auto gap-2 pb-3 -mx-2 px-2">
+                {categories.map((category, index) => {
+                  const categoryEmojis = ['🍽️', '🌮', '🥙', '🌯', '🫔', '🥗'];
+                  return (
+                    <button
+                      key={category}
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setSearchTerm(''); // Limpar busca ao selecionar categoria
+                      }}
+                      className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-lg whitespace-nowrap transition-all duration-300 text-sm sm:text-base flex-shrink-0 font-semibold border ${
+                        selectedCategory === category
+                          ? 'bg-red-500 text-white shadow-md border-red-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:bg-red-500 hover:border-red-500 hover:text-white'
+                      }`}
+                    >
+                      <span className="text-sm sm:text-base mr-1.5">{categoryEmojis[index % categoryEmojis.length]}</span>
+                      {category}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -761,22 +825,47 @@ function MenuItemCard({
             </div>
           </div>
         )}
-
-        {/* Action button */}
+        
+        {/* Botão Otimizado para Adicionar ao Carrinho */}
         <motion.button
           onClick={() => onAddToCart(item, selectedCustomizations)}
           whileTap={{ scale: 0.95 }}
-          className="w-full bg-red-500 text-white px-6 py-3.5 rounded-lg hover:bg-red-600 transition-all duration-300 text-base font-semibold shadow-md hover:shadow-lg group flex items-center justify-center space-x-2"
+          whileHover={{ scale: 1.02 }}
+          className="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 text-base"
         >
-          <motion.span
-            animate={{ rotate: isHovered ? 360 : 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-lg"
-          >
-            🛒
-          </motion.span>
-          <span>Adicionar ao Carrinho</span>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+          <span>ADICIONAR AO CARRINHO</span>
+          <div className="bg-white/20 px-2 py-1 rounded-lg text-sm font-bold">
+            {parseInt(item.price).toLocaleString()} AOA
+          </div>
         </motion.button>
+        
+        {/* Informações Extras */}
+        <div className="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-100">
+          <span className="flex items-center">
+            <span className="mr-1">✅</span>
+            {item.available ? 'Disponível' : 'Indisponível'}
+          </span>
+          <span className="flex items-center">
+            <span className="mr-1">⏱️</span>
+            Preparo: {item.preparationTime}min
+          </span>
+          </div>
+        )}
+
+        {/* Informações Extras */}
+        <div className="flex justify-between items-center text-xs text-gray-500 pt-2 border-t border-gray-100">
+          <span className="flex items-center">
+            <span className="mr-1">✅</span>
+            {item.available ? 'Disponível' : 'Indisponível'}
+          </span>
+          <span className="flex items-center">
+            <span className="mr-1">⏱️</span>
+            Preparo: {item.preparationTime}min
+          </span>
+        </div>
       </div>
     </motion.div>
   );

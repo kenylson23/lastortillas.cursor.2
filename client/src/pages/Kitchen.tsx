@@ -71,6 +71,49 @@ export default function Kitchen() {
       document.body.style.color = '';
     };
   }, []);
+
+  // Sistema de notificação sonora para novos pedidos
+  const [lastOrderCount, setLastOrderCount] = useState(0);
+  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
+
+  // Função para criar som de notificação
+  const playNotificationSound = () => {
+    if (!soundEnabled || !audioContext) return;
+
+    // Som de notificação simples usando Web Audio API
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    // Configurar som (frequência de 800Hz por 200ms)
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.3, audioContext.currentTime + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.2);
+  };
+
+  // Inicializar AudioContext quando som é ativado
+  useEffect(() => {
+    if (soundEnabled && !audioContext) {
+      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      setAudioContext(context);
+    }
+  }, [soundEnabled, audioContext]);
+
+  // Detectar novos pedidos e tocar som
+  useEffect(() => {
+    if (orders.length > lastOrderCount && lastOrderCount > 0) {
+      playNotificationSound();
+    }
+    setLastOrderCount(orders.length);
+  }, [orders.length, lastOrderCount, soundEnabled, audioContext]);
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -300,13 +343,21 @@ export default function Kitchen() {
               </button>
               
               <button
-                onClick={() => setSoundEnabled(!soundEnabled)}
+                onClick={() => {
+                  setSoundEnabled(!soundEnabled);
+                  // Testar som quando ativado
+                  if (!soundEnabled) {
+                    setTimeout(() => {
+                      playNotificationSound();
+                    }, 100);
+                  }
+                }}
                 className={`p-2 rounded-md transition-colors ${
                   soundEnabled 
                     ? 'bg-white text-red-600' 
                     : 'bg-red-800 text-red-100 hover:bg-red-700'
                 }`}
-                title={soundEnabled ? 'Desativar Som' : 'Ativar Som'}
+                title={soundEnabled ? 'Desativar Som (🔊 Ativo)' : 'Ativar Som'}
               >
                 <Bell className="w-4 h-4" />
               </button>
