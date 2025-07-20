@@ -73,6 +73,7 @@ export default function Kitchen() {
   }, []);
 
   // Sistema de notificação sonora para novos pedidos
+  const [soundEnabled, setSoundEnabled] = useState(true);
   const [lastOrderCount, setLastOrderCount] = useState(0);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
 
@@ -108,7 +109,6 @@ export default function Kitchen() {
   }, [soundEnabled, audioContext]);
 
   // Estados para controles
-  const [soundEnabled, setSoundEnabled] = useState(true);
   const [autoRefresh, setAutoRefresh] = useState(true);
 
   // Detectar novos pedidos e tocar som
