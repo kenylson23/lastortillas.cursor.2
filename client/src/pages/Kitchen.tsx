@@ -262,70 +262,73 @@ export default function Kitchen() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b-4 border-red-600 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 sm:py-0 min-h-16">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <button
                 onClick={() => setLocation('/admin')}
                 className="flex items-center text-red-600 hover:text-red-700 transition-colors"
               >
-                <ArrowLeft size={20} className="mr-2" />
-                <span className="font-medium">Voltar</span>
+                <ArrowLeft size={20} className="mr-1 sm:mr-2" />
+                <span className="font-medium text-sm sm:text-base">Voltar</span>
               </button>
-              <div className="h-8 w-px bg-gray-300"></div>
-              <div className="flex items-center space-x-2">
-                <ChefHat className="h-6 w-6 text-red-600" />
-                <h1 className="text-xl font-bold text-gray-900">Painel da Cozinha</h1>
+              <div className="h-6 sm:h-8 w-px bg-gray-300"></div>
+              <div className="flex items-center space-x-1 sm:space-x-2">
+                <ChefHat className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                <h1 className="text-lg sm:text-xl font-bold text-gray-900">Painel da Cozinha</h1>
               </div>
             </div>
 
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-2 sm:mt-0">
               {/* Auto Refresh Toggle */}
               <button
                 onClick={() => setAutoRefresh(!autoRefresh)}
-                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
+                className={`flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   autoRefresh 
                     ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {autoRefresh ? <Play size={16} className="mr-1" /> : <Pause size={16} className="mr-1" />}
-                Auto Refresh
+                {autoRefresh ? <Play size={14} className="mr-1" /> : <Pause size={14} className="mr-1" />}
+                <span className="hidden sm:inline">Auto Refresh</span>
+                <span className="sm:hidden">Auto</span>
               </button>
 
               {/* Sound Toggle */}
               <button
                 onClick={() => setSoundEnabled(!soundEnabled)}
-                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
+                className={`flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   soundEnabled 
                     ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {soundEnabled ? <Bell size={16} className="mr-1" /> : <BellOff size={16} className="mr-1" />}
+                {soundEnabled ? <Bell size={14} className="mr-1" /> : <BellOff size={14} className="mr-1" />}
                 Som
               </button>
 
               {/* Stats Toggle */}
               <button
                 onClick={() => setShowStats(!showStats)}
-                className={`flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
+                className={`flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm transition-colors ${
                   showStats 
                     ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                <BarChart3 size={16} className="mr-1" />
-                Estatísticas
+                <BarChart3 size={14} className="mr-1" />
+                <span className="hidden sm:inline">Estatísticas</span>
+                <span className="sm:hidden">Stats</span>
               </button>
 
               {/* Manual Refresh */}
               <button
                 onClick={() => queryClient.invalidateQueries({ queryKey: ['/api/orders'] })}
-                className="flex items-center px-3 py-2 rounded-lg text-sm bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
+                className="flex items-center px-2 sm:px-3 py-1 sm:py-2 rounded-lg text-xs sm:text-sm bg-red-100 text-red-700 hover:bg-red-200 transition-colors"
               >
-                <RefreshCw size={16} className="mr-1" />
-                Atualizar
+                <RefreshCw size={14} className="mr-1" />
+                <span className="hidden sm:inline">Atualizar</span>
+                <span className="sm:hidden">Refresh</span>
               </button>
             </div>
           </div>
@@ -334,55 +337,55 @@ export default function Kitchen() {
 
       {/* Estatísticas */}
       {showStats && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-4">
+            <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Total</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Total</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-900">{stats.total}</p>
                 </div>
-                <Package className="h-8 w-8 text-gray-400" />
+                <Package className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Ativos</p>
-                  <p className="text-2xl font-bold text-blue-600">{stats.active}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Ativos</p>
+                  <p className="text-lg sm:text-2xl font-bold text-blue-600">{stats.active}</p>
                 </div>
-                <Flame className="h-8 w-8 text-blue-400" />
+                <Flame className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400" />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Prontos</p>
-                  <p className="text-2xl font-bold text-green-600">{stats.ready}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Prontos</p>
+                  <p className="text-lg sm:text-2xl font-bold text-green-600">{stats.ready}</p>
                 </div>
-                <CheckCircle className="h-8 w-8 text-green-400" />
+                <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-400" />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Entregues</p>
-                  <p className="text-2xl font-bold text-gray-600">{stats.delivered}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Entregues</p>
+                  <p className="text-lg sm:text-2xl font-bold text-gray-600">{stats.delivered}</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-gray-400" />
+                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-gray-400" />
               </div>
             </div>
 
-            <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+            <div className="bg-white rounded-lg p-2 sm:p-4 shadow-sm border border-gray-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600">Atrasados</p>
-                  <p className="text-2xl font-bold text-red-600">{stats.delayed}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">Atrasados</p>
+                  <p className="text-lg sm:text-2xl font-bold text-red-600">{stats.delayed}</p>
                 </div>
-                <AlertCircle className="h-8 w-8 text-red-400" />
+                <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-red-400" />
               </div>
             </div>
           </div>
@@ -390,16 +393,16 @@ export default function Kitchen() {
       )}
 
       {/* Filtros */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-wrap gap-4 items-center">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-2 sm:py-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-2 sm:p-4">
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-4 items-start sm:items-center">
             {/* Filtros de Status */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Status:</span>
-              <div className="flex space-x-1">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Status:</span>
+              <div className="flex flex-wrap gap-1">
                 <button
                   onClick={() => setFilter('all')}
-                  className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded-md text-xs transition-colors ${
                     filter === 'all' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -407,7 +410,7 @@ export default function Kitchen() {
                 </button>
                 <button
                   onClick={() => setFilter('received')}
-                  className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded-md text-xs transition-colors ${
                     filter === 'received' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -415,7 +418,7 @@ export default function Kitchen() {
                 </button>
                 <button
                   onClick={() => setFilter('preparing')}
-                  className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded-md text-xs transition-colors ${
                     filter === 'preparing' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -423,7 +426,7 @@ export default function Kitchen() {
                 </button>
                 <button
                   onClick={() => setFilter('ready')}
-                  className={`px-3 py-1 rounded-md text-xs transition-colors ${
+                  className={`px-2 sm:px-3 py-1 rounded-md text-xs transition-colors ${
                     filter === 'ready' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
@@ -433,12 +436,12 @@ export default function Kitchen() {
             </div>
 
             {/* Ordenação */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Ordenar:</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Ordenar:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'time' | 'priority' | 'status')}
-                className="px-3 py-1 border border-gray-300 rounded-md text-xs"
+                className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs w-full sm:w-auto"
               >
                 <option value="time">Por Hora</option>
                 <option value="priority">Por Prioridade</option>
@@ -447,12 +450,12 @@ export default function Kitchen() {
             </div>
 
             {/* Localização */}
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium text-gray-700">Local:</span>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
+              <span className="text-xs sm:text-sm font-medium text-gray-700">Local:</span>
               <select
                 value={selectedLocation}
                 onChange={(e) => setSelectedLocation(e.target.value)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-xs"
+                className="px-2 sm:px-3 py-1 border border-gray-300 rounded-md text-xs w-full sm:w-auto"
               >
                 <option value="all">Todos</option>
                 <option value="talatona">Talatona</option>
@@ -465,7 +468,7 @@ export default function Kitchen() {
       </div>
 
       {/* Lista de Pedidos */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pb-4 sm:pb-8">
         {ordersLoading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600 mx-auto mb-4"></div>
@@ -480,28 +483,28 @@ export default function Kitchen() {
             </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {filteredOrders.map((order: Order) => (
               <div 
                 key={order.id}
                 className={`bg-white rounded-lg shadow-sm border-l-4 ${getPriorityColor(order.orderType)} border-r border-t border-b border-gray-200 overflow-hidden`}
               >
-                <div className="p-6">
+                <div className="p-3 sm:p-6">
                   {/* Header do Pedido */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="text-2xl">{getOrderTypeIcon(order.orderType)}</div>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="text-xl sm:text-2xl">{getOrderTypeIcon(order.orderType)}</div>
                       <div>
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                           Pedido #{order.id}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-xs sm:text-sm text-gray-600">
                           {formatTime(order.createdAt)} • {getElapsedTime(order.createdAt)}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
+                    <div className="self-start sm:text-right">
+                      <span className={`inline-flex px-2 sm:px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                         {order.status === 'received' && 'Recebido'}
                         {order.status === 'preparing' && 'Preparando'}
                         {order.status === 'ready' && 'Pronto'}
@@ -512,36 +515,36 @@ export default function Kitchen() {
                   </div>
 
                   {/* Informações do Cliente */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-3 bg-gray-50 rounded-lg">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4 p-2 sm:p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-2">
-                      <Users className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{order.customerName}</span>
+                      <Users className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-gray-600 truncate">{order.customerName}</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{order.customerPhone}</span>
+                      <Phone className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-gray-600">{order.customerPhone}</span>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
-                      <span className="text-sm text-gray-600 capitalize">{order.locationId}</span>
+                    <div className="flex items-center space-x-2 sm:col-span-2 lg:col-span-1">
+                      <MapPin className="h-3 w-3 sm:h-4 sm:w-4 text-gray-400 flex-shrink-0" />
+                      <span className="text-xs sm:text-sm text-gray-600 capitalize">{order.locationId}</span>
                       {order.tableId && (
-                        <span className="text-sm text-gray-600">• Mesa {order.tableId}</span>
+                        <span className="text-xs sm:text-sm text-gray-600">• Mesa {order.tableId}</span>
                       )}
                     </div>
                   </div>
 
                   {/* Items do Pedido */}
-                  <div className="mb-4">
-                    <h4 className="text-sm font-medium text-gray-900 mb-2 flex items-center">
-                      <ChefHat className="h-4 w-4 mr-1" />
+                  <div className="mb-3 sm:mb-4">
+                    <h4 className="text-xs sm:text-sm font-medium text-gray-900 mb-2 flex items-center">
+                      <ChefHat className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                       Itens do Pedido
                     </h4>
                     <div className="space-y-2">
                       {(order.items && order.items.length > 0) ? (
                         order.items.map((item, index) => (
-                          <div key={index} className="flex justify-between items-center py-2 px-3 bg-red-50 rounded-md">
-                            <div>
-                              <span className="font-medium text-gray-900">
+                          <div key={index} className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-2 px-2 sm:px-3 bg-red-50 rounded-md space-y-1 sm:space-y-0">
+                            <div className="flex-1">
+                              <span className="text-xs sm:text-sm font-medium text-gray-900">
                                 {item.quantity}x {item.name || getMenuItemName(item.menuItemId)}
                               </span>
                               {item.customizations && item.customizations.length > 0 && (
@@ -550,14 +553,14 @@ export default function Kitchen() {
                                 </p>
                               )}
                             </div>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center space-x-2 self-end sm:self-auto">
                               {item.preparationTime && (
                                 <span className="flex items-center text-xs text-gray-500">
                                   <Timer className="h-3 w-3 mr-1" />
                                   {item.preparationTime}min
                                 </span>
                               )}
-                              <span className="text-sm font-medium text-gray-900">
+                              <span className="text-xs sm:text-sm font-medium text-gray-900">
                                 {parseFloat(item.unitPrice).toFixed(0)} AOA
                               </span>
                             </div>
@@ -572,29 +575,29 @@ export default function Kitchen() {
                   </div>
 
                   {/* Total e Notas */}
-                  <div className="flex justify-between items-end">
-                    <div>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end space-y-3 sm:space-y-0">
+                    <div className="flex-1">
                       {order.notes && (
                         <div className="mb-2">
                           <span className="text-xs font-medium text-gray-700">Observações:</span>
-                          <p className="text-sm text-gray-600 italic">{order.notes}</p>
+                          <p className="text-xs sm:text-sm text-gray-600 italic">{order.notes}</p>
                         </div>
                       )}
                       <div className="flex items-center space-x-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
-                        <span className="text-lg font-bold text-gray-900">
+                        <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400" />
+                        <span className="text-sm sm:text-lg font-bold text-gray-900">
                           Total: {parseFloat(order.totalAmount).toFixed(0)} AOA
                         </span>
                       </div>
                     </div>
 
                     {/* Botões de Ação */}
-                    <div className="flex space-x-2">
+                    <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
                       {order.status === 'received' && (
                         <button
                           onClick={() => updateOrderStatus(order.id, 'preparing')}
                           disabled={updateStatusMutation.isPending}
-                          className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                          className="px-3 sm:px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
                         >
                           Iniciar Preparo
                         </button>
@@ -603,7 +606,7 @@ export default function Kitchen() {
                         <button
                           onClick={() => updateOrderStatus(order.id, 'ready')}
                           disabled={updateStatusMutation.isPending}
-                          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                          className="px-3 sm:px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
                         >
                           Marcar como Pronto
                         </button>
@@ -612,7 +615,7 @@ export default function Kitchen() {
                         <button
                           onClick={() => updateOrderStatus(order.id, 'delivered')}
                           disabled={updateStatusMutation.isPending}
-                          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-sm font-medium transition-colors"
+                          className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 text-xs sm:text-sm font-medium transition-colors"
                         >
                           Marcar como Entregue
                         </button>
