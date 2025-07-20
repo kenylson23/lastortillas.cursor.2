@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useAuth } from '../hooks/useAuth';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -110,14 +110,6 @@ export default function Kitchen() {
 
   // Estados para controles
   const [autoRefresh, setAutoRefresh] = useState(true);
-
-  // Detectar novos pedidos e tocar som
-  useEffect(() => {
-    if (orders.length > lastOrderCount && lastOrderCount > 0) {
-      playNotificationSound();
-    }
-    setLastOrderCount(orders.length);
-  }, [orders.length, lastOrderCount, soundEnabled, audioContext]);
   const [filter, setFilter] = useState<string>('active');
   const [sortBy, setSortBy] = useState<'time' | 'priority' | 'type'>('time');
   const [selectedLocation, setSelectedLocation] = useState<string>('all');
@@ -154,6 +146,16 @@ export default function Kitchen() {
     queryKey: ['/api/orders'],
     refetchInterval: autoRefresh ? 3000 : false,
   });
+
+  // Detectar novos pedidos e tocar som
+  useEffect(() => {
+    if (orders && orders.length > lastOrderCount && lastOrderCount > 0) {
+      playNotificationSound();
+    }
+    if (orders) {
+      setLastOrderCount(orders.length);
+    }
+  }, [orders?.length, lastOrderCount, soundEnabled, audioContext]);
 
   // Sound notification for new orders
   useEffect(() => {
