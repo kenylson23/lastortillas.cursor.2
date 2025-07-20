@@ -1,12 +1,39 @@
-import { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
-import { MenuItem, Order, OrderItem } from '@shared/schema';
 import EnhancedCart from './EnhancedCart';
 import OrderSuccessModal from './OrderSuccessModal';
 import OrderTracking from './OrderTracking';
 import { useAuth } from '../hooks/useAuth';
+
+// Definir interfaces localmente para resolver problemas de importação
+interface MenuItem {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  category: string;
+  available?: boolean;
+  preparationTime?: number;
+  customizations?: string[];
+}
+
+interface OrderItem {
+  menuItemId: number;
+  quantity: number;
+  unitPrice: string;
+  customizations?: string[];
+}
+
+interface Order {
+  id: number;
+  customerName: string;
+  customerPhone: string;
+  orderType: string;
+  totalAmount: string;
+  items: OrderItem[];
+}
 
 interface CartItem extends MenuItem {
   quantity: number;
@@ -71,8 +98,70 @@ export default function OnlineMenu({
     };
   });
 
+  const [tableStatus, setTableStatus] = useState<{
+    isOccupied: boolean;
+    warning: string | null;
+    tableData: any | null;
+  }>({
+    isOccupied: false,
+    warning: null,
+    tableData: null
+  });
+
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuth(); // Detectar se admin está logado
+
+  // Query para buscar informações da mesa quando QR code é escaneado
+  const { data: currentTable } = useQuery({
+    queryKey: ['/api/tables', tableId],
+    enabled: !!tableId,
+    queryFn: async () => {
+      const response = await fetch(`/api/tables/${tableId}`);
+      if (!response.ok) throw new Error('Mesa não encontrada');
+      return response.json();
+    }
+  });
+
+  // Configurar informações da mesa quando QR code é escaneado
+  useEffect(() => {
+    if (tableId && tableNumber && currentTable) {
+      console.log('Configurando mesa via QR Code:', { tableId, tableNumber, currentTable });
+      
+      // Configurar tipo de pedido para dine-in automaticamente
+      setCustomerInfo(prev => ({
+        ...prev,
+        orderType: 'dine-in',
+        tableId: tableId
+      }));
+
+      // Verificar status da mesa
+      if (currentTable.status === 'occupied') {
+        setTableStatus({
+          isOccupied: true,
+          warning: `Atenção: A Mesa ${tableNumber} está marcada como ocupada. Você pode prosseguir com o pedido se esta mesa foi liberada recentemente.`,
+          tableData: currentTable
+        });
+      } else if (currentTable.status === 'maintenance') {
+        setTableStatus({
+          isOccupied: true,
+          warning: `Mesa ${tableNumber} está em manutenção. Por favor, escolha outra mesa ou contate um funcionário.`,
+          tableData: currentTable
+        });
+      } else if (currentTable.status === 'reserved') {
+        setTableStatus({
+          isOccupied: true,
+          warning: `Mesa ${tableNumber} está reservada. Verifique se esta é sua reserva antes de prosseguir.`,
+          tableData: currentTable
+        });
+      } else {
+        setTableStatus({
+          isOccupied: false,
+          warning: null,
+          tableData: currentTable
+        });
+      }
+    }
+  }, [tableId, tableNumber, currentTable]);
 
   // Salvar carrinho no localStorage automaticamente
   useEffect(() => {
@@ -430,12 +519,21 @@ export default function OnlineMenu({
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ml-2"
+                  className={`px-3 py-1 rounded-full text-xs font-medium flex items-center space-x-1 ml-2 ${
+                    tableStatus.isOccupied 
+                      ? 'bg-amber-100 text-amber-800' 
+                      : 'bg-green-100 text-green-800'
+                  }`}
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    {tableStatus.isOccupied ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    )}
                   </svg>
                   <span>Mesa {tableNumber}</span>
+                  {tableStatus.isOccupied && <span className="text-xs">(Atenção)</span>}
                 </motion.div>
               )}
             </div>
@@ -533,6 +631,32 @@ export default function OnlineMenu({
           
           {!showTracking && (
             <>
+              {/* Table Status Warning */}
+              {tableStatus.warning && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-4 p-4 bg-amber-50 border-l-4 border-amber-400 rounded-lg"
+                >
+                  <div className="flex items-start">
+                    <div className="flex-shrink-0">
+                      <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.464 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-sm font-medium text-amber-800">Status da Mesa</h3>
+                      <p className="text-sm text-amber-700 mt-1">{tableStatus.warning}</p>
+                      {tableStatus.tableData && (
+                        <div className="mt-2 text-xs text-amber-600">
+                          Mesa {tableNumber} - {tableStatus.tableData.seats} pessoas - Status: {tableStatus.tableData.status}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+
               {/* Quick Search Bar */}
               <div className="mb-4">
                 <div className="relative max-w-md">
@@ -747,6 +871,9 @@ export default function OnlineMenu({
         locationId={locationId}
         isSubmitting={createOrderMutation.isPending}
         availableTables={availableTables}
+        qrTableId={tableId}
+        qrTableNumber={tableNumber}
+        tableStatus={tableStatus}
       />
 
       {/* Success Modal */}

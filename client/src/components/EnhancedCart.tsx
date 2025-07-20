@@ -16,6 +16,13 @@ interface EnhancedCartProps {
   locationId: string;
   isSubmitting?: boolean;
   availableTables?: any[];
+  qrTableId?: number;
+  qrTableNumber?: number;
+  tableStatus?: {
+    isOccupied: boolean;
+    warning: string | null;
+    tableData: any | null;
+  };
 }
 
 export default function EnhancedCart({
@@ -26,7 +33,10 @@ export default function EnhancedCart({
   onSubmitOrder,
   locationId,
   isSubmitting = false,
-  availableTables = []
+  availableTables = [],
+  qrTableId,
+  qrTableNumber,
+  tableStatus
 }: EnhancedCartProps) {
   // Debug logs (podem ser removidos em produção)
   console.log('EnhancedCart availableTables:', availableTables.length, 'tables for location:', locationId);
@@ -43,6 +53,18 @@ export default function EnhancedCart({
 
   const [deliveryFee, setDeliveryFee] = useState(0);
   const [estimatedTime, setEstimatedTime] = useState(45);
+
+  // Preencher automaticamente informações da mesa quando QR Code é escaneado
+  useEffect(() => {
+    if (qrTableId && qrTableNumber) {
+      console.log('Preenchendo automaticamente mesa via QR Code:', { qrTableId, qrTableNumber });
+      setCustomerInfo(prev => ({
+        ...prev,
+        orderType: 'dine-in',
+        tableId: qrTableId
+      }));
+    }
+  }, [qrTableId, qrTableNumber]);
 
   useEffect(() => {
     // Calcular taxa de entrega baseada no tipo de pedido
@@ -300,34 +322,59 @@ export default function EnhancedCart({
                       )}
                       {customerInfo.orderType === 'dine-in' && (
                         <div className="md:col-span-2">
+                          {/* QR Code Table Info */}
+                          {qrTableId && qrTableNumber && (
+                            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                              <div className="flex items-center">
+                                <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h4" />
+                                </svg>
+                                <span className="text-sm font-medium text-green-800">
+                                  Mesa {qrTableNumber} selecionada via QR Code
+                                </span>
+                              </div>
+                              {tableStatus?.warning && (
+                                <div className="mt-2 p-2 bg-amber-50 border border-amber-200 rounded">
+                                  <p className="text-xs text-amber-700">{tableStatus.warning}</p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
                           <select
                             value={customerInfo.tableId || ''}
                             onChange={(e) => {
                               console.log('Table selection changed:', e.target.value);
                               setCustomerInfo(prev => ({ ...prev, tableId: e.target.value ? parseInt(e.target.value) : null }));
                             }}
-                            className="border border-gray-300 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-red-500 bg-white"
+                            className={`border rounded-lg p-3 w-full focus:outline-none focus:ring-2 bg-white ${
+                              qrTableId ? 'border-green-300 focus:ring-green-500' : 'border-gray-300 focus:ring-red-500'
+                            }`}
                             required
+                            disabled={!!qrTableId}
                           >
                             <option value="">Selecione uma mesa *</option>
-                            {availableTables.filter(table => table.status === 'available').length === 0 ? (
-                              <option disabled value="">Nenhuma mesa disponível para esta localização</option>
+                            {qrTableId ? (
+                              <option value={qrTableId}>Mesa {qrTableNumber} (QR Code)</option>
                             ) : (
-                              availableTables.filter(table => table.status === 'available').map(table => {
-                                console.log('Rendering table option:', table);
-                                return (
-                                  <option key={table.id} value={table.id}>
-                                    Mesa {table.number} - {table.capacity} pessoas
-                                    {table.position && ` (${table.position})`}
-                                  </option>
-                                );
-                              })
+                              availableTables.filter(table => table.status === 'available').length === 0 ? (
+                                <option disabled value="">Nenhuma mesa disponível para esta localização</option>
+                              ) : (
+                                availableTables.filter(table => table.status === 'available').map(table => {
+                                  console.log('Rendering table option:', table);
+                                  return (
+                                    <option key={table.id} value={table.id}>
+                                      Mesa {table.tableNumber} - {table.seats} pessoas
+                                    </option>
+                                  );
+                                })
+                              )
                             )}
                           </select>
-                          {availableTables.filter(table => table.status === 'available').length === 0 && (
+                          {!qrTableId && availableTables.filter(table => table.status === 'available').length === 0 && (
                             <p className="text-sm text-red-600 mt-2">
-                              ⚠️ Sentimos muito! O Las Tortillas {getLocationDisplayName(locationId)} está com todas as mesas ocupadas. 
-                              Tente nossas outras unidades {getAlternativeLocations(locationId)} ou peça para entrega.
+                              ⚠️ Sentimos muito! Todas as mesas estão ocupadas. 
+                              Tente delivery ou takeaway.
                             </p>
                           )}
                         </div>
