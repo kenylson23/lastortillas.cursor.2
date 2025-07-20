@@ -26,7 +26,7 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
 
   // Auto-ajustar número da mesa ao mudar local
   useEffect(() => {
-    if (!table && formData.locationId) {
+    if (!table && formData.locationId && Array.isArray(allTables)) {
       const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
       const maxNumber = tablesInLocation.length > 0 
         ? Math.max(...tablesInLocation.map(t => t.tableNumber)) 
@@ -55,7 +55,7 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
     
     if (bulkCreate) {
       // Criar múltiplas mesas
-      const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
+      const tablesInLocation = Array.isArray(allTables) ? allTables.filter(t => t.locationId === formData.locationId) : [];
       const existingNumbers = tablesInLocation.map(t => t.tableNumber);
       
       for (let i = 0; i < bulkQuantity; i++) {
@@ -82,7 +82,7 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
   };
 
   const getNextAvailableNumbers = (quantity: number) => {
-    const tablesInLocation = allTables.filter(t => t.locationId === formData.locationId);
+    const tablesInLocation = Array.isArray(allTables) ? allTables.filter(t => t.locationId === formData.locationId) : [];
     const existingNumbers = new Set(tablesInLocation.map(t => t.tableNumber));
     const availableNumbers = [];
     let current = startNumber;
@@ -181,9 +181,9 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
                 <span className="text-red-500 ml-1">*</span>
               </label>
               {(() => {
-                const existingNumbers = allTables
+                const existingNumbers = Array.isArray(allTables) ? allTables
                   .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                  .map(t => t.tableNumber);
+                  .map(t => t.tableNumber) : [];
                 
                 const isDuplicate = existingNumbers.includes(formData.tableNumber || 0);
                 
@@ -334,9 +334,9 @@ function TableModal({ isOpen, onClose, table, onSave, allTables }: TableModalPro
                 Cancelar
               </button>
               {(() => {
-                const existingNumbers = allTables
+                const existingNumbers = Array.isArray(allTables) ? allTables
                   .filter(t => t.locationId === formData.locationId && t.id !== table?.id)
-                  .map(t => t.tableNumber);
+                  .map(t => t.tableNumber) : [];
                 
                 const isDuplicate = !bulkCreate && existingNumbers.includes(formData.tableNumber || 0);
                 const isFormValid = formData.tableNumber && formData.seats && formData.locationId && !isDuplicate;
