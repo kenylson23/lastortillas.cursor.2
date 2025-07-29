@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useToast } from '../hooks/use-toast';
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,11 +17,7 @@ export default function Login() {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userRole', 'admin');
       console.log('Login bem-sucedido - Administrador');
-      toast({
-        title: "Login realizado com sucesso",
-        description: "Redirecionando para o painel administrativo...",
-        variant: "success",
-      });
+      console.log('Redirecionando para /admin...');
       setTimeout(() => {
         setLocation('/admin');
       }, 1000);
@@ -31,21 +25,13 @@ export default function Login() {
       localStorage.setItem('isAuthenticated', 'true');
       localStorage.setItem('userRole', 'kitchen');
       console.log('Login bem-sucedido - Cozinha');
-      toast({
-        title: "Login realizado com sucesso",
-        description: "Redirecionando para o painel da cozinha...",
-        variant: "success",
-      });
+      console.log('Redirecionando para /cozinha...');
       setTimeout(() => {
         setLocation('/cozinha');
       }, 1000);
     } else {
       console.log('Credenciais inválidas:', credentials);
-      toast({
-        title: "Credenciais inválidas",
-        description: "Nome de usuário ou senha incorretos",
-        variant: "destructive",
-      });
+      alert('Credenciais inválidas! Nome de usuário ou senha incorretos.');
     }
     
     setIsLoading(false);
