@@ -45,6 +45,148 @@ export const storage = {
       data: null, 
       error: null 
     };
+  },
+
+  // Mock database operations for APIs
+  createMenuItem: async (menuItem: any) => {
+    console.log('Storage createMenuItem called:', menuItem);
+    return { 
+      id: Math.floor(Math.random() * 1000),
+      ...menuItem,
+      createdAt: new Date().toISOString()
+    };
+  },
+
+  getAllMenuItems: async () => {
+    console.log('Storage getAllMenuItems called');
+    return [
+      {
+        id: 1,
+        name: "Tacos Especiais",
+        description: "Tacos com carne, frango, peixe e vegetarianos",
+        price: "15.00",
+        category: "Tacos",
+        available: true,
+        preparationTime: 15,
+        customizations: ["sem cebola", "extra queijo"],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 2,
+        name: "Quesadillas",
+        description: "Tortillas grelhadas com queijo e recheios variados",
+        price: "12.00",
+        category: "Quesadillas",
+        available: true,
+        preparationTime: 10,
+        customizations: ["sem cebola", "extra queijo"],
+        createdAt: new Date().toISOString()
+      }
+    ];
+  },
+
+  getMenuItemsByCategory: async (category: string) => {
+    console.log('Storage getMenuItemsByCategory called:', category);
+    return [
+      {
+        id: 1,
+        name: "Tacos Especiais",
+        description: "Tacos com carne, frango, peixe e vegetarianos",
+        price: "15.00",
+        category: category,
+        available: true,
+        preparationTime: 15,
+        customizations: ["sem cebola", "extra queijo"],
+        createdAt: new Date().toISOString()
+      }
+    ];
+  },
+
+  createOrder: async (order: any) => {
+    console.log('Storage createOrder called:', order);
+    return { 
+      id: Math.floor(Math.random() * 1000),
+      ...order,
+      status: "received",
+      paymentStatus: "pending",
+      createdAt: new Date().toISOString()
+    };
+  },
+
+  getOrderById: async (id: string) => {
+    console.log('Storage getOrderById called:', id);
+    return {
+      id: parseInt(id),
+      customerName: "João Silva",
+      customerPhone: "+244 949 639 932",
+      customerEmail: "joao@example.com",
+      orderType: "delivery",
+      locationId: "ilha",
+      totalAmount: "27.00",
+      paymentMethod: "cash",
+      status: "received",
+      paymentStatus: "pending",
+      createdAt: new Date().toISOString()
+    };
+  },
+
+  getAllOrders: async () => {
+    console.log('Storage getAllOrders called');
+    return [
+      {
+        id: 1,
+        customerName: "João Silva",
+        customerPhone: "+244 949 639 932",
+        orderType: "delivery",
+        locationId: "ilha",
+        totalAmount: "27.00",
+        paymentMethod: "cash",
+        status: "received",
+        paymentStatus: "pending",
+        createdAt: new Date().toISOString()
+      }
+    ];
+  },
+
+  createReservation: async (reservation: any) => {
+    console.log('Storage createReservation called:', reservation);
+    return { 
+      id: Math.floor(Math.random() * 1000),
+      ...reservation,
+      createdAt: new Date().toISOString()
+    };
+  },
+
+  getReservationsByDate: async (date: string) => {
+    console.log('Storage getReservationsByDate called:', date);
+    return [
+      {
+        id: 1,
+        name: "Maria Santos",
+        phone: "+244 949 639 932",
+        email: "maria@example.com",
+        date: date,
+        time: "19:00",
+        guests: 4,
+        notes: "Mesa próxima à janela",
+        createdAt: new Date().toISOString()
+      }
+    ];
+  },
+
+  createContact: async (contact: any) => {
+    console.log('Storage createContact called:', contact);
+    return { 
+      id: Math.floor(Math.random() * 1000),
+      ...contact,
+      createdAt: new Date().toISOString()
+    };
+  },
+
+  checkAvailability: async (date: string, time: string) => {
+    console.log('Storage checkAvailability called:', date, time);
+    // Mock: sempre disponível
+    return true;
   }
 };
 
