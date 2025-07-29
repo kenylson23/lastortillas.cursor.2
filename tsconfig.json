@@ -1,28 +1,35 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
     "skipLibCheck": true,
-    "outDir": "./dist",
-    "rootDir": "./",
-    "allowJs": true,
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src-frontend/*"],
+      "@shared/*": ["./shared/*"],
+      "@assets/*": ["./attached_assets/*"]
+    }
   },
   "include": [
-    "api/**/*.ts",
-    "server/**/*.ts",
-    "shared/**/*.ts",
-    "client/**/*.ts",
-    "*.ts"
+    "src-frontend/**/*",
+    "shared/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "dist"
-  ]
+    "api/**/*",
+    "server/**/*",
+    "node_modules/**/*"
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
