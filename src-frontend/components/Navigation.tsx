@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import { useAuth } from "../hooks/useAuth";
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [, setLocation] = useLocation();
   const { isAuthenticated, user, logout } = useAuth();
 
   const navItems = [
@@ -15,13 +17,28 @@ export default function Navigation() {
 
   const handleNavigation = (href: string, isRoute?: boolean) => {
     if (isRoute) {
-      window.location.href = href;
+      setLocation(href);
     } else {
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
+    setIsMenuOpen(false);
+  };
+
+  const handleLogin = () => {
+    setLocation('/login');
+    setIsMenuOpen(false);
+  };
+
+  const handleMenu = () => {
+    setLocation('/menu');
+    setIsMenuOpen(false);
+  };
+
+  const handleAdmin = () => {
+    setLocation('/admin');
     setIsMenuOpen(false);
   };
 
@@ -47,21 +64,21 @@ export default function Navigation() {
                   {item.label}
                 </button>
               ))}
-              <a
-                href="/menu"
+              <button
+                onClick={handleMenu}
                 className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors duration-200 font-medium text-sm"
               >
                 Pedir Online
-              </a>
+              </button>
               {isAuthenticated ? (
                 <div className="flex items-center space-x-4">
                   <span className="text-gray-700">Olá, {user?.firstName}</span>
-                  <a
-                    href="/admin"
+                  <button
+                    onClick={handleAdmin}
                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
                   >
                     Admin
-                  </a>
+                  </button>
                   <button
                     onClick={logout}
                     className="text-gray-600 hover:text-red-600 transition-colors duration-200 font-medium text-sm"
@@ -70,12 +87,12 @@ export default function Navigation() {
                   </button>
                 </div>
               ) : (
-                <a
-                  href="/login"
+                <button
+                  onClick={handleLogin}
                   className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium text-sm"
                 >
                   Login
-                </a>
+                </button>
               )}
             </div>
           </div>
@@ -153,25 +170,23 @@ export default function Navigation() {
                   <div className="border-t border-gray-200 my-4"></div>
                   
                   {/* Botão de pedido online */}
-                  <a
-                    href="/menu"
-                    className="block bg-green-600 text-white px-6 py-4 rounded-xl hover:bg-green-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
-                    onClick={() => setIsMenuOpen(false)}
+                  <button
+                    onClick={handleMenu}
+                    className="block w-full bg-green-600 text-white px-6 py-4 rounded-xl hover:bg-green-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
                   >
                     🛒 Pedir Online
-                  </a>
+                  </button>
                   
                   {/* Botões de login/admin */}
                   {isAuthenticated ? (
                     <div className="space-y-3 mt-4">
                       <div className="text-center text-gray-700 text-lg font-medium">Olá, {user?.firstName}!</div>
-                      <a
-                        href="/admin"
-                        className="block bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
-                        onClick={() => setIsMenuOpen(false)}
+                      <button
+                        onClick={handleAdmin}
+                        className="block w-full bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg"
                       >
                         👨‍💼 Painel Admin
-                      </a>
+                      </button>
                       <button
                         onClick={() => {
                           logout();
@@ -183,13 +198,12 @@ export default function Navigation() {
                       </button>
                     </div>
                   ) : (
-                    <a
-                      href="/login"
-                      className="block bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg mt-4"
-                      onClick={() => setIsMenuOpen(false)}
+                    <button
+                      onClick={handleLogin}
+                      className="block w-full bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors duration-200 text-lg font-bold text-center shadow-lg mt-4"
                     >
                       🔐 Entrar
-                    </a>
+                    </button>
                   )}
                 </div>
 
