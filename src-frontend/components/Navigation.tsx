@@ -16,7 +16,9 @@ export default function Navigation() {
   ];
 
   const handleNavigation = (href: string, isRoute?: boolean) => {
+    console.log('handleNavigation called:', href, isRoute);
     if (isRoute) {
+      console.log('Setting location to:', href);
       setLocation(href);
     } else {
       const element = document.querySelector(href);
@@ -28,16 +30,19 @@ export default function Navigation() {
   };
 
   const handleLogin = () => {
+    console.log('Login button clicked');
     setLocation('/login');
     setIsMenuOpen(false);
   };
 
   const handleMenu = () => {
+    console.log('Menu button clicked');
     setLocation('/menu');
     setIsMenuOpen(false);
   };
 
   const handleAdmin = () => {
+    console.log('Admin button clicked');
     setLocation('/admin');
     setIsMenuOpen(false);
   };
