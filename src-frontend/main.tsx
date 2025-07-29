@@ -2,17 +2,6 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 import "./styles/performance.css";
-import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
-
-// Preload crítico da imagem do hero
-const preloadHeroImage = () => {
-  const link = document.createElement('link');
-  link.rel = 'preload';
-  link.href = heroImage;
-  link.as = 'image';
-  link.fetchPriority = 'high';
-  document.head.appendChild(link);
-};
 
 // Preload recursos críticos
 const criticalResources = [
@@ -30,7 +19,56 @@ criticalResources.forEach((resource) => {
   document.head.appendChild(link);
 });
 
-// Executar preload da imagem do hero
-preloadHeroImage();
+// Função para renderizar com tratamento de erro
+const renderApp = () => {
+  try {
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+      throw new Error("Elemento root não encontrado");
+    }
+    
+    const root = createRoot(rootElement);
+    root.render(<App />);
+  } catch (error) {
+    console.error("Erro ao renderizar aplicação:", error);
+    
+    // Fallback para usuário
+    const rootElement = document.getElementById("root");
+    if (rootElement) {
+      rootElement.innerHTML = `
+        <div style="
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          justify-content: center; 
+          height: 100vh; 
+          font-family: Arial, sans-serif;
+          text-align: center;
+          padding: 20px;
+        ">
+          <h1 style="color: #dc2626; margin-bottom: 20px;">Las Tortillas Mexican Grill</h1>
+          <p style="color: #6b7280; margin-bottom: 20px;">
+            Ocorreu um erro ao carregar a aplicação.
+          </p>
+          <button 
+            onclick="window.location.reload()" 
+            style="
+              background: #dc2626; 
+              color: white; 
+              border: none; 
+              padding: 12px 24px; 
+              border-radius: 8px; 
+              cursor: pointer;
+              font-size: 16px;
+            "
+          >
+            Tentar Novamente
+          </button>
+        </div>
+      `;
+    }
+  }
+};
 
-createRoot(document.getElementById("root")!).render(<App />);
+// Renderizar aplicação
+renderApp();

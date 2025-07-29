@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
-import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
 import LoadingSpinner from "./LoadingSpinner";
+
+// Imagem de fallback
+const fallbackImage = "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80";
 
 export default function Hero() {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -31,7 +33,7 @@ export default function Hero() {
     // Configurar para carregamento prioritário
     img.fetchPriority = 'high';
     img.loading = 'eager';
-    img.src = heroImage;
+    img.src = fallbackImage;
     
     // Cleanup
     return () => {
@@ -48,7 +50,7 @@ export default function Hero() {
           imageLoaded && !imageError ? 'opacity-100' : 'opacity-0'
         }`}
         style={{
-          backgroundImage: `url(${heroImage})`,
+          backgroundImage: `url(${fallbackImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',

@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
-import { memo, useCallback } from "react";
-import heroImage from "@assets/From tortillas with Love   photo credit @andersson_samd_1751272348650.jpg";
+import { useEffect, useState } from "react";
+import LoadingSpinner from "./LoadingSpinner";
+
+// Imagem de fallback
+const fallbackImage = "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=800&q=80";
 
 // Componente memo para elementos flutuantes
 const FloatingElement = memo(({ 
@@ -49,11 +52,40 @@ const HeroButton = memo(({
 HeroButton.displayName = 'HeroButton';
 
 export default function OptimizedHero() {
-  const scrollToSection = useCallback((href: string) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  };
+
+  // Preload otimizado da imagem do hero
+  useEffect(() => {
+    const img = new Image();
+    
+    img.onload = () => {
+      setImageLoaded(true);
+      setImageError(false);
+    };
+    
+    img.onerror = () => {
+      setImageError(true);
+      setImageLoaded(true); // Considerar como carregado mesmo com erro
+    };
+    
+    // Configurar para carregamento prioritário
+    img.fetchPriority = 'high';
+    img.loading = 'eager';
+    img.src = fallbackImage;
+    
+    // Cleanup
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
   }, []);
 
   return (
