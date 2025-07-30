@@ -1,192 +1,275 @@
-// Temporary stub implementations for storage - to be replaced with proper file storage system
+import { supabase } from './supabase';
+
+// Storage usando Supabase real
 export const storage = {
   // Upload de arquivo
   upload: async (bucket: string, path: string, file: File) => {
-    // TODO: Implement proper file upload (could use local filesystem or cloud storage)
-    console.log('Storage upload called:', bucket, path);
-    return { 
-      data: { path: `${bucket}/${path}` }, 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(path, file);
+      
+      if (error) throw error;
+      
+      return { 
+        data: { path: data.path }, 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro no upload:', error);
+      return { 
+        data: null, 
+        error: error.message 
+      };
+    }
   },
 
   // Download de arquivo
   download: async (bucket: string, path: string) => {
-    // TODO: Implement proper file download
-    console.log('Storage download called:', bucket, path);
-    return { 
-      data: new Blob(['mock file content']), 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .download(path);
+      
+      if (error) throw error;
+      
+      return { 
+        data, 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro no download:', error);
+      return { 
+        data: null, 
+        error: error.message 
+      };
+    }
   },
 
   // Obter URL pública
   getPublicUrl: (bucket: string, path: string) => {
-    // TODO: Implement proper public URL generation
-    console.log('Storage getPublicUrl called:', bucket, path);
-    return `/uploads/${bucket}/${path}`;
+    const { data } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(path);
+    
+    return data.publicUrl;
   },
 
   // Listar arquivos
   list: async (bucket: string, path?: string) => {
-    // TODO: Implement proper file listing
-    console.log('Storage list called:', bucket, path);
-    return { 
-      data: [], 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .list(path);
+      
+      if (error) throw error;
+      
+      return { 
+        data: data || [], 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro ao listar arquivos:', error);
+      return { 
+        data: [], 
+        error: error.message 
+      };
+    }
   },
 
   // Deletar arquivo
   remove: async (bucket: string, paths: string[]) => {
-    // TODO: Implement proper file removal
-    console.log('Storage remove called:', bucket, paths);
-    return { 
-      data: null, 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .remove(paths);
+      
+      if (error) throw error;
+      
+      return { 
+        data, 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro ao remover arquivos:', error);
+      return { 
+        data: null, 
+        error: error.message 
+      };
+    }
   },
 
-  // Mock database operations for APIs
+  // Database operations usando Supabase
   createMenuItem: async (menuItem: any) => {
-    console.log('Storage createMenuItem called:', menuItem);
-    return { 
-      id: Math.floor(Math.random() * 1000),
-      ...menuItem,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('menu_items')
+        .insert(menuItem)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar menu item:', error);
+      throw error;
+    }
   },
 
   getAllMenuItems: async () => {
-    console.log('Storage getAllMenuItems called');
-    return [
-      {
-        id: 1,
-        name: "Tacos Especiais",
-        description: "Tacos com carne, frango, peixe e vegetarianos",
-        price: "15.00",
-        category: "Tacos",
-        available: true,
-        preparationTime: 15,
-        customizations: ["sem cebola", "extra queijo"],
-        createdAt: new Date().toISOString()
-      },
-      {
-        id: 2,
-        name: "Quesadillas",
-        description: "Tortillas grelhadas com queijo e recheios variados",
-        price: "12.00",
-        category: "Quesadillas",
-        available: true,
-        preparationTime: 10,
-        customizations: ["sem cebola", "extra queijo"],
-        createdAt: new Date().toISOString()
-      }
-    ];
+    try {
+      const { data, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao buscar menu items:', error);
+      return [];
+    }
   },
 
   getMenuItemsByCategory: async (category: string) => {
-    console.log('Storage getMenuItemsByCategory called:', category);
-    return [
-      {
-        id: 1,
-        name: "Tacos Especiais",
-        description: "Tacos com carne, frango, peixe e vegetarianos",
-        price: "15.00",
-        category: category,
-        available: true,
-        preparationTime: 15,
-        customizations: ["sem cebola", "extra queijo"],
-        createdAt: new Date().toISOString()
-      }
-    ];
+    try {
+      const { data, error } = await supabase
+        .from('menu_items')
+        .select('*')
+        .eq('category', category)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao buscar menu items por categoria:', error);
+      return [];
+    }
   },
 
   createOrder: async (order: any) => {
-    console.log('Storage createOrder called:', order);
-    return { 
-      id: Math.floor(Math.random() * 1000),
-      ...order,
-      status: "received",
-      paymentStatus: "pending",
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .insert(order)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar pedido:', error);
+      throw error;
+    }
   },
 
   getOrderById: async (id: string) => {
-    console.log('Storage getOrderById called:', id);
-    return {
-      id: parseInt(id),
-      customerName: "João Silva",
-      customerPhone: "+244 949 639 932",
-      customerEmail: "joao@example.com",
-      orderType: "delivery",
-      locationId: "ilha",
-      totalAmount: "27.00",
-      paymentMethod: "cash",
-      status: "received",
-      paymentStatus: "pending",
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar pedido:', error);
+      return null;
+    }
   },
 
   getAllOrders: async () => {
-    console.log('Storage getAllOrders called');
-    return [
-      {
-        id: 1,
-        customerName: "João Silva",
-        customerPhone: "+244 949 639 932",
-        orderType: "delivery",
-        locationId: "ilha",
-        totalAmount: "27.00",
-        paymentMethod: "cash",
-        status: "received",
-        paymentStatus: "pending",
-        createdAt: new Date().toISOString()
-      }
-    ];
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao buscar pedidos:', error);
+      return [];
+    }
   },
 
   createReservation: async (reservation: any) => {
-    console.log('Storage createReservation called:', reservation);
-    return { 
-      id: Math.floor(Math.random() * 1000),
-      ...reservation,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('reservations')
+        .insert(reservation)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar reserva:', error);
+      throw error;
+    }
   },
 
   getReservationsByDate: async (date: string) => {
-    console.log('Storage getReservationsByDate called:', date);
-    return [
-      {
-        id: 1,
-        name: "Maria Santos",
-        phone: "+244 949 639 932",
-        email: "maria@example.com",
-        date: date,
-        time: "19:00",
-        guests: 4,
-        notes: "Mesa próxima à janela",
-        createdAt: new Date().toISOString()
-      }
-    ];
+    try {
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('*')
+        .eq('date', date)
+        .order('time', { ascending: true });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao buscar reservas por data:', error);
+      return [];
+    }
   },
 
   createContact: async (contact: any) => {
-    console.log('Storage createContact called:', contact);
-    return { 
-      id: Math.floor(Math.random() * 1000),
-      ...contact,
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const { data, error } = await supabase
+        .from('contacts')
+        .insert(contact)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar contato:', error);
+      throw error;
+    }
   },
 
   checkAvailability: async (date: string, time: string) => {
-    console.log('Storage checkAvailability called:', date, time);
-    // Mock: sempre disponível
-    return true;
+    try {
+      const { data, error } = await supabase
+        .from('reservations')
+        .select('guests')
+        .eq('date', date)
+        .eq('time', time);
+      
+      if (error) throw error;
+      
+      // Calcular capacidade total e ocupada
+      const totalCapacity = 50; // Capacidade total do restaurante
+      const occupiedSeats = data?.reduce((sum, reservation) => sum + reservation.guests, 0) || 0;
+      
+      return occupiedSeats < totalCapacity;
+    } catch (error) {
+      console.error('Erro ao verificar disponibilidade:', error);
+      return true; // Fallback: sempre disponível
+    }
   }
 };
 
@@ -194,32 +277,62 @@ export const storage = {
 export const adminStorage = {
   // Criar bucket
   createBucket: async (bucketId: string, options?: any) => {
-    // TODO: Implement proper bucket creation
-    console.log('Admin createBucket called:', bucketId);
-    return { 
-      data: { name: bucketId }, 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage.createBucket(bucketId, options);
+      
+      if (error) throw error;
+      
+      return { 
+        data: { name: bucketId }, 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro ao criar bucket:', error);
+      return { 
+        data: null, 
+        error: error.message 
+      };
+    }
   },
 
   // Listar buckets
   listBuckets: async () => {
-    // TODO: Implement proper bucket listing
-    console.log('Admin listBuckets called');
-    return { 
-      data: [], 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage.listBuckets();
+      
+      if (error) throw error;
+      
+      return { 
+        data: data || [], 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro ao listar buckets:', error);
+      return { 
+        data: [], 
+        error: error.message 
+      };
+    }
   },
 
   // Deletar bucket
   deleteBucket: async (bucketId: string) => {
-    // TODO: Implement proper bucket deletion
-    console.log('Admin deleteBucket called:', bucketId);
-    return { 
-      data: null, 
-      error: null 
-    };
+    try {
+      const { data, error } = await supabase.storage.deleteBucket(bucketId);
+      
+      if (error) throw error;
+      
+      return { 
+        data, 
+        error: null 
+      };
+    } catch (error) {
+      console.error('Erro ao deletar bucket:', error);
+      return { 
+        data: null, 
+        error: error.message 
+      };
+    }
   }
 };
 

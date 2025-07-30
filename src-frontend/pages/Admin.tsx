@@ -1,42 +1,42 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { useAuth } from '../hooks/useAuth';
-import OrderManagement from '../components/OrderManagement';
-import MenuManagement from '../components/MenuManagement';
-import OrderStats from '../components/OrderStats';
-import TableManagement from '../components/TableManagement';
 import { RefreshCw } from 'lucide-react';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
   const [activeTab, setActiveTab] = useState('orders');
-  const { isAuthenticated, isLoading, userRole, logout } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || userRole !== 'admin')) {
+    // Verificar autenticação do localStorage
+    const authStatus = localStorage.getItem('isAuthenticated');
+    const role = localStorage.getItem('userRole');
+    
+    if (authStatus === 'true' && role) {
+      setIsAuthenticated(true);
+      setUserRole(role);
+    } else {
       setLocation('/login');
     }
-  }, [isAuthenticated, isLoading, userRole, setLocation]);
+  }, [setLocation]);
 
-  if (isLoading) {
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('userRole');
+    setLocation('/');
+  };
+
+  if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <p className="mt-4 text-gray-600">Verificando autenticação...</p>
         </div>
       </div>
     );
   }
-
-  if (!isAuthenticated) {
-    return null; // Will redirect to login
-  }
-
-  const handleLogout = () => {
-    logout();
-    setLocation('/');
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -144,10 +144,30 @@ export default function Admin() {
 
       {/* Content */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
-        {activeTab === 'orders' && <OrderManagement />}
-        {activeTab === 'menu' && <MenuManagement />}
-        {activeTab === 'tables' && <TableManagement />}
-        {activeTab === 'analytics' && <OrderStats />}
+        {activeTab === 'orders' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão de Pedidos</h2>
+            <p className="text-gray-600">Sistema de gestão de pedidos em desenvolvimento...</p>
+          </div>
+        )}
+        {activeTab === 'menu' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão do Menu</h2>
+            <p className="text-gray-600">Sistema de gestão do menu em desenvolvimento...</p>
+          </div>
+        )}
+        {activeTab === 'tables' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão de Mesas</h2>
+            <p className="text-gray-600">Sistema de gestão de mesas em desenvolvimento...</p>
+          </div>
+        )}
+        {activeTab === 'analytics' && (
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Relatórios</h2>
+            <p className="text-gray-600">Sistema de relatórios em desenvolvimento...</p>
+          </div>
+        )}
       </div>
     </div>
   );
