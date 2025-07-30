@@ -50,8 +50,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         res.json(table);
       } else {
-        // Chamar getAllTables sem argumentos
-        const tables = await storage.getAllTables();
+        // Chamar getAllTables sem argumentos - corrigido
+        const tables = await (storage.getAllTables as () => Promise<any>)();
         res.json(tables);
       }
     } catch (error) {
