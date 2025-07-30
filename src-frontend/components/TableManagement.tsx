@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, Edit2, Trash2, Users, MapPin, AlertCircle, CheckCircle, Clock, Wrench, X, Copy, Zap, Grid, QrCode } from 'lucide-react';
-import { Table, InsertTable } from '@shared/schema';
+import { Table, InsertTable } from '../../shared/schema';
+import { apiRequest } from '../lib/queryClient';
 import QRCodeModal from './QRCodeModal';
 
 interface TableModalProps {
@@ -440,11 +441,11 @@ export default function TableManagement() {
   const { data: tables, isLoading, error } = useQuery({
     queryKey: ['/api/tables'],
     queryFn: async () => {
-      const response = await fetch('/api/tables');
-      if (!response.ok) {
+      const response = await apiRequest('/tables');
+      if (response.error) {
         throw new Error('Failed to fetch tables');
       }
-      return response.json();
+      return response.data;
     },
     refetchInterval: 5000, // Auto-refresh every 5 seconds
     refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
@@ -457,16 +458,11 @@ export default function TableManagement() {
 
   const createTableMutation = useMutation({
     mutationFn: async (table: InsertTable) => {
-      const response = await fetch('/api/tables', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(table)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha ao criar mesa');
+      const response = await apiRequest('/tables', 'POST', table);
+      if (response.error) {
+        throw new Error(response.error || 'Falha ao criar mesa');
       }
-      return response.json();
+      return response.data;
     },
     onSuccess: () => {
       console.log('✅ Table created successfully');
@@ -491,16 +487,11 @@ export default function TableManagement() {
 
   const updateTableMutation = useMutation({
     mutationFn: async ({ id, table }: { id: number; table: Partial<Table> }) => {
-      const response = await fetch(`/api/tables/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(table)
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Falha ao atualizar mesa');
+      const response = await apiRequest(`/tables/${id}`, 'PUT', table);
+      if (response.error) {
+        throw new Error(response.error || 'Falha ao atualizar mesa');
       }
-      return response.json();
+      return response.data;
     },
     onSuccess: () => {
       console.log('✅ Table updated successfully');
@@ -525,13 +516,11 @@ export default function TableManagement() {
 
   const deleteTableMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await fetch(`/api/tables/${id}`, {
-        method: 'DELETE'
-      });
-      if (!response.ok) {
+      const response = await apiRequest(`/tables/${id}`, 'DELETE');
+      if (response.error) {
         throw new Error('Failed to delete table');
       }
-      return response.json();
+      return response.data;
     },
     onSuccess: () => {
       console.log('✅ Table deleted successfully');
@@ -541,15 +530,11 @@ export default function TableManagement() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const response = await fetch(`/api/tables/${id}/status`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      if (!response.ok) {
+      const response = await apiRequest(`/tables/${id}/status`, 'PATCH', { status });
+      if (response.error) {
         throw new Error('Failed to update table status');
       }
-      return response.json();
+      return response.data;
     },
     onSuccess: () => {
       console.log('✅ Table status updated successfully');

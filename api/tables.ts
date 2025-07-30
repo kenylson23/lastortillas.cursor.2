@@ -3,15 +3,41 @@ import { storage } from '../shared/storage';
 import { insertTableSchema } from '../shared/schema';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Adicionar headers CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
+      console.log('Table creation request body:', req.body);
+      
+      // Validar o schema
       const table = insertTableSchema.parse(req.body);
+      console.log('Parsed table data:', table);
+      
       const newTable = await storage.createTable(table);
+      console.log('Created table:', newTable);
       
       res.status(201).json(newTable);
     } catch (error) {
       console.error('Table creation error:', error);
-      res.status(400).json({ message: "Failed to create table" });
+      
+      // Se for erro de validação Zod, retornar detalhes
+      if (error.name === 'ZodError') {
+        res.status(400).json({ 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      } else {
+        res.status(400).json({ message: "Failed to create table" });
+      }
     }
   } else if (req.method === 'GET') {
     try {
