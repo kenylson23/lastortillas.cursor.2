@@ -28,32 +28,32 @@ const MENU_ITEMS = [
 
 const MenuItemCard = memo(({ item, index }: { item: typeof MENU_ITEMS[0], index: number }) => {
   return (
-    <motion.div
+        <motion.div 
       initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, delay: index * 0.1 }}
-      viewport={{ once: true }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              viewport={{ once: true }}
       className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
-    >
+            >
       <div className="aspect-w-16 aspect-h-9">
-        <img
-          src={item.image}
-          alt={item.name}
+                  <img 
+                    src={item.image} 
+                    alt={item.name} 
           className="w-full h-48 object-cover"
           loading="lazy"
-        />
-      </div>
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
-        <p className="text-gray-600 mb-4">{item.description}</p>
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{item.name}</h3>
+                  <p className="text-gray-600 mb-4">{item.description}</p>
         <div className="flex items-center justify-between">
           <span className="text-2xl font-bold text-red-600">{item.price}</span>
           <button className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
             Ver Menu Completo
           </button>
-        </div>
-      </div>
-    </motion.div>
+                </div>
+              </div>
+            </motion.div>
   );
 });
 
@@ -87,22 +87,22 @@ export default function SimpleMenuShowcase() {
             <MenuItemCard key={item.id} item={item} index={index} />
           ))}
         </div>
-        
-        <motion.div
+
+        <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <a
-            href="/menu"
+            <a
+              href="/menu"
             className="inline-flex items-center px-8 py-3 bg-red-600 text-white text-lg font-semibold rounded-lg hover:bg-red-700 transition-colors"
-          >
+            >
             Ver Menu Completo
             <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
+              </svg>
           </a>
         </motion.div>
       </div>

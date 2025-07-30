@@ -1,202 +1,165 @@
-# 🚀 Migração para Supabase - Las Tortillas Mx
+# Guia de Migração para Supabase
 
-## 📋 Passos para Configurar o Supabase
+## Status Atual
 
-### 1. **Criar Projeto no Supabase**
+✅ **Projeto Supabase configurado**
+✅ **Tabelas principais criadas:**
+- `menu_items` (6 registros)
+- `orders` 
+- `order_items`
+- `reservations`
+- `tables` (10 registros)
+- `users`
+- `sessions`
 
-1. Acesse [supabase.com](https://supabase.com)
-2. Faça login ou crie uma conta
-3. Clique em "New Project"
-4. Preencha as informações:
-   - **Name**: `lastortilhas-mx`
-   - **Database Password**: `sua-senha-segura`
-   - **Region**: Escolha a mais próxima (ex: `us-east-1`)
-5. Clique em "Create new project"
+❌ **Tabela faltando:**
+- `contacts`
 
-### 2. **Obter Credenciais do Projeto**
+## Passos para Completar a Migração
 
-Após criar o projeto, vá em **Settings > API** e copie:
+### 1. Criar Tabela Contacts
 
-- **Project URL**: `https://[project-id].supabase.co`
-- **Anon Key**: `eyJ...` (chave longa)
-- **Service Role Key**: `eyJ...` (chave longa)
+Execute o seguinte SQL no Supabase Dashboard (SQL Editor):
 
-### 3. **Configurar Variáveis de Ambiente**
+```sql
+CREATE TABLE IF NOT EXISTS contacts (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  message TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);
+```
 
-Crie um arquivo `.env` na raiz do projeto:
+### 2. Configurar Row Level Security (RLS)
+
+Para cada tabela, execute:
+
+```sql
+-- Habilitar RLS
+ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contacts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tables ENABLE ROW LEVEL SECURITY;
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+
+-- Criar políticas básicas (permitir leitura pública, escrita apenas para autenticados)
+CREATE POLICY "Allow public read access" ON menu_items FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON menu_items FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access" ON orders FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON orders FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access" ON order_items FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON order_items FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access" ON reservations FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON reservations FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public read access" ON contacts FOR SELECT USING (true);
+CREATE POLICY "Allow public insert" ON contacts FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public read access" ON tables FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON tables FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+CREATE POLICY "Allow public read access" ON users FOR SELECT USING (true);
+CREATE POLICY "Allow authenticated insert" ON users FOR INSERT WITH CHECK (auth.uid() = id);
+```
+
+### 3. Configurar Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto com:
 
 ```env
 # Supabase Configuration
-SUPABASE_URL=https://[project-id].supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_URL=https://seu-project-id.supabase.co
+SUPABASE_ANON_KEY=sua-anon-key
+SUPABASE_SERVICE_ROLE_KEY=sua-service-role-key
 
-# Database URL (encontrada em Settings > Database)
-SUPABASE_DB_URL=postgresql://postgres:[sua-senha]@db.[project-id].supabase.co:5432/postgres
+# Database URLs
+SUPABASE_DB_DIRECT_URL=postgresql://postgres:[sua-senha]@db.[project-id].supabase.co:5432/postgres
+SUPABASE_DB_URL=postgresql://postgres.[project-id]:[sua-senha]@aws-0-us-east-1.pooler.supabase.com:6543/postgres
 
 # Environment
-NODE_ENV=development
-PORT=5000
+NODE_ENV=production
 ```
 
-### 4. **Instalar Dependências Atualizadas**
+### 4. Atualizar Configuração do Supabase
+
+Verifique se o arquivo `shared/supabase.ts` está correto:
+
+```typescript
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl = process.env.SUPABASE_URL || 'https://your-project.supabase.co'
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'your-anon-key'
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Database URL configuration for PostgreSQL (fallback)
+export const getDatabaseUrl = () => {
+  return process.env.DATABASE_URL || 'postgresql://localhost:5432/postgres';
+};
+```
+
+### 5. Testar a Conexão
+
+Execute o projeto localmente para testar:
 
 ```bash
-npm install
+npm run dev
 ```
 
-### 5. **Executar Migrações do Banco**
+### 6. Configurar Dados Iniciais
 
-```bash
-# Gerar migrações baseadas no schema
-npm run db:generate
-
-# Aplicar migrações ao Supabase
-npm run db:push
-```
-
-### 6. **Configurar Storage (Opcional)**
-
-Para upload de imagens, configure o Storage no Supabase:
-
-1. Vá em **Storage** no dashboard
-2. Crie um bucket chamado `menu-images`
-3. Configure as políticas de acesso:
+Insira alguns dados de exemplo no menu:
 
 ```sql
--- Política para permitir upload de imagens
-CREATE POLICY "Allow authenticated uploads" ON storage.objects
-FOR INSERT WITH CHECK (auth.role() = 'authenticated');
-
--- Política para permitir visualização pública
-CREATE POLICY "Allow public viewing" ON storage.objects
-FOR SELECT USING (true);
+INSERT INTO menu_items (name, description, price, category, available) VALUES
+('Tacos de Carne', 'Tacos tradicionais com carne assada', 12.50, 'Tacos', true),
+('Quesadilla de Frango', 'Quesadilla recheada com frango grelhado', 15.00, 'Quesadillas', true),
+('Guacamole', 'Guacamole fresco com chips', 8.00, 'Entradas', true),
+('Margarita', 'Margarita tradicional', 10.00, 'Bebidas', true);
 ```
 
-## 🔧 Configurações Adicionais
-
-### **Configurar Autenticação (Opcional)**
-
-Se quiser usar autenticação do Supabase:
-
-1. Vá em **Authentication > Settings**
-2. Configure os provedores desejados (Email, Google, etc.)
-3. Atualize as URLs de redirecionamento
-
-### **Configurar Row Level Security (RLS)**
-
-Execute no SQL Editor do Supabase:
+### 7. Configurar Mesas
 
 ```sql
--- Habilitar RLS nas tabelas
-ALTER TABLE menu_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tables ENABLE ROW LEVEL SECURITY;
-
--- Políticas básicas
-CREATE POLICY "Allow public read access" ON menu_items FOR SELECT USING (true);
-CREATE POLICY "Allow authenticated insert" ON orders FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow authenticated update" ON orders FOR UPDATE USING (true);
+INSERT INTO tables (location_id, table_number, seats, status, qr_code) VALUES
+('ilha', 1, 4, 'available', 'table-ilha-1'),
+('ilha', 2, 4, 'available', 'table-ilha-2'),
+('ilha', 3, 6, 'available', 'table-ilha-3'),
+('talatona', 1, 4, 'available', 'table-talatona-1'),
+('talatona', 2, 4, 'available', 'table-talatona-2'),
+('movel', 1, 2, 'available', 'table-movel-1'),
+('movel', 2, 2, 'available', 'table-movel-2');
 ```
 
-## 🚀 Iniciar o Projeto
+## Próximos Passos
 
-```bash
-npm run dev
-```
+1. ✅ Execute os comandos SQL acima no Supabase Dashboard
+2. ✅ Configure as variáveis de ambiente
+3. ✅ Teste a aplicação localmente
+4. ✅ Faça deploy para produção
 
-## 🌐 URLs de Acesso
+## Verificação Final
 
-- **Frontend**: http://localhost:5000
-- **Admin**: http://localhost:5000/admin
-- **Cozinha**: http://localhost:5000/kitchen
+Após completar os passos, verifique se:
 
-## 🔑 Credenciais de Teste
+- [ ] Todas as tabelas foram criadas
+- [ ] RLS está habilitado
+- [ ] Políticas de segurança estão configuradas
+- [ ] Aplicação conecta corretamente ao Supabase
+- [ ] Dados de exemplo estão inseridos
+- [ ] Funcionalidades principais funcionam
 
-### **Admin**
-- **Usuário**: admin
-- **Senha**: admin123
+## Suporte
 
-### **Cozinha**
-- **Usuário**: kitchen
-- **Senha**: kitchen123
-
-## 📊 Monitoramento
-
-### **Dashboard do Supabase**
-- Acesse o dashboard do seu projeto
-- Monitore logs, performance e uso
-- Configure alertas se necessário
-
-### **Logs da Aplicação**
-```bash
-# Ver logs em tempo real
-npm run dev
-```
-
-## 🛠️ Comandos Úteis
-
-```bash
-# Desenvolvimento
-npm run dev
-
-# Build para produção
-npm run build
-
-# Verificar tipos
-npm run check
-
-# Gerar migrações
-npm run db:generate
-
-# Aplicar migrações
-npm run db:push
-
-# Reset do banco (cuidado!)
-npm run db:reset
-```
-
-## 🐛 Solução de Problemas
-
-### **Erro de Conexão**
-1. Verifique se as credenciais do Supabase estão corretas
-2. Confirme se o projeto está ativo
-3. Teste a conexão no dashboard do Supabase
-
-### **Erro de Migração**
-```bash
-# Reset das migrações
-rm -rf migrations/
-npm run db:generate
-npm run db:push
-```
-
-### **Erro de Storage**
-1. Verifique se o bucket foi criado
-2. Confirme as políticas de acesso
-3. Teste o upload via dashboard
-
-## 📈 Vantagens do Supabase
-
-- ✅ **Sem configuração local** de PostgreSQL
-- ✅ **Backup automático** dos dados
-- ✅ **Escalabilidade** automática
-- ✅ **Dashboard** para monitoramento
-- ✅ **Storage** para imagens
-- ✅ **Autenticação** integrada
-- ✅ **API REST** automática
-- ✅ **Tempo real** com WebSockets
-
-## 🎯 Próximos Passos
-
-1. ✅ Criar projeto no Supabase
-2. ✅ Configurar variáveis de ambiente
-3. ✅ Executar migrações
-4. ✅ Testar funcionalidades
-5. ⏳ Configurar Storage (opcional)
-6. ⏳ Configurar autenticação (opcional)
-
----
-
-**Status**: ✅ Configuração básica do Supabase
-**Próximo**: ⏳ Criar projeto e configurar credenciais
+Se encontrar problemas, verifique:
+- Logs do Supabase
+- Configuração das variáveis de ambiente
+- Permissões das políticas RLS
+- Conexão de rede

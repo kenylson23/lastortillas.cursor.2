@@ -1,8 +1,9 @@
 # =====================================================
-# Configuração de Variáveis de Ambiente - Las Tortillas Mx
+# TEMPLATE PARA ARQUIVO .env
 # =====================================================
-
-# Copie este conteúdo para um arquivo .env na raiz do projeto
+# 
+# Copie este conteúdo para um arquivo chamado .env na raiz do projeto
+# e substitua os valores pelos seus dados do Supabase
 
 # Supabase Configuration
 SUPABASE_URL=https://seu-project-id.supabase.co
@@ -18,31 +19,34 @@ NODE_ENV=development
 PORT=5000
 
 # =====================================================
-# Como obter as credenciais:
+# COMO OBTER AS CREDENCIAIS:
 # =====================================================
-
-# 1. Acesse o dashboard do Supabase
-# 2. Vá em Settings > API
-# 3. Copie:
-#    - Project URL
-#    - anon public key
-#    - service_role secret key
-
-# 4. Vá em Settings > Database
+# 
+# 1. Acesse https://supabase.com
+# 2. Faça login na sua conta
+# 3. Selecione seu projeto
+# 4. Vá em Settings > API
 # 5. Copie:
+#    - Project URL (ex: https://abcdefghijklmnop.supabase.co)
+#    - anon public key (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)
+#    - service_role secret key (eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...)
+# 6. Vá em Settings > Database
+# 7. Copie:
 #    - Connection string (URI)
 #    - Connection string (pooler)
-
+#
 # =====================================================
-# Exemplo de configuração completa:
+# EXEMPLO DE CONFIGURAÇÃO COMPLETA:
 # =====================================================
-
+#
 # SUPABASE_URL=https://abcdefghijklmnop.supabase.co
 # SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYzNjU2NzIwMCwiZXhwIjoxOTUyMTQzMjAwfQ.example
 # SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFiY2RlZmdoaWprbG1ub3AiLCJyb2xlIjoic2VydmljZV9yb2xlIiwiaWF0IjoxNjM2NTY3MjAwLCJleHAiOjE5NTIxNDMyMDB9.example
-
+#
 # SUPABASE_DB_DIRECT_URL=postgresql://postgres:minhasenha@db.abcdefghijklmnop.supabase.co:5432/postgres
 # SUPABASE_DB_URL=postgresql://postgres.abcdefghijklmnop:minhasenha@aws-0-us-east-1.pooler.supabase.com:6543/postgres
-
+#
 # NODE_ENV=development
 # PORT=5000
+#
+# ===================================================== 
