@@ -50,6 +50,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         res.json(table);
       } else {
+        // Chamar getAllTables sem argumentos
         const tables = await storage.getAllTables();
         res.json(tables);
       }

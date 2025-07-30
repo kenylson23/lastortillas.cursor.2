@@ -24,6 +24,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         res.json(order);
       } else {
+        // Chamar getAllOrders sem argumentos
         const orders = await storage.getAllOrders();
         res.json(orders);
       }
