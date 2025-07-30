@@ -3,15 +3,39 @@ import { storage } from '../shared/storage';
 import { insertOrderSchema } from '../shared/schema';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Adicionar headers CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
+      console.log('Order creation request body:', req.body);
+      
       const order = insertOrderSchema.parse(req.body);
+      console.log('Parsed order data:', order);
+      
       const newOrder = await storage.createOrder(order);
+      console.log('Created order:', newOrder);
       
       res.status(201).json(newOrder);
     } catch (error) {
       console.error('Order creation error:', error);
-      res.status(400).json({ message: "Failed to create order" });
+      
+      if (error.name === 'ZodError') {
+        res.status(400).json({ 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      } else {
+        res.status(400).json({ message: "Failed to create order" });
+      }
     }
   } else if (req.method === 'GET') {
     try {
@@ -24,7 +48,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
         res.json(order);
       } else {
-        // Chamar getAllOrders sem argumentos - corrigido
         const orders = await (storage.getAllOrders as () => Promise<any>)();
         res.json(orders);
       }
@@ -41,8 +64,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: "Order ID is required" });
       }
       
-      // Atualizar status do pedido
+      console.log('Updating order status:', { id, status });
       const updatedOrder = await storage.updateOrderStatus(parseInt(id as string), status);
+      console.log('Updated order:', updatedOrder);
+      
       res.json(updatedOrder);
     } catch (error) {
       console.error('Order status update error:', error);
@@ -56,6 +81,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ message: "Order ID is required" });
       }
       
+      console.log('Deleting order:', id);
       await storage.deleteOrder(parseInt(id as string));
       res.status(204).send();
     } catch (error) {

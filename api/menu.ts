@@ -3,15 +3,39 @@ import { storage } from '../shared/storage';
 import { insertMenuItemSchema } from '../shared/schema';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Adicionar headers CORS
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
+      console.log('Menu item creation request body:', req.body);
+      
       const menuItem = insertMenuItemSchema.parse(req.body);
+      console.log('Parsed menu item data:', menuItem);
+      
       const newMenuItem = await storage.createMenuItem(menuItem);
+      console.log('Created menu item:', newMenuItem);
       
       res.status(201).json(newMenuItem);
     } catch (error) {
       console.error('Menu item creation error:', error);
-      res.status(400).json({ message: "Failed to create menu item" });
+      
+      if (error.name === 'ZodError') {
+        res.status(400).json({ 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      } else {
+        res.status(400).json({ message: "Failed to create menu item" });
+      }
     }
   } else if (req.method === 'GET') {
     try {
