@@ -1,5 +1,4 @@
 import { pgTable, text, varchar, serial, integer, boolean, timestamp, numeric, jsonb, index } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table for Replit Auth
@@ -96,37 +95,64 @@ export const tables = pgTable("tables", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertReservationSchema = createInsertSchema(reservations).omit({
-  id: true,
-  createdAt: true,
+// Zod schemas puros (sem drizzle-zod)
+export const insertReservationSchema = z.object({
+  name: z.string().min(1),
+  phone: z.string().min(1),
+  email: z.string().email().optional(),
+  date: z.string().min(1),
+  time: z.string().min(1),
+  guests: z.number().int().positive(),
+  notes: z.string().optional(),
 });
 
-export const insertContactSchema = createInsertSchema(contacts).omit({
-  id: true,
-  createdAt: true,
+export const insertContactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email(),
+  phone: z.string().optional(),
+  message: z.string().min(1),
 });
 
-export const insertMenuItemSchema = createInsertSchema(menuItems).omit({
-  id: true,
-  createdAt: true,
+export const insertMenuItemSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().min(1),
+  price: z.string().min(1),
+  category: z.string().min(1),
+  available: z.boolean().default(true),
+  preparationTime: z.number().int().positive().default(15),
+  customizations: z.array(z.string()).optional(),
 });
 
-export const insertOrderSchema = createInsertSchema(orders).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-}).extend({
+export const insertOrderSchema = z.object({
+  customerName: z.string().min(1),
+  customerPhone: z.string().min(1),
+  customerEmail: z.string().email().optional(),
+  deliveryAddress: z.string().optional(),
+  orderType: z.enum(["delivery", "takeaway", "dine-in"]),
+  locationId: z.string().min(1),
+  tableId: z.number().int().positive().optional(),
+  status: z.string().default("received"),
+  totalAmount: z.string().min(1),
+  paymentMethod: z.enum(["cash", "card", "transfer"]),
+  paymentStatus: z.string().default("pending"),
+  notes: z.string().optional(),
   estimatedDeliveryTime: z.string().optional(),
 });
 
-export const insertOrderItemSchema = createInsertSchema(orderItems).omit({
-  id: true,
-  orderId: true,
+export const insertOrderItemSchema = z.object({
+  menuItemId: z.number().int().positive(),
+  quantity: z.number().int().positive(),
+  unitPrice: z.string().min(1),
+  customizations: z.array(z.string()).optional(),
 });
 
-export const insertTableSchema = createInsertSchema(tables).omit({
-  id: true,
-  createdAt: true,
+export const insertTableSchema = z.object({
+  locationId: z.string().min(1),
+  tableNumber: z.number().int().positive(),
+  seats: z.number().int().positive(),
+  status: z.enum(["available", "occupied", "reserved", "maintenance"]).default("available"),
+  qrCode: z.string().optional(),
+  qrCodeUrl: z.string().optional(),
 });
 
 // Types from Drizzle schema inference
