@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
-import { Order, OrderItem, MenuItem } from '@shared/schema';
+import { Order, OrderItem, MenuItem } from '../../shared/schema';
 // Removido: import { useToast } from '../hooks/use-toast';
 import { X, Edit3, Trash2, MessageSquare, Clock, CheckCircle, XCircle, Truck, Phone, MapPin, CreditCard, FileText, Share2 } from 'lucide-react';
 

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
-import { Order } from '@shared/schema';
+import { Order } from '../../shared/schema';
 import { RefreshCw, LogOut, User, Clock, CheckCircle, XCircle, Truck, Package, AlertCircle } from 'lucide-react';
 
 export default function Kitchen() {

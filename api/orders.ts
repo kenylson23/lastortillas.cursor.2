@@ -31,6 +31,36 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       console.error('Orders fetch error:', error);
       res.status(500).json({ message: "Failed to fetch orders" });
     }
+  } else if (req.method === 'PATCH') {
+    try {
+      const { id } = req.query;
+      const { status } = req.body;
+      
+      if (!id) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+      
+      // Atualizar status do pedido
+      const updatedOrder = await storage.updateOrderStatus(parseInt(id as string), status);
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error('Order status update error:', error);
+      res.status(400).json({ message: "Failed to update order status" });
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      
+      if (!id) {
+        return res.status(400).json({ message: "Order ID is required" });
+      }
+      
+      await storage.deleteOrder(parseInt(id as string));
+      res.status(204).send();
+    } catch (error) {
+      console.error('Order deletion error:', error);
+      res.status(400).json({ message: "Failed to delete order" });
+    }
   } else {
     res.status(405).json({ message: 'Method not allowed' });
   }

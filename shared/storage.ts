@@ -356,6 +356,42 @@ export const storage = {
       console.error('Erro ao deletar mesa:', error);
       throw error;
     }
+  },
+
+  // Order status update
+  updateOrderStatus: async (id: number, status: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .update({ status })
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao atualizar status do pedido:', error);
+      throw error;
+    }
+  },
+
+  // Delete order
+  deleteOrder: async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar pedido:', error);
+      throw error;
+    }
   }
 };
 
