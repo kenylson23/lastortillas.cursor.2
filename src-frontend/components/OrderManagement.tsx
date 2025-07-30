@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '../lib/queryClient';
 import { Order, OrderItem, MenuItem } from '@shared/schema';
-import { useToast } from '../hooks/use-toast';
+// Removido: import { useToast } from '../hooks/use-toast';
 import { X, Edit3, Trash2, MessageSquare, Clock, CheckCircle, XCircle, Truck, Phone, MapPin, CreditCard, FileText, Share2 } from 'lucide-react';
 
 interface OrderWithItems extends Order {
@@ -19,7 +19,7 @@ export default function OrderManagement() {
   const [adminNotes, setAdminNotes] = useState('');
   const [estimatedTime, setEstimatedTime] = useState('');
   const queryClient = useQueryClient();
-  const { toast } = useToast();
+  // Removido: const { toast } = useToast();
 
   const { data: orders = [], isLoading, refetch } = useQuery({
     queryKey: ['/api/orders', selectedStatus, selectedLocation, selectedOrderType],
@@ -89,18 +89,15 @@ export default function OrderManagement() {
         setSelectedOrder(prev => prev ? { ...prev, status: variables.status } : null);
       }
       
-      toast({
-        title: "Sucesso",
-        description: "Status do pedido atualizado com sucesso",
-      });
+      // Substituído toast por console.log e alert
+      console.log('Status do pedido atualizado com sucesso');
+      alert('Status do pedido atualizado com sucesso');
     },
     onError: (error) => {
-      toast({
-        title: "Erro",
-        description: "Falha ao atualizar status do pedido",
-        variant: "destructive",
-      });
-    }
+      // Substituído toast por console.log e alert
+      console.error('Falha ao atualizar status do pedido:', error);
+      alert('Falha ao atualizar status do pedido');
+    },
   });
 
   const deleteOrderMutation = useMutation({
@@ -109,29 +106,22 @@ export default function OrderManagement() {
       return response.json();
     },
     onSuccess: () => {
-      // Invalidar e forçar refetch imediato para atualização instantânea
       queryClient.invalidateQueries({ queryKey: ['/api/orders'] });
       queryClient.invalidateQueries({ predicate: (query) => 
         query.queryKey[0] === '/api/tables' 
       });
-      queryClient.refetchQueries({ queryKey: ['/api/orders'] });
-      queryClient.refetchQueries({ predicate: (query) => 
-        query.queryKey[0] === '/api/tables' 
-      });
       setIsOrderModalOpen(false);
       setSelectedOrder(null);
-      toast({
-        title: "Sucesso",
-        description: "Pedido removido com sucesso",
-      });
+      
+      // Substituído toast por console.log e alert
+      console.log('Pedido deletado com sucesso');
+      alert('Pedido deletado com sucesso');
     },
     onError: (error) => {
-      toast({
-        title: "Erro",
-        description: "Falha ao remover pedido",
-        variant: "destructive",
-      });
-    }
+      // Substituído toast por console.log e alert
+      console.error('Falha ao deletar pedido:', error);
+      alert('Falha ao deletar pedido');
+    },
   });
 
   const fetchOrderDetails = async (orderId: number) => {
@@ -143,11 +133,9 @@ export default function OrderManagement() {
       setAdminNotes(orderDetails.adminNotes || '');
       setEstimatedTime(orderDetails.estimatedDeliveryTime || '');
     } catch (error) {
-      toast({
-        title: "Erro",
-        description: "Falha ao buscar detalhes do pedido",
-        variant: "destructive",
-      });
+      // Substituído toast por console.log e alert
+      console.error('Falha ao buscar detalhes do pedido:', error);
+      alert('Falha ao buscar detalhes do pedido');
     }
   };
 
@@ -805,10 +793,9 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                       <button
                         onClick={() => {
                           // TODO: Add API call to update estimated time
-                          toast({
-                            title: "Funcionalidade em desenvolvimento",
-                            description: "Atualização de tempo estimado será implementada em breve",
-                          });
+                          // Substituído toast por console.log e alert
+                          console.log('Atualização de tempo estimado será implementada em breve');
+                          alert('Atualização de tempo estimado será implementada em breve');
                         }}
                         className="mt-7 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                       >
@@ -831,10 +818,9 @@ ${selectedOrder.deliveryAddress ? `*Endereço:* ${selectedOrder.deliveryAddress}
                       <button
                         onClick={() => {
                           // TODO: Add API call to save admin notes
-                          toast({
-                            title: "Funcionalidade em desenvolvimento",
-                            description: "Salvamento de notas administrativas será implementado em breve",
-                          });
+                          // Substituído toast por console.log e alert
+                          console.log('Salvamento de notas administrativas será implementado em breve');
+                          alert('Salvamento de notas administrativas será implementado em breve');
                         }}
                         className="mt-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
                       >

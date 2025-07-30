@@ -1,14 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '../hooks/use-toast';
-import { MenuItem, InsertMenuItem } from '../../shared/schema';
+import { MenuItem } from '../../shared/schema';
 import { apiRequest } from '../lib/queryClient';
 
 export default function MenuManagement() {
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
-  const [newItem, setNewItem] = useState<Partial<InsertMenuItem>>({
+  const [newItem, setNewItem] = useState<Partial<MenuItem>>({
     name: '',
     description: '',
     price: '0',
@@ -16,7 +15,6 @@ export default function MenuManagement() {
     available: true
   });
   
-  const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch menu items with auto-refresh
@@ -28,7 +26,7 @@ export default function MenuManagement() {
 
   // Add item mutation
   const addItemMutation = useMutation({
-    mutationFn: async (item: InsertMenuItem) => {
+    mutationFn: async (item: MenuItem) => {
       const response = await apiRequest('POST', '/api/menu-items', item);
       return response.json();
     },
@@ -38,11 +36,8 @@ export default function MenuManagement() {
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
       // Força refetch imediato para atualização instantânea
       queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
-      toast({
-        title: 'Item adicionado',
-        description: 'O item foi adicionado ao menu com sucesso',
-        variant: 'success'
-      });
+      console.log('Item adicionado com sucesso');
+      alert('Item adicionado com sucesso');
       setIsAddingItem(false);
       setNewItem({
         name: '',
@@ -53,11 +48,8 @@ export default function MenuManagement() {
       });
     },
     onError: (error) => {
-      toast({
-        title: 'Erro ao adicionar item',
-        description: error.message,
-        variant: 'destructive'
-      });
+      console.error('Erro ao adicionar item:', error);
+      alert('Erro ao adicionar item');
     }
   });
 
@@ -72,26 +64,20 @@ export default function MenuManagement() {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
       queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
-      toast({
-        title: 'Item atualizado',
-        description: 'O item foi atualizado com sucesso',
-        variant: 'success'
-      });
+      console.log('Item atualizado com sucesso');
+      alert('Item atualizado com sucesso');
       setEditingItem(null);
     },
     onError: (error) => {
-      toast({
-        title: 'Erro ao atualizar item',
-        description: error.message,
-        variant: 'destructive'
-      });
+      console.error('Erro ao atualizar item:', error);
+      alert('Erro ao atualizar item');
     }
   });
 
   const handleAddItem = (e: React.FormEvent) => {
     e.preventDefault();
     if (newItem.name && newItem.category && newItem.price) {
-      addItemMutation.mutate(newItem as InsertMenuItem);
+      addItemMutation.mutate(newItem as MenuItem);
     }
   };
 
@@ -120,19 +106,13 @@ export default function MenuManagement() {
       queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
       queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
-      toast({
-        title: 'Item removido',
-        description: 'O item foi removido com sucesso',
-        variant: 'success'
-      });
+      console.log('Item removido com sucesso');
+      alert('Item removido com sucesso');
       setItemToDelete(null);
     },
     onError: (error) => {
-      toast({
-        title: 'Erro ao remover item',
-        description: error.message,
-        variant: 'destructive'
-      });
+      console.error('Erro ao remover item:', error);
+      alert('Erro ao remover item');
     }
   });
 

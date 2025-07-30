@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, LogOut, User, Settings } from 'lucide-react';
+import OrderManagement from '../components/OrderManagement';
+import MenuManagement from '../components/MenuManagement';
+import TableManagement from '../components/TableManagement';
+import OrderStats from '../components/OrderStats';
 
 export default function Admin() {
   const [, setLocation] = useLocation();
@@ -56,38 +60,16 @@ export default function Admin() {
               <p className="text-sm sm:text-base text-gray-600 mt-1">Gestão Las Tortillas • Dados em tempo real</p>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4 w-full sm:w-auto justify-end">
-              {/* Banner de acesso à cozinha - DESTAQUE */}
-              <button
-                onClick={() => setLocation('/cozinha')}
-                className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 sm:px-6 py-2 rounded-lg hover:from-orange-600 hover:to-red-600 transition-all text-sm sm:text-base flex items-center gap-2 shadow-lg font-bold border-2 border-orange-300"
-                title="Acessar Painel da Cozinha"
-              >
-                <span className="text-lg">👨‍🍳</span>
-                <span className="hidden sm:inline">PAINEL COZINHA</span>
-                <span className="sm:hidden">COZINHA</span>
-              </button>
-              
-              {/* Acesso rápido ao sistema de pedidos */}
-              <button
-                onClick={() => setLocation('/menu')}
-                className="bg-green-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base flex items-center gap-2 shadow-md"
-              >
-                <span className="text-lg">🛒</span>
-                <span className="hidden sm:inline">Fazer Pedido</span>
-                <span className="sm:hidden">Pedido</span>
-              </button>
-              <button
-                onClick={() => setLocation('/')}
-                className="text-gray-600 hover:text-gray-900 transition-colors text-sm sm:text-base"
-              >
-                <span className="hidden sm:inline">Voltar ao Site</span>
-                <span className="sm:hidden">Site</span>
-              </button>
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <User className="w-4 h-4" />
+                <span className="hidden sm:inline">{userRole === 'admin' ? 'Administrador' : 'Usuário'}</span>
+              </div>
               <button
                 onClick={handleLogout}
-                className="bg-red-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               >
-                Logout
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Sair</span>
               </button>
             </div>
           </div>
@@ -145,26 +127,20 @@ export default function Admin() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-6">
         {activeTab === 'orders' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão de Pedidos</h2>
-            <p className="text-gray-600">Sistema de gestão de pedidos em desenvolvimento...</p>
+          <div className="space-y-6">
+            <OrderStats />
+            <OrderManagement />
           </div>
         )}
         {activeTab === 'menu' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão do Menu</h2>
-            <p className="text-gray-600">Sistema de gestão do menu em desenvolvimento...</p>
-          </div>
+          <MenuManagement />
         )}
         {activeTab === 'tables' && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Gestão de Mesas</h2>
-            <p className="text-gray-600">Sistema de gestão de mesas em desenvolvimento...</p>
-          </div>
+          <TableManagement />
         )}
         {activeTab === 'analytics' && (
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Relatórios</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Relatórios e Analytics</h2>
             <p className="text-gray-600">Sistema de relatórios em desenvolvimento...</p>
           </div>
         )}
