@@ -441,7 +441,7 @@ export default function TableManagement() {
   const { data: tables, isLoading, error } = useQuery({
     queryKey: ['/api/tables'],
     queryFn: async () => {
-      const response = await apiRequest('/tables');
+      const response = await apiRequest('/api/tables');
       if (response.error) {
         throw new Error('Failed to fetch tables');
       }
@@ -458,7 +458,7 @@ export default function TableManagement() {
 
   const createTableMutation = useMutation({
     mutationFn: async (table: InsertTable) => {
-      const response = await apiRequest('/tables', 'POST', table);
+      const response = await apiRequest('/api/tables', 'POST', table);
       if (response.error) {
         throw new Error(response.error || 'Falha ao criar mesa');
       }
@@ -487,7 +487,7 @@ export default function TableManagement() {
 
   const updateTableMutation = useMutation({
     mutationFn: async ({ id, table }: { id: number; table: Partial<Table> }) => {
-      const response = await apiRequest(`/tables/${id}`, 'PUT', table);
+      const response = await apiRequest(`/api/tables/${id}`, 'PUT', table);
       if (response.error) {
         throw new Error(response.error || 'Falha ao atualizar mesa');
       }
@@ -516,7 +516,7 @@ export default function TableManagement() {
 
   const deleteTableMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest(`/tables/${id}`, 'DELETE');
+      const response = await apiRequest(`/api/tables/${id}`, 'DELETE');
       if (response.error) {
         throw new Error('Failed to delete table');
       }
@@ -530,7 +530,7 @@ export default function TableManagement() {
 
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: number; status: string }) => {
-      const response = await apiRequest(`/tables/${id}/status`, 'PATCH', { status });
+      const response = await apiRequest(`/api/tables/${id}/status`, 'PATCH', { status });
       if (response.error) {
         throw new Error('Failed to update table status');
       }
