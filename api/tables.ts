@@ -1,0 +1,65 @@
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { storage } from '../shared/storage';
+import { insertTableSchema } from '../shared/schema';
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method === 'POST') {
+    try {
+      const table = insertTableSchema.parse(req.body);
+      const newTable = await storage.createTable(table);
+      
+      res.status(201).json(newTable);
+    } catch (error) {
+      console.error('Table creation error:', error);
+      res.status(400).json({ message: "Failed to create table" });
+    }
+  } else if (req.method === 'GET') {
+    try {
+      const { id } = req.query;
+      
+      if (id) {
+        const table = await storage.getTableById(id as string);
+        if (!table) {
+          return res.status(404).json({ message: "Table not found" });
+        }
+        res.json(table);
+      } else {
+        const tables = await storage.getAllTables();
+        res.json(tables);
+      }
+    } catch (error) {
+      console.error('Tables fetch error:', error);
+      res.status(500).json({ message: "Failed to fetch tables" });
+    }
+  } else if (req.method === 'PUT') {
+    try {
+      const { id } = req.query;
+      if (!id) {
+        return res.status(400).json({ message: "Table ID is required" });
+      }
+      
+      const updates = req.body;
+      const updatedTable = await storage.updateTable(parseInt(id as string), updates);
+      
+      res.json(updatedTable);
+    } catch (error) {
+      console.error('Table update error:', error);
+      res.status(400).json({ message: "Failed to update table" });
+    }
+  } else if (req.method === 'DELETE') {
+    try {
+      const { id } = req.query;
+      if (!id) {
+        return res.status(400).json({ message: "Table ID is required" });
+      }
+      
+      await storage.deleteTable(parseInt(id as string));
+      res.status(204).send();
+    } catch (error) {
+      console.error('Table deletion error:', error);
+      res.status(400).json({ message: "Failed to delete table" });
+    }
+  } else {
+    res.status(405).json({ message: 'Method not allowed' });
+  }
+} 

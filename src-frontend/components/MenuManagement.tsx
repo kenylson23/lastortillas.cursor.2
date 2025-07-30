@@ -17,25 +17,28 @@ export default function MenuManagement() {
   
   const queryClient = useQueryClient();
 
-  // Fetch menu items with auto-refresh
+  // Fetch menu items with auto-refresh - CORRIGIDO: usar /api/menu
   const { data: menuItems = [], isLoading } = useQuery<MenuItem[]>({
-    queryKey: ['/api/menu-items'],
+    queryKey: ['/api/menu'],
+    queryFn: async () => {
+      const response = await apiRequest('GET', '/api/menu');
+      return response.json();
+    },
     refetchInterval: 5000, // Auto-refresh every 5 seconds
     refetchIntervalInBackground: true, // Keep refreshing even when tab is not active
   });
 
-  // Add item mutation
+  // Add item mutation - CORRIGIDO: usar /api/menu
   const addItemMutation = useMutation({
     mutationFn: async (item: MenuItem) => {
-      const response = await apiRequest('POST', '/api/menu-items', item);
+      const response = await apiRequest('POST', '/api/menu', item);
       return response.json();
     },
     onSuccess: () => {
       // Invalidar todas as queries relacionadas ao menu
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
       // Força refetch imediato para atualização instantânea
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu'] });
       console.log('Item adicionado com sucesso');
       alert('Item adicionado com sucesso');
       setIsAddingItem(false);
@@ -53,17 +56,16 @@ export default function MenuManagement() {
     }
   });
 
-  // Update item mutation
+  // Update item mutation - CORRIGIDO: usar /api/menu
   const updateItemMutation = useMutation({
     mutationFn: async ({ id, updates }: { id: number; updates: Partial<MenuItem> }) => {
-      const response = await apiRequest('PUT', `/api/menu-items/${id}`, updates);
+      const response = await apiRequest('PUT', `/api/menu/${id}`, updates);
       return response.json();
     },
     onSuccess: () => {
       // Invalidar e forçar refetch para atualização instantânea
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu'] });
       console.log('Item atualizado com sucesso');
       alert('Item atualizado com sucesso');
       setEditingItem(null);
@@ -95,17 +97,16 @@ export default function MenuManagement() {
     });
   };
 
-  // Delete item mutation
+  // Delete item mutation - CORRIGIDO: usar /api/menu
   const deleteItemMutation = useMutation({
     mutationFn: async (id: number) => {
-      const response = await apiRequest('DELETE', `/api/menu-items/${id}`);
+      const response = await apiRequest('DELETE', `/api/menu/${id}`);
       return response.json();
     },
     onSuccess: () => {
       // Invalidar e forçar refetch para atualização instantânea
-      queryClient.invalidateQueries({ queryKey: ['/api/menu-items'] });
       queryClient.invalidateQueries({ queryKey: ['/api/menu'] });
-      queryClient.refetchQueries({ queryKey: ['/api/menu-items'] });
+      queryClient.refetchQueries({ queryKey: ['/api/menu'] });
       console.log('Item removido com sucesso');
       alert('Item removido com sucesso');
       setItemToDelete(null);

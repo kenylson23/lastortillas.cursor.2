@@ -1,4 +1,5 @@
-import { useToast } from "@/hooks/use-toast"
+// Removido useToast temporariamente para evitar erros
+// import { useToast } from "@/hooks/use-toast"
 import {
   Toast,
   ToastClose,
@@ -9,7 +10,8 @@ import {
 } from "@/components/ui/toast"
 
 export function Toaster() {
-  const { toasts } = useToast()
+  // Removido: const { toasts } = useToast()
+  const toasts: any[] = [] // Array vazio temporário
 
   return (
     <ToastProvider>

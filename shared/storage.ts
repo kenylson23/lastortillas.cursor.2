@@ -270,6 +270,92 @@ export const storage = {
       console.error('Erro ao verificar disponibilidade:', error);
       return true; // Fallback: sempre disponível
     }
+  },
+
+  // Table operations
+  createTable: async (table: any) => {
+    try {
+      const { data, error } = await supabase
+        .from('tables')
+        .insert(table)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao criar mesa:', error);
+      throw error;
+    }
+  },
+
+  getAllTables: async () => {
+    try {
+      const { data, error } = await supabase
+        .from('tables')
+        .select('*')
+        .order('location_id', { ascending: true })
+        .order('table_number', { ascending: true });
+      
+      if (error) throw error;
+      
+      return data || [];
+    } catch (error) {
+      console.error('Erro ao buscar mesas:', error);
+      return [];
+    }
+  },
+
+  getTableById: async (id: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('tables')
+        .select('*')
+        .eq('id', id)
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao buscar mesa:', error);
+      return null;
+    }
+  },
+
+  updateTable: async (id: number, updates: any) => {
+    try {
+      const { data, error } = await supabase
+        .from('tables')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) throw error;
+      
+      return data;
+    } catch (error) {
+      console.error('Erro ao atualizar mesa:', error);
+      throw error;
+    }
+  },
+
+  deleteTable: async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('tables')
+        .delete()
+        .eq('id', id);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error) {
+      console.error('Erro ao deletar mesa:', error);
+      throw error;
+    }
   }
 };
 

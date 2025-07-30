@@ -49,9 +49,9 @@ export default function OrderManagement() {
   });
 
   const { data: menuItems = [] } = useQuery({
-    queryKey: ['/api/menu-items'],
+    queryKey: ['/api/menu'],
     queryFn: async () => {
-      const response = await apiRequest('GET', '/api/menu-items');
+      const response = await apiRequest('GET', '/api/menu');
       return response.json();
     },
     refetchInterval: 5000, // Auto-refresh every 5 seconds
