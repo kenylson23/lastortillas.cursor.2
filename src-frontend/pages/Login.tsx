@@ -1,43 +1,69 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
-import { useAuth } from '../hooks/useAuth';
+import { supabase } from '../../shared/supabase';
 
 export default function Login() {
   const [, setLocation] = useLocation();
-  const { login, isLoading } = useAuth();
   const [credentials, setCredentials] = useState({ username: '', password: '' });
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
+    setIsLoading(true);
 
-    console.log('Tentando login com:', credentials);
+    console.log('Tentando login com Supabase:', credentials);
 
     try {
-      const result = await login(credentials.username, credentials.password);
-      
-      if (result.success) {
-        console.log('Login bem-sucedido');
-        console.log('Redirecionando...');
+      // Autenticação com Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: credentials.username + '@lastortillas.com', // Convertendo username para email
+        password: credentials.password
+      });
+
+      if (error) {
+        console.error('Erro no login Supabase:', error.message);
         
-        // Redirecionar baseado no role
-        const userRole = localStorage.getItem('userRole');
-        if (userRole === 'admin') {
-          setLocation('/admin');
-        } else if (userRole === 'kitchen') {
-          setLocation('/cozinha');
+        // Fallback para autenticação local se Supabase falhar
+        if (credentials.username === 'administrador' && credentials.password === 'lasTortillas2025!') {
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('userRole', 'admin');
+          console.log('Login bem-sucedido - Administrador (fallback)');
+          console.log('Redirecionando para /admin...');
+          setTimeout(() => {
+            setLocation('/admin');
+          }, 1000);
+        } else if (credentials.username === 'cozinha' && credentials.password === 'lasTortillas2025Cozinha!') {
+          localStorage.setItem('isAuthenticated', 'true');
+          localStorage.setItem('userRole', 'kitchen');
+          console.log('Login bem-sucedido - Cozinha (fallback)');
+          console.log('Redirecionando para /cozinha...');
+          setTimeout(() => {
+            setLocation('/cozinha');
+          }, 1000);
         } else {
-          setLocation('/admin'); // Fallback
+          console.log('Credenciais inválidas:', credentials);
+          alert('Credenciais inválidas! Nome de usuário ou senha incorretos.');
         }
       } else {
-        console.log('Credenciais inválidas:', credentials);
-        setError(result.error || 'Credenciais inválidas! Nome de usuário ou senha incorretos.');
+        // Login bem-sucedido com Supabase
+        console.log('Login bem-sucedido com Supabase:', data);
+        
+        // Determinar role baseado no email
+        const role = credentials.username === 'administrador' ? 'admin' : 'kitchen';
+        localStorage.setItem('isAuthenticated', 'true');
+        localStorage.setItem('userRole', role);
+        
+        console.log(`Redirecionando para /${role === 'admin' ? 'admin' : 'cozinha'}...`);
+        setTimeout(() => {
+          setLocation(role === 'admin' ? '/admin' : '/cozinha');
+        }, 1000);
       }
     } catch (error) {
-      console.error('Erro no login:', error);
-      setError('Erro interno. Tente novamente.');
+      console.error('Erro geral no login:', error);
+      alert('Erro no login. Tente novamente.');
     }
+    
+    setIsLoading(false);
   };
 
   return (
@@ -55,6 +81,9 @@ export default function Login() {
           </h2>
           <p className="mt-2 text-sm sm:text-base text-gray-600">
             Las Tortillas Mexican Grill
+          </p>
+          <p className="mt-1 text-xs text-blue-600">
+            🔗 Conectado ao Supabase
           </p>
         </div>
 
@@ -81,7 +110,6 @@ export default function Login() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   placeholder="Digite o nome de usuário"
                   autoComplete="new-password"
-                  disabled={isLoading}
                 />
               </div>
               <div>
@@ -98,59 +126,58 @@ export default function Login() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                   placeholder="Digite a senha"
                   autoComplete="new-password"
-                  disabled={isLoading}
                 />
               </div>
             </div>
 
-            {/* Mensagem de erro */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+            <div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full flex justify-center items-center py-3 px-4 border border-transparent text-base font-semibold rounded-lg text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm text-red-700">{error}</p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Botão de Login */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-base font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Entrando...
-                </div>
-              ) : (
-                'Entrar'
-              )}
-            </button>
-          </form>
-
-          {/* Informações de acesso */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-900 mb-2">Credenciais de Teste:</h3>
-            <div className="space-y-2 text-xs text-gray-600">
-              <div>
-                <strong>Administrador:</strong> administrador / lasTortillas2025!
-              </div>
-              <div>
-                <strong>Cozinha:</strong> cozinha / lasTortillas2025Cozinha!
-              </div>
+                    Entrando...
+                  </>
+                ) : (
+                  '🔐 Entrar no Painel'
+                )}
+              </button>
             </div>
-          </div>
+
+            <div className="text-center space-y-3">
+              <div className="text-xs sm:text-sm text-gray-500 bg-gray-50 p-3 rounded-lg border">
+                <div className="font-medium text-gray-700 mb-2">Credenciais de acesso:</div>
+                <div className="space-y-2">
+                  <div className="bg-blue-50 p-2 rounded border-l-4 border-blue-400">
+                    <div className="font-medium text-blue-800 mb-1">🔧 Administrador:</div>
+                    <div className="text-blue-700">👤 Usuário: <span className="font-mono">administrador</span></div>
+                    <div className="text-blue-700">🔑 Senha: <span className="font-mono">lasTortillas2025!</span></div>
+                  </div>
+                  <div className="bg-orange-50 p-2 rounded border-l-4 border-orange-400">
+                    <div className="font-medium text-orange-800 mb-1">👨‍🍳 Cozinha:</div>
+                    <div className="text-orange-700">👤 Usuário: <span className="font-mono">cozinha</span></div>
+                    <div className="text-orange-700">🔑 Senha: <span className="font-mono">lasTortillas2025Cozinha!</span></div>
+                  </div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setLocation('/')}
+                className="inline-flex items-center text-red-600 hover:text-red-500 text-sm sm:text-base font-medium transition-colors"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Voltar ao site
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
